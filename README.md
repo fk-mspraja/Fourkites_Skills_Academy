@@ -4,6 +4,57 @@
 
 This repository contains the core Skills Library for building intelligent, automated RCA agents that can diagnose support tickets across multiple transportation modes (OTR, Ocean, Drayage, Air).
 
+## 🔧 Flexibility by Design
+
+**Everything is configurable via YAML - no code changes required:**
+
+- **Patterns**: Add, remove, or modify diagnostic patterns without touching Python code
+- **Decision Trees**: Change investigation priority and order by editing YAML files
+- **Confidence Thresholds**: Adjust auto-resolution vs human-review thresholds per domain
+- **Data Sources**: Configure which APIs/databases to query for each pattern
+- **Resolution Steps**: Update remediation workflows as processes evolve
+
+The Skills Library is a **framework**, not a hardcoded solution. Support teams can continuously improve the mental model by editing YAML files based on new learnings.
+
+### How to Customize Patterns
+
+**Change Investigation Priority** (edit decision_tree.yaml):
+```yaml
+# Check callbacks first (highest frequency)
+- pattern: callback_delivery_failed
+  priority: 1
+  sub_patterns:
+    - event_not_subscribed  # Check this first
+    - dns_lookup_failure    # Then this
+    - http_503_error        # Then this
+```
+
+**Adjust Confidence Thresholds** (edit pattern YAML):
+```yaml
+# Increase auto-resolution threshold if pattern is highly reliable
+evidence:
+  - type: athena_query
+    confidence_weight: 0.95  # Was 0.90, now 95% confident
+```
+
+**Add New Resolution Steps** (edit pattern YAML):
+```yaml
+resolution_steps:
+  - "NEW: Check if customer recently changed firewall rules"
+  - "Verify webhook endpoint accessibility"
+  - "Check authentication credentials"
+```
+
+**Real Example from Arpit's Cases:**
+
+After seeing 3 callback failures with `event_not_subscribed` error, the team can:
+1. Create `patterns/event_not_subscribed.yaml`
+2. Add it to `decision_tree.yaml` as priority #1 for callback failures
+3. Set confidence weight to 0.98 (very reliable pattern)
+4. All future tickets with this error auto-resolve in <2 minutes
+
+**No code changes required** - just edit YAML files and redeploy.
+
 ---
 
 ## 📦 What's Included
@@ -150,6 +201,63 @@ Use the templates in `skills/_templates/`:
 
 ## 🏗️ Architecture
 
+### Development Order (How to Build a New Domain)
+
+**CRITICAL: Follow this order when building RCA capabilities for a new domain**
+
+```
+STEP 1: KNOWLEDGE EXTRACTION (2-4 days)
+   → Shadow SMEs, capture mental model
+   → Document patterns, decision trees, data sources
+   → Use templates in skills/_templates/
+   ↓
+STEP 2: PATTERN DATA (1-2 days)
+   → Create pattern YAML files
+   → Define confidence weights, evidence checks
+   → Build decision tree YAML
+   ↓
+STEP 3: COLLABORATIVE AGENTS (1-2 weeks)
+   → Implement specialized agents (NetworkAgent, LoadValidationAgent, etc.)
+   → Connect to real data sources (Athena, Redshift, APIs)
+   → Test against 20+ historical cases
+   ↓
+RESULT: Production-ready skill for that domain
+```
+
+**Why this order?** Knowledge extraction captures the "what to look for" before building the "how to look". Patterns guide agent implementation, not the other way around.
+
+### 3-Layer Architecture
+
+The Skills Library is organized into 3 distinct layers:
+
+```
+LAYER 1: BUILDING BLOCKS (✅ Complete - Phase 1)
+   ├── skill_base.py - Abstract skill class
+   ├── skills_router.py - Ticket classification
+   └── multi_agent_investigator.py - Orchestration framework
+
+LAYER 2: COLLABORATIVE AGENTS (🔨 Phase 2)
+   ├── CallbacksAgent - Athena queries
+   ├── LoadValidationAgent - Redshift queries
+   ├── NetworkAgent - API queries
+   ├── CompanyAPIAgent - Configuration queries
+   └── SigNozAgent - Observability queries
+
+   **This is where the real work happens** - agents query data sources,
+   collect evidence, and evaluate patterns against real production data.
+
+LAYER 3: KNOWLEDGE EXTRACTION (✅ Templates Complete - Phase 1)
+   ├── knowledge_extraction_template.yaml - 12-section template
+   ├── Pattern YAML files - Diagnostic logic per root cause
+   └── Decision tree YAML - Investigation priority order
+
+   **This layer defines WHAT to look for** - patterns, evidence weights,
+   resolution steps. Layer 2 agents execute the investigation logic
+   defined here.
+```
+
+**Key Insight**: Layer 3 (Knowledge) drives Layer 2 (Agents). When you extract new knowledge from SMEs, you create pattern YAML files that tell Layer 2 agents what evidence to collect and how to score confidence.
+
 ### Hierarchical Routing (3 Levels)
 
 ```
@@ -189,6 +297,67 @@ INVESTIGATION RESULT
 
 RESULT: Root cause with confidence score
 ```
+
+---
+
+## 🚧 What's Included vs What's Next
+
+### ✅ Included (Production Ready)
+
+**Building Blocks (Phase 1 - COMPLETE)**
+- `skill_base.py` - Abstract Skill class with pattern matching
+- `skills_router.py` - Hierarchical 3-level router with 50+ patterns
+- `multi_agent_investigator.py` - 6-agent orchestration framework
+
+**Skill Definitions (Phase 1 - COMPLETE)**
+- `skills/otr-rca/SKILL.yaml` - 55 trigger keywords, 16 root cause categories
+- `skills/ocean-tracking/SKILL.yaml` - 12 trigger keywords, 7 root cause categories
+
+**Knowledge Extraction Templates (Phase 1 - COMPLETE)**
+- `skills/_templates/` - 2,850+ lines of templates and guides
+- Complete 2-day extraction process documentation
+
+**Test Cases (Real Production Issues)**
+- `test_cases/callback_failure_jan22_2026.yaml` - 3 tracking IDs with callback failures
+- `test_cases/load_creation_failed_address_validation.yaml` - S20251111-0041 address validation
+
+### 🔨 Next Phase (In Progress)
+
+**Pattern YAML Files (Phase 2)**
+
+Individual pattern files with specific investigation logic:
+- `skills/otr-rca/patterns/eld_not_enabled.yaml`
+- `skills/otr-rca/patterns/network_relationship_missing.yaml`
+- `skills/otr-rca/patterns/load_not_found.yaml`
+- `skills/otr-rca/patterns/carrier_api_down.yaml`
+- `skills/otr-rca/patterns/event_not_subscribed.yaml` ⚡ (from Arpit's Jan 22 case)
+- `skills/otr-rca/patterns/dns_lookup_failure.yaml` ⚡ (from Arpit's Jan 22 case)
+- `skills/otr-rca/patterns/http_503_callback_error.yaml` ⚡ (from Arpit's Jan 22 case)
+- `skills/otr-rca/patterns/address_validation_failed.yaml` ⚡ (from Arpit's Jan 23 case)
+
+Each pattern file defines:
+- Evidence checks (queries, API calls, log patterns)
+- Confidence weights for each evidence type
+- Resolution steps specific to that root cause
+- When to auto-resolve vs escalate
+
+**Collaborative Agents (Phase 2)**
+
+Specialized agents that query real data sources:
+- `CallbacksAgent` - Queries Athena callbacks_v2 table
+- `LoadValidationAgent` - Queries Redshift load_validation_data_mart
+- `NetworkAgent` - Queries network relationships API
+- `TrackingAPIAgent` - Real implementation (currently stub)
+- `RedshiftAgent` - Real implementation (currently stub)
+- `CompanyAPIAgent` - Queries company configuration API
+- `SigNozAgent` - Queries observability metrics
+
+**Decision Tree YAML (Phase 2)**
+
+Priority-ordered investigation logic:
+- `skills/otr-rca/decision_tree.yaml` - Defines investigation order
+- Sub-pattern classification (e.g., callback failures → DNS vs auth vs endpoint)
+- Conditional branching based on evidence
 
 ---
 
@@ -248,27 +417,38 @@ All building blocks use Python standard library only:
 
 ## 📝 Next Steps
 
-### Immediate (This Week)
-1. Review Skills Library with team
-2. Schedule first SME extraction session (Prashant for OTR or Surya for Ocean)
+### Phase 2A: Pattern Files (Week 1)
+1. Create individual pattern YAML files for 10 OTR patterns
+2. Add 4 new patterns from Arpit's production issues (event_not_subscribed, dns_lookup_failure, http_503_error, address_validation_failed)
+3. Define evidence checks with SQL queries for Athena/Redshift
+4. Set confidence weights based on historical accuracy
 
-### Short Term (Weeks 1-2)
-1. Extract first domain using templates
-2. Create pattern YAML files from extraction
-3. Test skill against 20 historical cases
-4. Measure accuracy and iterate
+### Phase 2B: Collaborative Agents (Weeks 2-3)
+1. Implement CallbacksAgent with Athena connection
+2. Implement LoadValidationAgent with Redshift connection
+3. Implement NetworkAgent with API connection
+4. Test against 20+ historical cases from Arpit's backlog
+5. Measure accuracy (target: 85%+ on known patterns)
 
-### Medium Term (Weeks 3-4)
-1. Deploy first skill to test environment
-2. Integrate with Cassie routing
-3. Extract 2-3 more domains
+### Phase 2C: Decision Tree (Week 4)
+1. Create decision_tree.yaml with investigation priority order
+2. Add sub-pattern classification logic (callbacks → DNS vs auth vs endpoint)
+3. Define conditional branching rules
+4. Test with real production tickets
+
+### Phase 3: SME Extraction Sessions (Weeks 5-8)
+1. Schedule first extraction session (Prashant for OTR callbacks deep dive)
+2. Use knowledge_extraction_template.yaml during shadow session
+3. Extract 2-3 more domains (Ocean tracking failures, Drayage issues)
 4. Build pattern library to 50+ patterns
 
-### Long Term (Months 2-3)
-1. Complete 10-12 domain extractions
-2. Achieve 60% L1 automation rate
-3. Reduce investigation time by 60%
-4. Establish maintenance process
+### Phase 4: Production Deployment (Months 2-3)
+1. Deploy first skill to test environment
+2. Integrate with Cassie routing
+3. Complete 10-12 domain extractions
+4. Achieve 60% L1 automation rate
+5. Reduce investigation time by 60%
+6. Establish maintenance process
 
 ---
 
