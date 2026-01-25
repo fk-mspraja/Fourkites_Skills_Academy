@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support Team Troubleshooting Mind Map</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 40px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: #1a1a1a;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 40px;
+        }
+
+        .meta {
+            text-align: center;
+            font-size: 0.9em;
+            color: #888;
+            margin-bottom: 40px;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 30px 0;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .legend-box {
+            width: 30px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .flow-container {
+            margin: 50px 0;
+        }
+
+        .flow-step {
+            margin: 30px 0;
+            position: relative;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .step-number {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #000;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .step-title {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .step-time {
+            margin-left: auto;
+            padding: 8px 16px;
+            background: #e74c3c;
+            color: #fff;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .step-content {
+            margin-left: 65px;
+            padding: 25px;
+            background: #f8f8f8;
+            border-radius: 8px;
+            border-left: 4px solid #000;
+        }
+
+        .tool-card {
+            background: #fff;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 6px;
+            border: 2px solid #ddd;
+            transition: all 0.3s;
+        }
+
+        .tool-card:hover {
+            border-color: #000;
+            transform: translateX(5px);
+        }
+
+        .tool-name {
+            font-weight: 700;
+            font-size: 1.1em;
+            margin-bottom: 8px;
+            color: #1a1a1a;
+        }
+
+        .tool-purpose {
+            color: #666;
+            font-size: 0.95em;
+            margin-bottom: 10px;
+        }
+
+        .tool-details {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .tool-tag {
+            padding: 4px 10px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .arrow {
+            text-align: center;
+            font-size: 3em;
+            color: #000;
+            margin: 20px 0;
+            font-weight: 700;
+        }
+
+        .decision-box {
+            background: #fff3cd;
+            border: 3px solid #ffc107;
+            border-radius: 8px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+
+        .decision-title {
+            font-size: 1.3em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #856404;
+        }
+
+        .decision-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .decision-option {
+            padding: 15px;
+            background: #fff;
+            border-radius: 6px;
+            border-left: 4px solid #ffc107;
+        }
+
+        .option-label {
+            font-weight: 700;
+            color: #856404;
+            margin-bottom: 5px;
+        }
+
+        .option-action {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .pain-points {
+            background: #f8d7da;
+            border: 3px solid #e74c3c;
+            border-radius: 8px;
+            padding: 30px;
+            margin: 40px 0;
+        }
+
+        .pain-points h2 {
+            color: #721c24;
+            margin-bottom: 20px;
+        }
+
+        .pain-list {
+            list-style: none;
+        }
+
+        .pain-list li {
+            padding: 12px 15px;
+            margin: 8px 0;
+            background: #fff;
+            border-left: 4px solid #e74c3c;
+            border-radius: 4px;
+        }
+
+        .automation-box {
+            background: #d4edda;
+            border: 3px solid #28a745;
+            border-radius: 8px;
+            padding: 30px;
+            margin: 40px 0;
+        }
+
+        .automation-box h2 {
+            color: #155724;
+            margin-bottom: 20px;
+        }
+
+        .automation-list {
+            list-style: none;
+        }
+
+        .automation-list li {
+            padding: 15px;
+            margin: 10px 0;
+            background: #fff;
+            border-left: 4px solid #28a745;
+            border-radius: 4px;
+        }
+
+        .impact-high {
+            background: #28a745;
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: 700;
+            display: inline-block;
+            margin-left: 10px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 40px 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 3em;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .data-sources {
+            margin: 40px 0;
+        }
+
+        .source-priority {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            margin: 15px 0;
+            background: #fff;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+        }
+
+        .priority-badge {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #000;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: 700;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+
+        .source-info {
+            flex-grow: 1;
+        }
+
+        .source-name {
+            font-size: 1.2em;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .source-desc {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .source-meta {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .latency {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .reliability {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .high { background: #d4edda; color: #155724; }
+        .medium { background: #fff3cd; color: #856404; }
+        .low { background: #f8d7da; color: #721c24; }
+
+        @media print {
+            body { padding: 20px; }
+            .container { box-shadow: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Support Team Troubleshooting Mind Map</h1>
+        <div class="subtitle">Ocean Mode - Complete Investigation Flow</div>
+        <div class="meta">Based on: Jan 7, 2026 session with Surya (Support Analyst) | Created by: MSP Raja, AI R&D Solutions Engineer</div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-number">30-45</span>
+                <span class="stat-label">Minutes Per Ticket</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">5-8</span>
+                <span class="stat-label">Systems Used</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">80%</span>
+                <span class="stat-label">Time on Data Gathering</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">20%</span>
+                <span class="stat-label">Time on Analysis</span>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-box" style="background: #000;"></div>
+                <span><strong>Investigation Steps</strong></span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background: #ffc107;"></div>
+                <span><strong>Decision Points</strong></span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background: #e74c3c;"></div>
+                <span><strong>Pain Points</strong></span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background: #28a745;"></div>
+                <span><strong>Automation Opportunities</strong></span>
+            </div>
+        </div>
+
+        <div class="flow-container">
+            <h2 style="text-align: center; margin: 40px 0 30px 0; font-size: 2em;">Investigation Journey</h2>
+
+            <!-- Step 0: Ticket Intake -->
+            <div class="flow-step">
+                <div class="step-header">
+                    <div class="step-number">0</div>
+                    <div class="step-title">Ticket Intake</div>
+                    <div class="step-time">Instant</div>
+                </div>
+                <div class="step-content">
+                    <div class="tool-card">
+                        <div class="tool-name">📧 Salesforce</div>
+                        <div class="tool-purpose">Customer creates case → Auto-routed to queue</div>
+                        <div class="tool-details">
+                            <span class="tool-tag">Triage Queue</span>
+                            <span class="tool-tag">ISBO (Ocean/Air/Rail)</span>
+                            <span class="tool-tag">Facilities (DY)</span>
+                            <span class="tool-tag">Omni-channel Assignment</span>
+                        </div>
+                    </div>
+                    <div style="margin-top: 15px; padding: 12px; background: #fff; border-radius: 6px;">
+                        <strong>Example Issue:</strong> "Load showing vessel departure on Dec 22, but actual was Dec 30"
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow">↓</div>
+
+            <!-- Step 1: Platform Check -->
+            <div class="flow-step">
+                <div class="step-header">
+                    <div class="step-number">1</div>
+                    <div class="step-title">Platform Check</div>
+                    <div class="step-time">2-3 min</div>
+                </div>
+                <div class="step-content">
+                    <div class="tool-card">
+                        <div class="tool-name">🌐 FourKites Platform (Customer UI)</div>
+                        <div class="tool-purpose">First look - See what customer sees</div>
+                        <div class="tool-details">
+                            <span class="tool-tag">Same as customer view</span>
+                            <span class="tool-tag">User login</span>
+                            <span class="tool-tag">Real-time data</span>
+                        </div>
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <strong>What they check:</strong>
+                        <ul style="margin-top: 10px; padding-left: 20px;">
+                            <li>Load exists? Current state?</li>
+                            <li><strong>Tracking method:</strong> Which identifier being used?</li>
+                            <li><strong>Source of update:</strong> RPA (JT) / API / EDI / Vessel tracking</li>
+                            <li>Milestone timeline</li>
+                            <li>Hover over events to see data source (if enabled)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow">↓</div>
+
+            <!-- Step 2: API Check -->
+            <div class="flow-step">
+                <div class="step-header">
+                    <div class="step-number">2</div>
+                    <div class="step-title">Get Tracking Config</div>
+                    <div class="step-time">1-2 min</div>
+                </div>
+                <div class="step-content">
+                    <div class="tool-card">
+                        <div class="tool-name">🔌 Super API / Tracking API</div>
+                        <div class="tool-purpose">Get internal tracking configuration</div>
+                        <div class="tool-details">
+                            <span class="tool-tag">Postman</span>
+                            <span class="tool-tag">API key auth</span>
+                            <span class="tool-tag">JSON response</span>
+                        </div>
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <strong>What they get:</strong>
+                        <ul style="margin-top: 10px; padding-left: 20px;">
+                            <li><strong>Primary identifier:</strong> Booking number / Container / Bill of lading</li>
+                            <li><strong>JT subscription ID</strong> (if using web scraping)</li>
+                            <li>Tracking configuration details</li>
+                            <li>Internal tracking ID</li>
+                        </ul>
+                    </div>
+                    <div style="margin-top: 15px; padding: 12px; background: #d1ecf1; border-radius: 6px; border-left: 4px solid #0c5460;">
+                        <strong>Key Decision:</strong> If source = RPA, need to check JT portal next
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow">↓</div>
+
+            <!-- Step 3: JT Portal -->
+            <div class="flow-step">
+                <div class="step-header">
+                    <div class="step-number">3</div>
+                    <div class="step-title">Check Just Transform (JT)</div>
+                    <div class="step-time">10-15 min</div>
+                </div>
+                <div class="step-content">
+                    <div class="tool-card">
+                        <div class="tool-name">🕷️ Just Transform Portal</div>
+                        <div class="tool-purpose">See exactly what was scraped from carrier portal</div>
+                        <div class="tool-details">
+                            <span class="tool-tag">Shared credentials</span>
+                            <span class="tool-tag">Web scraping vendor</span>
+                            <span class="tool-tag">60-70 carriers</span>
+                        </div>
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <strong>Investigation process:</strong>
+                        <ol style="margin-top: 10px; padding-left: 20px;">
+                            <li>Go to Ocean mode → History</li>
+                            <li>Paste subscription ID</li>
+                            <li>Filter by time range (when issue occurred)</li>
+                            <li>Check multiple JSON events for that day</li>
+                            <li>Look at <strong>crawled output</strong> (raw from carrier) vs <strong>response</strong> (formatted for FourKites)</li>
+                        </ol>
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <strong>Event codes to look for:</strong>
+                        <ul style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;">
+                            <li style="padding: 8px 12px; background: #fff; border-radius: 4px; border: 2px solid #ddd;"><strong>VD</strong> - Vessel Departure</li>
+                            <li style="padding: 8px 12px; background: #fff; border-radius: 4px; border: 2px solid #ddd;"><strong>AG</strong> - Arrived Gate</li>
+                            <li style="padding: 8px 12px; background: #fff; border-radius: 4px; border: 2px solid #ddd;"><strong>ET</strong> - Estimated Time</li>
+                        </ul>
+                    </div>
+                    <div style="margin-top: 15px; padding: 12px; background: #f8d7da; border-radius: 6px; border-left: 4px solid #721c24;">
+                        <strong>⚠️ Pain Point:</strong> Must manually check each JSON event. Can have 3-5 events per day. Time-consuming!
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow">↓</div>
+
+            <!-- Step 4: SigNoz Logs -->
+            <div class="flow-step">
+                <div class="step-header">
+                    <div class="step-number">4</div>
+                    <div class="step-title">Deep Dive into Logs</div>
+                    <div class="step-time" style="background: #c0392b;">15-20 min 🔥</div>
+                </div>
+                <div class="step-content">
+                    <div class="tool-card">
+                        <div class="tool-name">📊 SigNoz (ClickHouse Logs)</div>
+                        <div class="tool-purpose">See what system actually processed</div>
+                        <div class="tool-details">
+                            <span class="tool-tag">User login</span>
+                            <span class="tool-tag">Query interface</span>
+                            <span class="tool-tag">Up to 1 month logs</span>
+                        </div>
+                    </div>
+                    <div style="margin-top: 15px; background: #1e1e1e; color: #fff; padding: 15px; border-radius: 6px; font-family: 'Courier New', monospace;">
+                        <div style="color: #98c379;">service_name:</div> multimodel_carrier_updates_worker<br>
+                        <div style="color: #98c379;">keyword:</div> PROCESS_OCEAN_UPDATE<br>
+                        <div style="color: #98c379;">NOT contains:</div> [filters for internal events]<br>
+                        <div style="color: #98c379;">environment:</div> production<br>
+                        <div style="color: #98c379;">time_range:</div> Up to 1 month (ocean = 120 days expiry)
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <strong>Why 1 month?</strong> Ocean shipments are long (weeks to months). Need complete history to see:
+                        <ul style="margin-top: 10px; padding-left: 20px;">
+                            <li>All updates received</li>
+                            <li>Duplicate events</li>
+                            <li>Corrections (rollovers = vessel changes)</li>
+                            <li>Processing errors</li>
+                        </ul>
+                    </div>
+                    <div style="margin-top: 15px; padding: 12px; background: #f8d7da; border-radius: 6px; border-left: 4px solid #721c24;">
+                        <strong>⚠️ BIGGEST PAIN POINT:</strong> Returns raw JSON logs. No structure. Must manually parse and correlate. This is where Surya built his custom HTML log analyzer!
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow">↓</div>
+
+            <!-- Step 5: Correlation -->
+            <div class="flow-step">
+                <div class="step-header">
+                    <div class="step-number">5</div>
+                    <div class="step-title">Correlate Findings</div>
+                    <div class="step-time">5-10 min</div>
+                </div>
+                <div class="step-content">
+                    <div style="padding: 20px; background: #fff; border-radius: 6px; border: 2px solid #000;">
+                        <strong>Manual correlation across sources:</strong>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                            <div style="padding: 12px; background: #f8f9fa; border-radius: 4px; border-left: 4px solid #6c757d;">
+                                <strong>Platform:</strong> Shows VD on Dec 22
+                            </div>
+                            <div style="padding: 12px; background: #f8f9fa; border-radius: 4px; border-left: 4px solid #6c757d;">
+                                <strong>JT:</strong> Sent VD with Dec 22 timestamp
+                            </div>
+                            <div style="padding: 12px; background: #f8f9fa; border-radius: 4px; border-left: 4px solid #6c757d;">
+                                <strong>SigNoz:</strong> Processed VD on Dec 22
+                            </div>
+                            <div style="padding: 12px; background: #f8f9fa; border-radius: 4px; border-left: 4px solid #6c757d;">
+                                <strong>Later:</strong> Rollover VD on Dec 30
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 15px; padding: 12px; background: #fff3cd; border-radius: 6px; border-left: 4px solid #856404;">
+                        <strong>💡 Pattern Identified:</strong> JT scraped and sent incorrect data, which we processed. Later correction (rollover) happened.
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow">↓</div>
+
+            <!-- Step 6: Decision -->
+            <div class="decision-box">
+                <div class="decision-title">🎯 Root Cause Decision</div>
+                <p style="margin-bottom: 15px;">Based on correlated evidence, determine the source of the issue:</p>
+                <div class="decision-options">
+                    <div class="decision-option">
+                        <div class="option-label">🔴 Carrier Issue</div>
+                        <div class="option-action">
+                            JT scraped correctly, but carrier portal had wrong data<br>
+                            <strong>Action:</strong> Inform customer it's carrier-side
+                        </div>
+                    </div>
+                    <div class="decision-option">
+                        <div class="option-label">🟠 JT Issue</div>
+                        <div class="option-action">
+                            JT scraped incorrectly or applied wrong logic<br>
+                            <strong>Action:</strong> Create bug ticket for JT team
+                        </div>
+                    </div>
+                    <div class="decision-option">
+                        <div class="option-label">🟡 Configuration Issue</div>
+                        <div class="option-action">
+                            Load misconfigured (wrong identifier, missing data)<br>
+                            <strong>Action:</strong> Fix config or escalate to engineering
+                        </div>
+                    </div>
+                    <div class="decision-option">
+                        <div class="option-label">⚫ System Bug</div>
+                        <div class="option-action">
+                            Platform processing issue<br>
+                            <strong>Action:</strong> Create engineering bug ticket
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow">↓</div>
+
+            <!-- Step 7: Resolution -->
+            <div class="flow-step">
+                <div class="step-header">
+                    <div class="step-number">6</div>
+                    <div class="step-title">Resolution & Communication</div>
+                    <div class="step-time">5 min</div>
+                </div>
+                <div class="step-content">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div style="padding: 20px; background: #d4edda; border-radius: 6px; border-left: 4px solid #28a745;">
+                            <strong>✅ Quick Fix</strong>
+                            <ul style="margin-top: 10px; padding-left: 20px;">
+                                <li>Update customer with findings</li>
+                                <li>Explain root cause</li>
+                                <li>Close ticket</li>
+                            </ul>
+                        </div>
+                        <div style="padding: 20px; background: #fff3cd; border-radius: 6px; border-left: 4px solid #ffc107;">
+                            <strong>🎫 Escalation</strong>
+                            <ul style="margin-top: 10px; padding-left: 20px;">
+                                <li>Create JT bug ticket</li>
+                                <li>Create engineering ticket</li>
+                                <li>Bi-weekly sync for discussion</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Source Priority -->
+        <div class="data-sources">
+            <h2 style="text-align: center; margin: 40px 0 30px 0; font-size: 2em;">Data Source Hierarchy (Ocean)</h2>
+
+            <div class="source-priority">
+                <div class="priority-badge">1</div>
+                <div class="source-info">
+                    <div class="source-name">EA315 (EDI File)</div>
+                    <div class="source-desc">Flat file from carrier - Structured, validated format</div>
+                </div>
+                <div class="source-meta">
+                    <div class="latency">⏱️ Hours to days delay</div>
+                    <span class="reliability high">High Reliability</span>
+                </div>
+            </div>
+
+            <div class="source-priority">
+                <div class="priority-badge">2</div>
+                <div class="source-info">
+                    <div class="source-name">Carrier API</div>
+                    <div class="source-desc">Direct API integration - Real-time updates</div>
+                </div>
+                <div class="source-meta">
+                    <div class="latency">⏱️ Real-time</div>
+                    <span class="reliability high">High Reliability</span>
+                </div>
+            </div>
+
+            <div class="source-priority">
+                <div class="priority-badge">3</div>
+                <div class="source-info">
+                    <div class="source-name">RPA / JT (Web Scraping)</div>
+                    <div class="source-desc">Just Transform scraping - Fallback when API/EDI unavailable (60-70 carriers)</div>
+                </div>
+                <div class="source-meta">
+                    <div class="latency">⏱️ ~6 hour latency</div>
+                    <span class="reliability medium">Medium Reliability</span>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px; padding: 20px; background: #e7f3ff; border-radius: 8px; border-left: 4px solid #2196f3;">
+                <strong>📝 Note:</strong> Currently ERPA (JT) is prioritized in multi-sourcing because it's faster than EDI. System processes whichever data arrives first.
+            </div>
+        </div>
+
+        <!-- Pain Points -->
+        <div class="pain-points">
+            <h2>⚠️ Current Pain Points</h2>
+            <ul class="pain-list">
+                <li><strong>Tool Fragmentation:</strong> 5-8 different systems per investigation, multiple authentications needed</li>
+                <li><strong>Time-Consuming:</strong> 30-45 minutes per ticket, 80% spent on data gathering, only 20% on analysis</li>
+                <li><strong>Raw Logs:</strong> SigNoz returns unstructured JSON - must manually parse and correlate</li>
+                <li><strong>Manual Correlation:</strong> No automatic linking between Platform → JT → SigNoz → API data</li>
+                <li><strong>EDI Readability:</strong> Files are unreadable without custom parser</li>
+                <li><strong>JT Reliability:</strong> Carrier portals change frequently, scraping breaks, ~6 hour latency</li>
+                <li><strong>No Automation:</strong> Every step is manual, no pattern detection, no suggested root cause</li>
+                <li><strong>Knowledge Scatter:</strong> Workflows in Confluence, APIs in Postman, scripts on local machines</li>
+            </ul>
+        </div>
+
+        <!-- Automation Opportunities -->
+        <div class="automation-box">
+            <h2>🚀 Automation Opportunities (High Impact)</h2>
+            <ul class="automation-list">
+                <li>
+                    <strong>Multi-Source Data Aggregator</strong> <span class="impact-high">Save 15-20 min</span><br>
+                    Input: Tracking ID → Output: Platform + JT + SigNoz + API data in one unified view
+                </li>
+                <li>
+                    <strong>Structured Log Parser</strong> <span class="impact-high">Save 10-15 min</span><br>
+                    Auto-extract key fields from SigNoz logs, present in table format (like Surya's HTML tool)
+                </li>
+                <li>
+                    <strong>Automatic Correlation Engine</strong> <span class="impact-high">Save 5-10 min</span><br>
+                    Compare JT vs SigNoz vs Platform, flag discrepancies, show timeline of events
+                </li>
+                <li>
+                    <strong>Root Cause Suggester (AI)</strong> <span class="impact-high">Save 5-10 min</span><br>
+                    Based on patterns: "Likely JT scraping error" or "Carrier data issue" with confidence score
+                </li>
+                <li>
+                    <strong>Smart Escalation</strong> <span class="impact-high">Save 5 min</span><br>
+                    Auto-detect issue type, pre-fill bug tickets with evidence, suggest assignee
+                </li>
+                <li>
+                    <strong>JT API Integration</strong> <span class="impact-high">Save 3-5 min</span><br>
+                    Use API instead of portal UI for programmatic access
+                </li>
+                <li>
+                    <strong>Data Hub Integration</strong> <span class="impact-high">Save switching time</span><br>
+                    Build into re-tool - API already exists, just needs integration
+                </li>
+            </ul>
+            <div style="margin-top: 25px; padding: 20px; background: #fff; border-radius: 6px; border: 2px solid #28a745;">
+                <strong>📊 Projected Impact:</strong> Reduce average resolution time from 30-45 minutes to 10-15 minutes (60% reduction!)
+            </div>
+        </div>
+
+        <!-- Custom Tools by Surya -->
+        <div style="margin: 40px 0; padding: 30px; background: #e3f2fd; border-radius: 8px; border: 2px solid #2196f3;">
+            <h2 style="margin-bottom: 20px;">🛠️ Custom Tools Built by Support Team</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div style="background: #fff; padding: 20px; border-radius: 6px; border-left: 4px solid #2196f3;">
+                    <strong style="font-size: 1.1em;">EDI Parser (Python)</strong>
+                    <div style="margin-top: 10px; color: #666;">
+                        Formats EDI files (EA315, 214) into readable, element-wise breakdown<br>
+                        <strong>Use:</strong> Debug parsing errors, communicate with carriers
+                    </div>
+                </div>
+                <div style="background: #fff; padding: 20px; border-radius: 6px; border-left: 4px solid #2196f3;">
+                    <strong style="font-size: 1.1em;">HTML Log Analyzer (Python)</strong>
+                    <div style="margin-top: 10px; color: #666;">
+                        Parses SigNoz logs → Structured table with statistics and map visualization<br>
+                        <strong>Use:</strong> Makes logs readable and shareable
+                    </div>
+                </div>
+            </div>
+            <div style="margin-top: 20px; padding: 15px; background: #fff; border-radius: 6px;">
+                <strong>💡 Key Insight:</strong> Surya built these because existing systems didn't give him the structured data he needed. This is exactly what we should automate!
+            </div>
+        </div>
+
+        <div style="margin-top: 60px; padding-top: 40px; border-top: 2px solid #ddd; text-align: center; color: #888;">
+            <p><strong>Document:</strong> Support Troubleshooting Mind Map</p>
+            <p style="margin-top: 10px;"><strong>Created by:</strong> MSP Raja, AI R&D Solutions Engineer | <strong>Date:</strong> January 7, 2026</p>
+            <p style="margin-top: 10px;"><strong>Source:</strong> Support team walkthrough session with Surya (Ocean Support Analyst)</p>
+            <p style="margin-top: 10px;"><strong>Next Sessions:</strong> OTR workflow (Prashant), DY workflow (Priya)</p>
+        </div>
+    </div>
+</body>
+</html>

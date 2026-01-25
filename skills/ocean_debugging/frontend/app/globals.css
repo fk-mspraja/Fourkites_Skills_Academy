@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-gray-950 text-gray-100 antialiased;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-gray-900 border border-gray-800 rounded-lg shadow-lg;
+  }
+
+  .badge {
+    @apply px-3 py-1 rounded-full text-xs font-semibold;
+  }
+
+  .badge-blue {
+    @apply bg-fourkites-blue/20 text-fourkites-blue border border-fourkites-blue/30;
+  }
+
+  .badge-teal {
+    @apply bg-fourkites-teal/20 text-fourkites-teal border border-fourkites-teal/30;
+  }
+
+  .badge-green {
+    @apply bg-green-500/20 text-green-400 border border-green-500/30;
+  }
+
+  .badge-red {
+    @apply bg-red-500/20 text-red-400 border border-red-500/30;
+  }
+
+  .badge-gray {
+    @apply bg-gray-700/50 text-gray-300 border border-gray-600/50;
+  }
+
+  .badge-yellow {
+    @apply bg-yellow-500/20 text-yellow-400 border border-yellow-500/30;
+  }
+}

@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FourKites Skills Academy - Executive Presentation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'deep-black': '#0a0a0a',
+                        'dark-gray': '#1a1a1a',
+                        'accent-purple': '#8b5cf6',
+                        'accent-blue': '#3b82f6',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap');
+
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: #0a0a0a;
+            color: #ffffff;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .glass-card {
+            background: rgba(26, 26, 26, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.6s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 2rem;
+        }
+
+        .metric-card {
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(139, 92, 246, 0.3);
+        }
+
+        .problem-highlight {
+            background: linear-gradient(90deg, rgba(239, 68, 68, 0.1) 0%, transparent 100%);
+            border-left: 4px solid #ef4444;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .solution-highlight {
+            background: linear-gradient(90deg, rgba(34, 197, 94, 0.1) 0%, transparent 100%);
+            border-left: 4px solid #22c55e;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 12px;
+            height: 12px;
+            background: #8b5cf6;
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.6);
+        }
+
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 12px;
+            width: 2px;
+            height: 100%;
+            background: linear-gradient(180deg, rgba(139, 92, 246, 0.5) 0%, transparent 100%);
+        }
+
+        .skill-card-demo {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .skill-card-demo:hover {
+            border-color: #8b5cf6;
+            box-shadow: 0 0 30px rgba(139, 92, 246, 0.4);
+        }
+
+        .code-block {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 1.5rem;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+        }
+
+        .impact-number {
+            font-size: 4rem;
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        .nav-link {
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #8b5cf6;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="py-4">
+        <div class="max-w-7xl mx-auto px-6 flex items-center justify-between">
+            <div class="text-2xl font-bold gradient-text">🎓 Skills Academy</div>
+            <div class="flex gap-8">
+                <a href="#problem" class="nav-link text-gray-400">Problem</a>
+                <a href="#solution" class="nav-link text-gray-400">Solution</a>
+                <a href="#whatisaskill" class="nav-link text-gray-400">What is a Skill?</a>
+                <a href="#examples" class="nav-link text-gray-400">Examples</a>
+                <a href="#impact" class="nav-link text-gray-400">Impact</a>
+                <a href="#vision" class="nav-link text-gray-400">Vision</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="section" style="margin-top: 60px;">
+        <div class="max-w-6xl mx-auto text-center animate-fade-in">
+            <div class="mb-8">
+                <span class="text-sm uppercase tracking-widest text-purple-400 font-semibold">Executive Presentation</span>
+            </div>
+            <h1 class="text-7xl font-black mb-6 leading-tight">
+                Eliminating the<br>
+                <span class="gradient-text">Coordination Tax</span>
+            </h1>
+            <p class="text-2xl text-gray-400 mb-12 max-w-3xl mx-auto leading-relaxed">
+                How FourKites Skills Academy transforms scattered institutional knowledge into
+                discoverable, reusable skills for humans and AI agents
+            </p>
+
+            <div class="grid grid-cols-4 gap-6 mb-12">
+                <div class="glass-card rounded-2xl p-6">
+                    <div class="text-5xl font-black gradient-text mb-2">30s</div>
+                    <div class="text-sm text-gray-400">Search Time<br>(was 2+ hours)</div>
+                </div>
+                <div class="glass-card rounded-2xl p-6">
+                    <div class="text-5xl font-black gradient-text mb-2">95%</div>
+                    <div class="text-sm text-gray-400">Time<br>Reduction</div>
+                </div>
+                <div class="glass-card rounded-2xl p-6">
+                    <div class="text-5xl font-black gradient-text mb-2">$4M+</div>
+                    <div class="text-sm text-gray-400">Year 1<br>Value</div>
+                </div>
+                <div class="glass-card rounded-2xl p-6">
+                    <div class="text-5xl font-black gradient-text mb-2">18x</div>
+                    <div class="text-sm text-gray-400">ROI</div>
+                </div>
+            </div>
+
+            <blockquote class="glass-card rounded-2xl p-8 text-left">
+                <div class="text-3xl text-purple-400 mb-4">"</div>
+                <p class="text-xl italic mb-4 text-gray-300">
+                    "The companies that win in autonomous operations won't be the ones with the best technology.
+                    They'll be the ones that operate with the speed and precision that AI enables."
+                </p>
+                <div class="text-lg font-semibold">— Matt Elenjickal, CEO</div>
+            </blockquote>
+        </div>
+    </section>
+
+    <!-- The Problem Section -->
+    <section id="problem" class="section bg-gradient-to-b from-deep-black to-dark-gray">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-5xl font-black mb-12 text-center">
+                The <span class="text-red-500">Problem</span>: Coordination Tax is Killing Our Velocity
+            </h2>
+
+            <div class="grid md:grid-cols-2 gap-8 mb-12">
+                <!-- Stephen Dyke Example -->
+                <div class="glass-card rounded-2xl p-8 metric-card">
+                    <div class="text-sm text-purple-400 font-semibold mb-4">CASE STUDY #1</div>
+                    <h3 class="text-2xl font-bold mb-6">Stephen Dyke's 2-Hour Search</h3>
+
+                    <div class="problem-highlight">
+                        <div class="text-sm text-gray-400 mb-2">12:25 PM - January 5, 2026</div>
+                        <p class="text-sm">"Can you share any standard CS Journey content?"</p>
+                    </div>
+
+                    <div class="problem-highlight">
+                        <div class="text-sm text-gray-400 mb-2">2:13 PM</div>
+                        <p class="text-sm">"We have an old one that needs to be refreshed..."</p>
+                    </div>
+
+                    <div class="problem-highlight">
+                        <div class="text-sm text-gray-400 mb-2">2:34 PM</div>
+                        <p class="text-sm">"We started updating it but teams were changing so we stopped"</p>
+                    </div>
+
+                    <div class="mt-6 p-4 bg-red-900/20 rounded-lg">
+                        <div class="text-sm text-gray-400 mb-2">COST</div>
+                        <div class="text-2xl font-bold text-red-400">2+ hours, 4 people, no answer</div>
+                    </div>
+                </div>
+
+                <!-- Chris Young Example -->
+                <div class="glass-card rounded-2xl p-8 metric-card">
+                    <div class="text-sm text-purple-400 font-semibold mb-4">CASE STUDY #2</div>
+                    <h3 class="text-2xl font-bold mb-6">Missing Implementation Content</h3>
+
+                    <div class="problem-highlight">
+                        <div class="text-sm text-gray-400 mb-2">January 6, 2026</div>
+                        <p class="text-sm">"Do you have current external master content for Integration, Digital Workforce CIE processing?"</p>
+                    </div>
+
+                    <div class="problem-highlight">
+                        <div class="text-sm text-gray-400 mb-2">Response</div>
+                        <p class="text-sm">"I believe that we do, but not certain where it lives..."</p>
+                    </div>
+
+                    <div class="problem-highlight">
+                        <div class="text-sm text-gray-400 mb-2">Final Answer</div>
+                        <p class="text-sm font-bold text-red-400">"We don't currently, Stephen" / "unfortunately"</p>
+                    </div>
+
+                    <div class="mt-6 p-4 bg-red-900/20 rounded-lg">
+                        <div class="text-sm text-gray-400 mb-2">IMPACT</div>
+                        <div class="text-2xl font-bold text-red-400">Missing content for customer engagement</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Annual Cost Breakdown -->
+            <div class="glass-card rounded-2xl p-8">
+                <h3 class="text-3xl font-bold mb-8 text-center">Annual Coordination Tax</h3>
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="text-center">
+                        <div class="impact-number text-red-400">$1.5M</div>
+                        <div class="text-gray-400 mt-2">Knowledge Search Time</div>
+                        <div class="text-sm text-gray-500 mt-1">500 employees × 1 hr/week</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="impact-number text-red-400">$2M+</div>
+                        <div class="text-gray-400 mt-2">Lost Sales</div>
+                        <div class="text-sm text-gray-500 mt-1">Can't articulate value</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="impact-number text-red-400">$800K</div>
+                        <div class="text-gray-400 mt-2">Support Inefficiency</div>
+                        <div class="text-sm text-gray-500 mt-1">Manual RCA, scattered runbooks</div>
+                    </div>
+                </div>
+                <div class="text-center mt-8 pt-8 border-t border-gray-800">
+                    <div class="text-6xl font-black text-red-500 mb-2">~$5M</div>
+                    <div class="text-xl text-gray-400">Total Annual Tax (Conservative)</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- The Solution Section -->
+    <section id="solution" class="section">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-5xl font-black mb-12 text-center">
+                The <span class="text-green-500">Solution</span>: Agent Skills Framework
+            </h2>
+
+            <div class="glass-card rounded-2xl p-12 mb-12 text-center">
+                <div class="text-sm text-purple-400 font-semibold mb-4">INDUSTRY STANDARD</div>
+                <h3 class="text-4xl font-bold mb-6">Built by Anthropic (Creators of Claude)</h3>
+                <p class="text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
+                    Agent Skills are lightweight, open format for extending AI agent capabilities with
+                    specialized knowledge, procedural instructions, and organizational context.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8 mb-12">
+                <!-- Before -->
+                <div class="glass-card rounded-2xl p-8">
+                    <h3 class="text-2xl font-bold mb-6 text-red-400">❌ Before Skills Academy</h3>
+                    <div class="space-y-4 text-gray-400">
+                        <div class="flex items-start gap-3">
+                            <div class="text-2xl">🔍</div>
+                            <div>
+                                <div class="font-semibold text-white">2+ Hour Searches</div>
+                                <div class="text-sm">Slack threads, scattered docs, no answer</div>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="text-2xl">📁</div>
+                            <div>
+                                <div class="font-semibold text-white">Knowledge Decay</div>
+                                <div class="text-sm">"Teams were changing so we stopped updating"</div>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="text-2xl">🤖</div>
+                            <div>
+                                <div class="font-semibold text-white">AI Agents: 60% Useful</div>
+                                <div class="text-sm">Lack FourKites-specific context</div>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="text-2xl">👥</div>
+                            <div>
+                                <div class="font-semibold text-white">Tribal Knowledge</div>
+                                <div class="text-sm">Lives in people's heads, not systems</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- After -->
+                <div class="glass-card rounded-2xl p-8 border-2 border-green-500/30">
+                    <h3 class="text-2xl font-bold mb-6 text-green-400">✅ With Skills Academy</h3>
+                    <div class="space-y-4 text-gray-400">
+                        <div class="flex items-start gap-3">
+                            <div class="text-2xl">⚡</div>
+                            <div>
+                                <div class="font-semibold text-white">30 Second Answers</div>
+                                <div class="text-sm">Instant search, always current</div>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="text-2xl">🔄</div>
+                            <div>
+                                <div class="font-semibold text-white">Zero Decay</div>
+                                <div class="text-sm">Version-controlled, maintained like code</div>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="text-2xl">🎯</div>
+                            <div>
+                                <div class="font-semibold text-white">AI Agents: 95% Useful</div>
+                                <div class="text-sm">Perfect FourKites context</div>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="text-2xl">📚</div>
+                            <div>
+                                <div class="font-semibold text-white">Institutional Knowledge</div>
+                                <div class="text-sm">Documented, discoverable, reusable</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- What is a Skill Section -->
+    <section id="whatisaskill" class="section bg-gradient-to-b from-dark-gray to-deep-black">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-5xl font-black mb-12 text-center">
+                What is a <span class="gradient-text">Skill</span>?
+            </h2>
+
+            <!-- Skills vs Prompts -->
+            <div class="glass-card rounded-2xl p-8 mb-12">
+                <h3 class="text-3xl font-bold mb-8 text-center">Skills ≠ Prompts</h3>
+
+                <div class="grid md:grid-cols-2 gap-8">
+                    <!-- What Skills Are NOT -->
+                    <div class="p-6 bg-red-900/10 border-2 border-red-500/30 rounded-xl">
+                        <h4 class="text-xl font-bold mb-4 text-red-400">❌ Skills are NOT just prompts</h4>
+                        <div class="space-y-3 text-gray-400 text-sm">
+                            <div class="flex items-start gap-2">
+                                <span class="text-red-400">✗</span>
+                                <span>Just text instructions ("Ask AI to analyze tracking")</span>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <span class="text-red-400">✗</span>
+                                <span>One-off conversations with no memory</span>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <span class="text-red-400">✗</span>
+                                <span>Each person gets different answers</span>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <span class="text-red-400">✗</span>
+                                <span>Nothing compounds across the org</span>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 p-4 bg-deep-black rounded-lg">
+                            <div class="text-xs text-gray-500 mb-2">EXAMPLE: THE PROBLEM</div>
+                            <div class="text-sm text-gray-400">
+                                Ten people ask AI "Why is this lane delayed?"<br>
+                                → Ten different answers<br>
+                                → Everyone restarts from zero<br>
+                                → <span class="text-red-400 font-bold">No organizational learning</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- What Skills ARE -->
+                    <div class="p-6 bg-green-900/10 border-2 border-green-500/30 rounded-xl">
+                        <h4 class="text-xl font-bold mb-4 text-green-400">✅ Skills ARE structured intelligence</h4>
+                        <div class="space-y-3 text-gray-400 text-sm">
+                            <div class="flex items-start gap-2">
+                                <span class="text-green-400">✓</span>
+                                <span><strong class="text-white">Logic:</strong> Decision trees, pattern detection, rules</span>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <span class="text-green-400">✓</span>
+                                <span><strong class="text-white">Data:</strong> Queries, APIs, integration points</span>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <span class="text-green-400">✓</span>
+                                <span><strong class="text-white">Procedures:</strong> Step-by-step workflows</span>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <span class="text-green-400">✓</span>
+                                <span><strong class="text-white">Context:</strong> FourKites-specific knowledge</span>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 p-4 bg-deep-black rounded-lg">
+                            <div class="text-xs text-gray-500 mb-2">RESULT: COMPOUNDING INTELLIGENCE</div>
+                            <div class="text-sm text-gray-400">
+                                One skill saves the best analysis once<br>
+                                → Everyone uses the same reliable pattern<br>
+                                → AI follows proven logic every time<br>
+                                → <span class="text-green-400 font-bold">Org gets sharper with each use</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Anatomy of a Skill -->
+            <div class="glass-card rounded-2xl p-8 mb-12">
+                <h3 class="text-3xl font-bold mb-8">Anatomy of a Skill: FedEx Tracking Workflow</h3>
+
+                <div class="mb-6 p-4 bg-yellow-900/10 border-l-4 border-yellow-500 rounded-r-lg">
+                    <div class="text-sm text-yellow-300 font-semibold mb-2">REAL FOURKITES EXAMPLE</div>
+                    <p class="text-gray-400 text-sm">
+                        Stephen's FedEx and BRP workflows: Each team diagnoses tracking gaps, timestamp issues, ETA slips,
+                        and carrier follow-ups in their own way. <span class="text-red-400">Nothing compounds.</span>
+                    </p>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-6 mb-8">
+                    <!-- Component 1: Inputs -->
+                    <div class="skill-card-demo rounded-xl p-6">
+                        <div class="text-3xl mb-4">📥</div>
+                        <h4 class="font-bold mb-4 text-purple-400">1. INPUTS</h4>
+                        <div class="code-block text-xs">
+<span class="text-gray-500">// Data the skill needs</span>
+<span class="text-blue-400">load_data:</span> {
+  load_number,
+  carrier,
+  pickup_time,
+  delivery_appt
+}
+
+<span class="text-blue-400">eta_signals:</span> {
+  current_eta,
+  original_eta,
+  eta_drift
+}
+
+<span class="text-blue-400">stop_history:</span> [
+  timestamps,
+  locations,
+  gaps
+]
+
+<span class="text-blue-400">carrier_patterns:</span> {
+  reliability_score,
+  avg_delay,
+  common_issues
+}
+                        </div>
+                    </div>
+
+                    <!-- Component 2: Skill Logic -->
+                    <div class="skill-card-demo rounded-xl p-6">
+                        <div class="text-3xl mb-4">⚙️</div>
+                        <h4 class="font-bold mb-4 text-green-400">2. SKILL LOGIC</h4>
+                        <div class="code-block text-xs">
+<span class="text-gray-500">// What the skill does</span>
+
+<span class="text-yellow-400">DETECT</span> missing timestamps
+  → Check stop_history gaps
+  → Compare vs expected
+
+<span class="text-yellow-400">CHECK</span> ETA drift
+  → current_eta - original_eta
+  → Compare vs appointment
+
+<span class="text-yellow-400">ASSESS</span> carrier reliability
+  → Query carrier_patterns
+  → Risk score (0-100)
+
+<span class="text-yellow-400">GENERATE</span> outreach
+  → If drift > 2hrs: alert
+  → If timestamps missing: query
+  → If risk high: escalate
+                        </div>
+                    </div>
+
+                    <!-- Component 3: Outputs -->
+                    <div class="skill-card-demo rounded-xl p-6">
+                        <div class="text-3xl mb-4">📤</div>
+                        <h4 class="font-bold mb-4 text-blue-400">3. OUTPUTS</h4>
+                        <div class="code-block text-xs">
+<span class="text-gray-500">// Recommended actions</span>
+
+<span class="text-green-400">RESULT:</span> {
+  <span class="text-blue-400">action:</span> "Contact carrier",
+
+  <span class="text-blue-400">reason:</span> "ETA drift 4hrs,
+            missing 3 timestamps,
+            carrier risk score 72",
+
+  <span class="text-blue-400">priority:</span> "HIGH",
+
+  <span class="text-blue-400">template:</span> "FedEx delay
+              outreach v2.1",
+
+  <span class="text-blue-400">next_steps:</span> [
+    "Send carrier query",
+    "Alert customer",
+    "Monitor every 30min"
+  ]
+}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Impact Statement -->
+                <div class="p-6 bg-gradient-to-br from-purple-900/30 to-blue-900/30 rounded-xl">
+                    <h4 class="font-bold mb-4 text-center text-xl">Result: Compounding Intelligence</h4>
+                    <div class="grid md:grid-cols-4 gap-4 text-center text-sm">
+                        <div>
+                            <div class="text-3xl font-bold gradient-text mb-2">1x</div>
+                            <div class="text-gray-400">Skill created once</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-bold gradient-text mb-2">∞</div>
+                            <div class="text-gray-400">Used by all teams</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-bold gradient-text mb-2">100%</div>
+                            <div class="text-gray-400">Consistency</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-bold gradient-text mb-2">↑</div>
+                            <div class="text-gray-400">Gets better over time</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- How to Create Skills from Daily Patterns -->
+            <div class="glass-card rounded-2xl p-8">
+                <h3 class="text-3xl font-bold mb-8">How to Create Skills from Daily Patterns</h3>
+
+                <div class="space-y-6">
+                    <!-- Step 1 -->
+                    <div class="timeline-item">
+                        <div class="font-bold text-xl mb-3 text-purple-400">Step 1: Identify Repeated Work</div>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="p-4 bg-deep-black rounded-lg">
+                                <div class="text-sm text-gray-500 mb-2">Look for:</div>
+                                <ul class="text-sm text-gray-400 space-y-1">
+                                    <li>• Same questions asked repeatedly</li>
+                                    <li>• Common troubleshooting flows</li>
+                                    <li>• Manual analysis that could be automated</li>
+                                    <li>• Tribal knowledge ("Ask Sarah, she knows")</li>
+                                </ul>
+                            </div>
+                            <div class="p-4 bg-deep-black rounded-lg">
+                                <div class="text-sm text-gray-500 mb-2">Examples:</div>
+                                <ul class="text-sm text-purple-400 space-y-1">
+                                    <li>→ "Why is load not tracking?" (85+ patterns)</li>
+                                    <li>→ "How do I run QBR?" (CS Journey)</li>
+                                    <li>→ "What's our implementation process?"</li>
+                                    <li>→ "Why are FedEx ETAs always off?"</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="timeline-item">
+                        <div class="font-bold text-xl mb-3 text-blue-400">Step 2: Document the Best Process</div>
+                        <div class="p-4 bg-deep-black rounded-lg">
+                            <div class="text-sm text-gray-400 mb-4">Work with domain expert to capture:</div>
+                            <div class="grid md:grid-cols-3 gap-4 text-sm">
+                                <div>
+                                    <div class="text-blue-400 font-semibold mb-2">Inputs Needed</div>
+                                    <div class="text-gray-500">What data do you look at first?</div>
+                                </div>
+                                <div>
+                                    <div class="text-green-400 font-semibold mb-2">Decision Logic</div>
+                                    <div class="text-gray-500">How do you diagnose the issue?</div>
+                                </div>
+                                <div>
+                                    <div class="text-purple-400 font-semibold mb-2">Resolution Steps</div>
+                                    <div class="text-gray-500">What actions do you take?</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="timeline-item">
+                        <div class="font-bold text-xl mb-3 text-green-400">Step 3: Structure as Skill</div>
+                        <div class="p-4 bg-deep-black rounded-lg">
+                            <div class="text-sm text-gray-400 mb-3">Package into skill format:</div>
+                            <div class="code-block text-xs">
+<span class="text-gray-500">// skills/fedex-tracking-workflow/SKILL.md</span>
+
+<span class="text-blue-400">name:</span> fedex-tracking-workflow
+<span class="text-blue-400">description:</span> "Diagnose FedEx tracking gaps, ETA drift, timestamp issues"
+<span class="text-blue-400">owner:</span> stephen.dyke@fourkites.com
+<span class="text-blue-400">version:</span> 1.0.0
+
+<span class="text-yellow-400">## Inputs</span>
+- load_data (from Tracking API)
+- eta_signals (from ETA service)
+- stop_history (from position updates)
+- carrier_patterns (from analytics DB)
+
+<span class="text-yellow-400">## Logic</span>
+1. Detect missing timestamps → Check gaps > 2 hours
+2. Check ETA drift → Compare current vs original
+3. Assess carrier reliability → Query historical performance
+4. Generate outreach → Template based on issue type
+
+<span class="text-yellow-400">## Outputs</span>
+- Recommended action with reasoning
+- Priority level (HIGH/MEDIUM/LOW)
+- Communication template
+- Next steps checklist
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 4 -->
+                    <div class="timeline-item">
+                        <div class="font-bold text-xl mb-3 text-yellow-400">Step 4: Deploy & Improve</div>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="p-4 bg-deep-black rounded-lg">
+                                <div class="text-sm text-yellow-400 font-semibold mb-2">Make Available</div>
+                                <ul class="text-sm text-gray-400 space-y-1">
+                                    <li>• Add to Skills Academy catalog</li>
+                                    <li>• Enable for AI agents (Claude, custom bots)</li>
+                                    <li>• Train teams on usage</li>
+                                    <li>• Monitor adoption metrics</li>
+                                </ul>
+                            </div>
+                            <div class="p-4 bg-deep-black rounded-lg">
+                                <div class="text-sm text-yellow-400 font-semibold mb-2">Continuous Improvement</div>
+                                <ul class="text-sm text-gray-400 space-y-1">
+                                    <li>• Track success rate</li>
+                                    <li>• Collect feedback from users</li>
+                                    <li>• Refine logic based on edge cases</li>
+                                    <li>• Version updates (1.0 → 1.1 → 2.0)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Key Principle -->
+                <div class="mt-8 p-6 bg-gradient-to-r from-purple-900/30 to-transparent border-l-4 border-purple-500 rounded-r-xl">
+                    <div class="text-2xl font-bold mb-3">Key Principle: Compound Intelligence</div>
+                    <p class="text-lg text-gray-300 mb-4">
+                        Every skill captures the best version of a process <strong>once</strong>, so both humans and AI
+                        use the same reliable pattern <strong>every time</strong>. Over time these skills become our
+                        organizational knowledge patterns, letting everyone get sharper with each use.
+                    </p>
+                    <div class="text-sm text-purple-400 font-semibold">
+                        That's how we build real velocity and a moat that others can't copy.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Examples Section -->
+    <section id="examples" class="section bg-gradient-to-b from-dark-gray to-deep-black">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-5xl font-black mb-12 text-center">
+                Live <span class="gradient-text">Examples</span>
+            </h2>
+
+            <!-- RCA Support Agent Example -->
+            <div class="glass-card rounded-2xl p-8 mb-8">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <div class="text-sm text-green-400 font-semibold mb-2">✅ PRODUCTION</div>
+                        <h3 class="text-3xl font-bold">RCA Support Agent</h3>
+                    </div>
+                    <div class="px-4 py-2 bg-green-500/20 rounded-lg text-green-400 font-semibold">
+                        60% L1 Automation
+                    </div>
+                </div>
+
+                <p class="text-gray-400 mb-6">
+                    Comprehensive root cause analysis for load not tracking, ELD issues, ocean container problems.
+                    Automates 60% of L1 support investigations with 95% accuracy.
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="skill-card-demo rounded-xl p-6">
+                        <h4 class="font-bold mb-4 text-purple-400">Problem Example</h4>
+                        <div class="code-block text-sm">
+<span class="text-gray-500">// Case 2682612: ELD Not Enabled</span>
+<span class="text-blue-400">Load:</span> U110123982
+<span class="text-blue-400">Symptom:</span> Not tracking despite carrier has GPS
+<span class="text-blue-400">Customer:</span> "Why isn't my load tracking?"
+                        </div>
+                    </div>
+
+                    <div class="skill-card-demo rounded-xl p-6">
+                        <h4 class="font-bold mb-4 text-green-400">Automated Resolution</h4>
+                        <div class="code-block text-sm">
+<span class="text-gray-500">// RCA Agent Analysis (2 min)</span>
+<span class="text-green-400">✓</span> Load exists (U110123982)
+<span class="text-green-400">✓</span> Carrier has ELD (Samsara)
+<span class="text-red-400">✗</span> eld_enabled = FALSE
+<span class="text-yellow-400">→</span> <span class="text-green-400">ROOT CAUSE: ELD not enabled</span>
+<span class="text-blue-400">→</span> Resolution: Enable in Connect (5 min)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-4 mt-6">
+                    <div class="text-center p-4 bg-deep-black rounded-lg">
+                        <div class="text-3xl font-bold text-green-400">95%</div>
+                        <div class="text-sm text-gray-400">Accuracy</div>
+                    </div>
+                    <div class="text-center p-4 bg-deep-black rounded-lg">
+                        <div class="text-3xl font-bold text-purple-400">85+</div>
+                        <div class="text-sm text-gray-400">Issue Patterns</div>
+                    </div>
+                    <div class="text-center p-4 bg-deep-black rounded-lg">
+                        <div class="text-3xl font-bold text-blue-400">2-5min</div>
+                        <div class="text-sm text-gray-400">Avg Resolution</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customer Journey Example -->
+            <div class="glass-card rounded-2xl p-8 mb-8">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <div class="text-sm text-orange-400 font-semibold mb-2">🚧 PILOT</div>
+                        <h3 class="text-3xl font-bold">Customer Journey Skill</h3>
+                    </div>
+                    <div class="px-4 py-2 bg-purple-500/20 rounded-lg text-purple-400 font-semibold">
+                        Solves Stephen's Problem
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <div class="problem-highlight">
+                            <h4 class="font-bold mb-2">❌ January 5 Reality</h4>
+                            <ul class="text-sm space-y-2 text-gray-400">
+                                <li>12:25 PM: Stephen asks for CS Journey content</li>
+                                <li>2:13 PM: "We have an old one..."</li>
+                                <li>2:34 PM: "Teams were changing so we stopped"</li>
+                                <li><strong class="text-red-400">Result: 2+ hours, no answer</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="solution-highlight">
+                            <h4 class="font-bold mb-2">✅ With Skill</h4>
+                            <ul class="text-sm space-y-2 text-gray-400">
+                                <li>Search: "CS Journey content"</li>
+                                <li>Result: Instant (30 seconds)</li>
+                                <li>Content: Always current, version-controlled</li>
+                                <li><strong class="text-green-400">Impact: 95% time reduction</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 p-4 bg-deep-black rounded-lg">
+                    <div class="text-sm text-gray-500 mb-2">SKILL CONTENTS</div>
+                    <div class="grid md:grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <div class="text-purple-400 mb-2">• CS Kickoff Framework</div>
+                            <div class="text-purple-400 mb-2">• QBR Templates</div>
+                            <div class="text-purple-400 mb-2">• Success Metrics</div>
+                        </div>
+                        <div>
+                            <div class="text-purple-400 mb-2">• Engagement Models</div>
+                            <div class="text-purple-400 mb-2">• Health Scoring</div>
+                            <div class="text-purple-400 mb-2">• Customer Charters</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Implementation Methodology Example -->
+            <div class="glass-card rounded-2xl p-8">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <div class="text-sm text-orange-400 font-semibold mb-2">🚧 PILOT</div>
+                        <h3 class="text-3xl font-bold">Implementation Methodology</h3>
+                    </div>
+                    <div class="px-4 py-2 bg-purple-500/20 rounded-lg text-purple-400 font-semibold">
+                        Solves Missing Content
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-bold mb-4">Before (Chris Young's Request)</h4>
+                        <div class="problem-highlight">
+                            <p class="text-sm text-gray-400 mb-2">"Do you have master content for Integration, Digital Workforce CIE processing?"</p>
+                            <p class="text-lg font-bold text-red-400">"We don't currently" / "unfortunately"</p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="font-bold mb-4">After (With Skill)</h4>
+                        <div class="solution-highlight">
+                            <ul class="text-sm space-y-2 text-gray-400">
+                                <li>✓ 4-Phase Implementation Framework</li>
+                                <li>✓ CIE Processing Workflows</li>
+                                <li>✓ Carrier Onboarding Procedures</li>
+                                <li>✓ TMS Integration Guides</li>
+                                <li><strong class="text-green-400">✓ Always available, always current</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Impact Section -->
+    <section id="impact" class="section">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-5xl font-black mb-12 text-center">
+                Measurable <span class="gradient-text">Impact</span>
+            </h2>
+
+            <div class="grid md:grid-cols-2 gap-8 mb-12">
+                <!-- Year 1 Value -->
+                <div class="glass-card rounded-2xl p-8">
+                    <h3 class="text-2xl font-bold mb-6">Year 1 Value Projection</h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center p-4 bg-deep-black rounded-lg">
+                            <span class="text-gray-400">Knowledge Search Savings</span>
+                            <span class="text-2xl font-bold text-green-400">$1.4M</span>
+                        </div>
+                        <div class="flex justify-between items-center p-4 bg-deep-black rounded-lg">
+                            <span class="text-gray-400">Support Automation</span>
+                            <span class="text-2xl font-bold text-green-400">$480K</span>
+                        </div>
+                        <div class="flex justify-between items-center p-4 bg-deep-black rounded-lg">
+                            <span class="text-gray-400">Sales Enablement</span>
+                            <span class="text-2xl font-bold text-green-400">$2M+</span>
+                        </div>
+                        <div class="flex justify-between items-center p-4 bg-deep-black rounded-lg">
+                            <span class="text-gray-400">Onboarding Efficiency</span>
+                            <span class="text-2xl font-bold text-green-400">$115K</span>
+                        </div>
+                        <div class="flex justify-between items-center p-4 bg-purple-900/30 rounded-lg border-2 border-purple-500">
+                            <span class="text-white font-bold">Total Year 1 Value</span>
+                            <span class="text-4xl font-black text-purple-400">$4M+</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ROI Analysis -->
+                <div class="glass-card rounded-2xl p-8">
+                    <h3 class="text-2xl font-bold mb-6">Investment vs. Return</h3>
+                    <div class="space-y-6">
+                        <div>
+                            <div class="text-sm text-gray-400 mb-2">Investment Required</div>
+                            <div class="space-y-2">
+                                <div class="flex justify-between text-sm">
+                                    <span>Development (2 engineers × 3 months)</span>
+                                    <span class="text-gray-400">$150K</span>
+                                </div>
+                                <div class="flex justify-between text-sm">
+                                    <span>Content Migration</span>
+                                    <span class="text-gray-400">$50K</span>
+                                </div>
+                                <div class="flex justify-between text-sm">
+                                    <span>Tooling & Infrastructure</span>
+                                    <span class="text-gray-400">$20K</span>
+                                </div>
+                                <div class="h-px bg-gray-700 my-2"></div>
+                                <div class="flex justify-between font-bold">
+                                    <span>Total Investment</span>
+                                    <span class="text-red-400">$220K</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="h-px bg-gray-700"></div>
+
+                        <div>
+                            <div class="text-sm text-gray-400 mb-2">Return on Investment</div>
+                            <div class="text-center p-6 bg-gradient-to-br from-purple-900/30 to-blue-900/30 rounded-xl">
+                                <div class="text-6xl font-black gradient-text mb-2">18x</div>
+                                <div class="text-lg text-gray-400">Year 1 ROI</div>
+                            </div>
+                        </div>
+
+                        <div class="text-center text-sm text-gray-400">
+                            $4M value ÷ $220K investment = 18.2x return
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Metrics Grid -->
+            <div class="grid md:grid-cols-4 gap-6">
+                <div class="glass-card rounded-2xl p-6 text-center metric-card">
+                    <div class="text-4xl font-black gradient-text mb-2">95%</div>
+                    <div class="text-sm text-gray-400">Search Time Reduction</div>
+                </div>
+                <div class="glass-card rounded-2xl p-6 text-center metric-card">
+                    <div class="text-4xl font-black gradient-text mb-2">60%</div>
+                    <div class="text-sm text-gray-400">Support Automation</div>
+                </div>
+                <div class="glass-card rounded-2xl p-6 text-center metric-card">
+                    <div class="text-4xl font-black gradient-text mb-2">50+</div>
+                    <div class="text-sm text-gray-400">Skills by Month 12</div>
+                </div>
+                <div class="glass-card rounded-2xl p-6 text-center metric-card">
+                    <div class="text-4xl font-black gradient-text mb-2">Zero</div>
+                    <div class="text-sm text-gray-400">Knowledge Decay</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Vision Section -->
+    <section id="vision" class="section bg-gradient-to-b from-deep-black to-dark-gray">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-5xl font-black mb-12 text-center">
+                The <span class="gradient-text">Vision</span>
+            </h2>
+
+            <div class="glass-card rounded-2xl p-12 mb-12 text-center">
+                <p class="text-3xl font-bold mb-6 leading-relaxed">
+                    "We can't eliminate the coordination tax for our customers<br>
+                    if we haven't eliminated it for <span class="gradient-text">ourselves</span>."
+                </p>
+                <div class="text-lg text-gray-400">— Matt Elenjickal, CEO (January 6, 2026)</div>
+            </div>
+
+            <!-- Roadmap -->
+            <div class="glass-card rounded-2xl p-8 mb-12">
+                <h3 class="text-3xl font-bold mb-8">Roadmap to AI-Age Velocity</h3>
+
+                <div class="space-y-6">
+                    <div class="timeline-item">
+                        <div class="font-bold text-xl mb-2 text-purple-400">Phase 1: Pilot Validation (Weeks 1-2)</div>
+                        <ul class="text-gray-400 space-y-2">
+                            <li>✅ Build 4 proof-of-concept skills</li>
+                            <li>✅ Deploy interactive web interface</li>
+                            <li>⏳ Test with 10 Sales/CS/PS users</li>
+                            <li>⏳ Measure: 95% time reduction target</li>
+                        </ul>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="font-bold text-xl mb-2 text-blue-400">Phase 2: Core Catalog (Weeks 3-6)</div>
+                        <ul class="text-gray-400 space-y-2">
+                            <li>• Build 15 essential skills across domains</li>
+                            <li>• Train skill creators in each department</li>
+                            <li>• Integrate with Claude Desktop</li>
+                            <li>• Scale to 50 active users</li>
+                        </ul>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="font-bold text-xl mb-2 text-green-400">Phase 3: Full Rollout (Weeks 7-12)</div>
+                        <ul class="text-gray-400 space-y-2">
+                            <li>• 50+ skills covering all FourKites domains</li>
+                            <li>• Company-wide adoption</li>
+                            <li>• AI agents using skills in production</li>
+                            <li>• Continuous improvement process</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Strategic Alignment -->
+            <div class="glass-card rounded-2xl p-8">
+                <h3 class="text-3xl font-bold mb-8">Strategic Alignment</h3>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="p-6 bg-deep-black rounded-xl">
+                        <h4 class="font-bold text-purple-400 mb-4">Matt's 45-Day Initiative</h4>
+                        <ul class="text-sm text-gray-400 space-y-2">
+                            <li>✓ Standardized Repeatability → Skills ARE standard packages</li>
+                            <li>✓ Eliminate Handoffs → Knowledge flows automatically</li>
+                            <li>✓ Close Feedback Loops → Skills capture learnings</li>
+                            <li>✓ AI-Age Velocity → Agents operate with context</li>
+                        </ul>
+                    </div>
+
+                    <div class="p-6 bg-deep-black rounded-xl">
+                        <h4 class="font-bold text-blue-400 mb-4">Business Priorities</h4>
+                        <ul class="text-sm text-gray-400 space-y-2">
+                            <li>✓ Win Autonomous Ops → We prove it internally first</li>
+                            <li>✓ $4M+ AI Revenue → AI needs perfect context</li>
+                            <li>✓ Scale to 300+ Fortune 500 → Reusable skills</li>
+                            <li>✓ Competitive Advantage → We move faster</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="section">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-5xl font-black mb-8">
+                Ready to <span class="gradient-text">Eliminate</span> Coordination Tax?
+            </h2>
+
+            <div class="glass-card rounded-2xl p-12 mb-12">
+                <h3 class="text-3xl font-bold mb-6">The Ask: 2-Week Pilot</h3>
+
+                <div class="grid md:grid-cols-3 gap-6 mb-8">
+                    <div class="text-left">
+                        <div class="text-4xl mb-4">📝</div>
+                        <div class="font-bold mb-2">Build</div>
+                        <div class="text-sm text-gray-400">3 skills from missing content (Stephen, Chris examples)</div>
+                    </div>
+                    <div class="text-left">
+                        <div class="text-4xl mb-4">👥</div>
+                        <div class="font-bold mb-2">Test</div>
+                        <div class="text-sm text-gray-400">10 users from Sales, CS, PS teams</div>
+                    </div>
+                    <div class="text-left">
+                        <div class="text-4xl mb-4">📊</div>
+                        <div class="font-bold mb-2">Measure</div>
+                        <div class="text-sm text-gray-400">95% time reduction, 90% satisfaction</div>
+                    </div>
+                </div>
+
+                <div class="text-xl text-gray-400 mb-8">
+                    If targets hit → Full rollout<br>
+                    If targets missed → Iterate or pivot
+                </div>
+
+                <div class="p-6 bg-gradient-to-br from-purple-900/30 to-blue-900/30 rounded-xl">
+                    <div class="text-sm text-purple-400 mb-2">TOTAL INVESTMENT</div>
+                    <div class="text-4xl font-black mb-4">2 weeks + 2 engineers</div>
+                    <div class="text-sm text-gray-400">Proof of concept before full commitment</div>
+                </div>
+            </div>
+
+            <div class="text-2xl text-gray-400 mb-4">
+                This is not just a knowledge base.
+            </div>
+            <div class="text-4xl font-black gradient-text mb-8">
+                This is how we operate at AI-age velocity.
+            </div>
+
+            <div class="text-lg text-gray-500">
+                Created by MSP Raja, AI R&D Solutions Engineer<br>
+                January 22, 2026
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-12 border-t border-gray-800">
+        <div class="max-w-6xl mx-auto px-6 text-center text-gray-500">
+            <p>FourKites Skills Academy • Eliminating Coordination Tax • Built on Anthropic Agent Skills Standard</p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add active class to nav links on scroll
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (pageYOffset >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('text-purple-400');
+                link.classList.add('text-gray-400');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.remove('text-gray-400');
+                    link.classList.add('text-purple-400');
+                }
+            });
+        });
+
+        // Animate metrics on scroll
+        const observerOptions = {
+            threshold: 0.5,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-fade-in');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.metric-card, .glass-card').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

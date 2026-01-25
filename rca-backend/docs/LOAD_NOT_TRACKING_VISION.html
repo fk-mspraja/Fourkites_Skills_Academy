@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Load Not Tracking - Vision & Architecture</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-tertiary: #1a1a1a;
+            --bg-card: #0d0d0d;
+            --border-color: #2a2a2a;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --text-muted: #666666;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-yellow: #f59e0b;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --accent-cyan: #06b6d4;
+            --accent-pink: #ec4899;
+            --accent-orange: #f97316;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 40px 0;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 60px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #fff 0%, #a0a0a0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+
+        .header-meta {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        .header-meta-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header-meta-item .label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .header-meta-item .value {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Section */
+        .section {
+            margin-bottom: 80px;
+            page-break-inside: avoid;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .section-number {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .section-number.one { background: linear-gradient(135deg, var(--accent-red), #dc2626); }
+        .section-number.two { background: linear-gradient(135deg, var(--accent-green), #059669); }
+        .section-number.three { background: linear-gradient(135deg, var(--accent-blue), #2563eb); }
+
+        .section h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        /* Diagram Container */
+        .diagram-container {
+            background: #000000;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 40px;
+            overflow-x: auto;
+        }
+
+        .diagram-container pre {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            line-height: 1.35;
+            color: var(--text-secondary);
+            white-space: pre;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .stat-card .label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
+        .stat-card.red .value { color: var(--accent-red); }
+        .stat-card.yellow .value { color: var(--accent-yellow); }
+        .stat-card.green .value { color: var(--accent-green); }
+        .stat-card.blue .value { color: var(--accent-blue); }
+        .stat-card.purple .value { color: var(--accent-purple); }
+
+        /* Phase Cards */
+        .phase-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .phase-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .phase-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .phase-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+        }
+
+        .phase-card.phase-1::before { background: linear-gradient(90deg, var(--accent-yellow), var(--accent-orange)); }
+        .phase-card.phase-2::before { background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan)); }
+        .phase-card.phase-3::before { background: linear-gradient(90deg, var(--accent-green), var(--accent-cyan)); }
+
+        .phase-card .phase-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        .phase-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+
+        .phase-card .duration {
+            font-size: 0.85rem;
+            color: var(--accent-cyan);
+            margin-bottom: 15px;
+        }
+
+        .phase-card ul {
+            list-style: none;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .phase-card ul li {
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .phase-card ul li::before {
+            content: '>';
+            position: absolute;
+            left: 0;
+            color: var(--accent-cyan);
+        }
+
+        /* Gap Cards */
+        .gap-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .gap-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-red);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .gap-card.solved {
+            border-left-color: var(--accent-green);
+        }
+
+        .gap-card h4 {
+            font-size: 1rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .gap-card p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .gap-card .solution {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.85rem;
+            color: var(--accent-green);
+        }
+
+        /* Info Box */
+        .info-box {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .info-box h4 {
+            color: var(--accent-cyan);
+            margin-bottom: 10px;
+        }
+
+        .info-box p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 40px 0;
+            border-top: 1px solid var(--border-color);
+            margin-top: 60px;
+        }
+
+        .footer p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background: white;
+                color: black;
+            }
+            .section {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>Load Not Tracking - Vision & Architecture</h1>
+            <p class="subtitle">Support Ops Strategy for Arpit's Leadership Presentation</p>
+            <div class="header-meta">
+                <div class="header-meta-item">
+                    <span class="label">Date</span>
+                    <span class="value">January 22, 2026</span>
+                </div>
+                <div class="header-meta-item">
+                    <span class="label">Meeting</span>
+                    <span class="value">Support Ops Strategy</span>
+                </div>
+                <div class="header-meta-item">
+                    <span class="label">Author</span>
+                    <span class="value">MSP Raja</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Problem Statement -->
+        <div class="info-box" style="margin-bottom: 40px; border-left: 4px solid var(--accent-yellow);">
+            <h4>Problem Statement</h4>
+            <p>
+                <strong>942 support cases analyzed</strong> with LOAD_NOT_TRACKING as the most complex category.
+                Current Cassie agent marks these as "manual intervention needed" due to <strong>100+ failure scenarios</strong>
+                and <strong>lack of comprehensive data source access</strong>. This creates bottleneck for support team.
+            </p>
+        </div>
+
+        <!-- Stats Summary -->
+        <div class="stats-grid">
+            <div class="stat-card red">
+                <div class="value">942</div>
+                <div class="label">Total Cases Analyzed</div>
+            </div>
+            <div class="stat-card yellow">
+                <div class="value">316</div>
+                <div class="label">Load Not Found</div>
+            </div>
+            <div class="stat-card blue">
+                <div class="value">170</div>
+                <div class="label">Login User Issues</div>
+            </div>
+            <div class="stat-card purple">
+                <div class="value">112</div>
+                <div class="label">Network Issues</div>
+            </div>
+            <div class="stat-card yellow">
+                <div class="value">100</div>
+                <div class="label">Callback Failure</div>
+            </div>
+            <div class="stat-card red">
+                <div class="value">60</div>
+                <div class="label">Manual Intervention</div>
+            </div>
+        </div>
+
+        <!-- SECTION 1: Current State Architecture -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-number one">1</div>
+                <h2>Current State Architecture</h2>
+            </div>
+
+            <div class="diagram-container">
+<pre style="color: #e4e4e7;">
+<span style="color: #ef4444;">                                    CURRENT STATE: FRAGMENTED & REACTIVE</span>
+<span style="color: #666;">═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════</span>
+
+                                                    <span style="color: #f59e0b;">SUPPORT TICKET</span>
+                                                          │
+                                                          ▼
+                                              ┌───────────────────────┐
+                                              │   <span style="color: #8b5cf6;">AGENT CASSIE</span>         │
+                                              │   (Classification)    │
+                                              └───────────┬───────────┘
+                                                          │
+                              ┌────────────────────────────┼────────────────────────────┐
+                              │                            │                            │
+                              ▼                            ▼                            ▼
+                    ┌─────────────────┐          ┌─────────────────┐          ┌─────────────────┐
+                    │ <span style="color: #10b981;">CONFIG ISSUES</span>   │          │ <span style="color: #f59e0b;">SIMPLE LOOKUP</span>   │          │ <span style="color: #ef4444;">LOAD NOT TRACK</span>  │
+                    │   ✓ Handled     │          │   ✓ Handled     │          │   ✗ SKIPPED     │
+                    └─────────────────┘          └─────────────────┘          └────────┬────────┘
+                                                                                       │
+                                                                                       ▼
+                                                                              ┌─────────────────┐
+                                                                              │ <span style="color: #ef4444;">MANUAL QUEUE</span>    │
+                                                                              │  60+ cases/day  │
+                                                                              │  100+ scenarios │
+                                                                              └────────┬────────┘
+                                                                                       │
+<span style="color: #666;">───────────────────────────────────────────────────────────────────────────────────────┼───────────────────────────────────</span>
+                                              <span style="color: #ef4444;">HUMAN ANALYST MANUAL INVESTIGATION</span>          │
+                                                                                       │
+           ┌───────────────────────────────────────────────────────────────────────────┼───────────────────────────────────┐
+           │                                                                           │                                   │
+           │   ┌─────────────┐   ┌─────────────┐   ┌─────────────┐   ┌─────────────┐  │  ┌─────────────┐   ┌─────────────┐│
+           │   │ <span style="color: #3b82f6;">Tracking</span>    │   │ <span style="color: #f97316;">Redshift</span>    │   │ <span style="color: #06b6d4;">SigNoz</span>      │   │ <span style="color: #8b5cf6;">Athena</span>      │  │  │ <span style="color: #ec4899;">ClickHouse</span>  │   │ <span style="color: #10b981;">Network</span>     ││
+           │   │ API         │   │ DWH         │   │ Logs 30d    │   │ Logs 180d   │  │  │ Logs 90d    │   │ API         ││
+           │   └──────┬──────┘   └──────┬──────┘   └──────┬──────┘   └──────┬──────┘  │  └──────┬──────┘   └──────┬──────┘│
+           │          │                 │                 │                 │         │         │                 │       │
+           │          │                 │                 │                 │         │         │                 │       │
+           │          └─────────────────┴─────────────────┴─────────────────┴─────────┼─────────┴─────────────────┘       │
+           │                                              │                           │                                   │
+           │                                              ▼                           │                                   │
+           │                                    ┌─────────────────┐                   │                                   │
+           │                                    │ <span style="color: #f59e0b;">HUMAN ANALYST</span>   │◄──────────────────┘                                   │
+           │                                    │ Manual lookup   │                                                       │
+           │                                    │ 30-60 min/case  │                                                       │
+           │                                    └─────────────────┘                                                       │
+           │                                                                                                              │
+           └──────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+<span style="color: #ef4444;">KEY PROBLEMS:</span>
+┌──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ <span style="color: #ef4444;">✗</span> No unified trace ID across microservices      │ <span style="color: #ef4444;">✗</span> Scattered tracking identifiers prevent E2E visibility                │
+│ <span style="color: #ef4444;">✗</span> Multiple log DBs with different retention     │ <span style="color: #ef4444;">✗</span> Cassie explicitly skips LOAD_NOT_TRACKING (main.py:1926)             │
+│ <span style="color: #ef4444;">✗</span> No GPS position database access               │ <span style="color: #ef4444;">✗</span> No device type registry (truck vs trailer)                           │
+│ <span style="color: #ef4444;">✗</span> No network ELD config visibility             │ <span style="color: #ef4444;">✗</span> 13 MCP servers exist but NONE can diagnose device issues             │
+└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+        </section>
+
+        <!-- SECTION 2: Future Collaborative Agent Vision -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-number two">2</div>
+                <h2>Future Collaborative Agent Vision</h2>
+            </div>
+
+            <div class="diagram-container">
+<pre style="color: #e4e4e7;">
+<span style="color: #10b981;">                                    FUTURE STATE: COLLABORATIVE MULTI-AGENT SYSTEM</span>
+<span style="color: #666;">═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════</span>
+
+                                                    <span style="color: #f59e0b;">SUPPORT TICKET</span>
+                                                          │
+                                                          ▼
+                                    ┌─────────────────────────────────────────┐
+                                    │         <span style="color: #8b5cf6;">ORCHESTRATOR AGENT</span>              │
+                                    │      (LangGraph Multi-Agent Hub)        │
+                                    │                                         │
+                                    │  ┌───────────────────────────────────┐  │
+                                    │  │      <span style="color: #06b6d4;">YAML PATTERN ENGINE</span>          │  │
+                                    │  │  • Human analyst workflows        │  │
+                                    │  │  • 100+ scenario patterns         │  │
+                                    │  │  • Evidence-based hypothesis      │  │
+                                    │  └───────────────────────────────────┘  │
+                                    └──────────────────┬──────────────────────┘
+                                                       │
+                    ┌──────────────────────────────────┼──────────────────────────────────┐
+                    │                                  │                                  │
+                    ▼                                  ▼                                  ▼
+        ┌─────────────────────┐          ┌─────────────────────┐          ┌─────────────────────┐
+        │  <span style="color: #10b981;">TIER 1: SIMPLE</span>     │          │  <span style="color: #f59e0b;">TIER 2: MEDIUM</span>     │          │  <span style="color: #ef4444;">TIER 3: COMPLEX</span>    │
+        │  Auto-resolved      │          │  Pattern-matched    │          │  HITL Collaborative │
+        │  ~70% of cases      │          │  ~25% of cases      │          │  ~5% of cases       │
+        └─────────────────────┘          └─────────────────────┘          └──────────┬──────────┘
+                                                                                     │
+                                                                                     ▼
+<span style="color: #666;">─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span>
+                                              <span style="color: #3b82f6;">SPECIALIZED AGENT LAYER</span>
+
+    ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐
+    │ <span style="color: #3b82f6;">Data Collection</span>  │  │ <span style="color: #8b5cf6;">Hypothesis</span>       │  │ <span style="color: #10b981;">Evidence</span>         │  │ <span style="color: #f59e0b;">RAG Knowledge</span>    │  │ <span style="color: #ec4899;">Synthesis</span>        │
+    │ Agent            │  │ Agent            │  │ Agent            │  │ Agent            │  │ Agent            │
+    │                  │  │                  │  │                  │  │                  │  │                  │
+    │ • Parallel fetch │  │ • 18 patterns    │  │ • Bayesian score │  │ • Confluence     │  │ • Root cause     │
+    │ • All sources    │  │ • GPS/ELD/Device │  │ • For/Against    │  │ • Slack history  │  │ • Confidence %   │
+    │ • Unified state  │  │ • Network config │  │ • Validation     │  │ • JIRA tickets   │  │ • Resolution     │
+    └────────┬─────────┘  └────────┬─────────┘  └────────┬─────────┘  └────────┬─────────┘  └────────┬─────────┘
+             │                     │                     │                     │                     │
+             └─────────────────────┴─────────────────────┴─────────────────────┴─────────────────────┘
+                                                         │
+                                                         ▼
+<span style="color: #666;">─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span>
+                                              <span style="color: #06b6d4;">UNIFIED DATA LAYER (MCP SERVERS)</span>
+
+    ┌──────────────┐ ┌──────────────┐ ┌──────────────┐ ┌──────────────┐ ┌──────────────┐ ┌──────────────┐ ┌──────────────┐
+    │<span style="color: #10b981;">tracking-api</span>  │ │<span style="color: #f97316;">mcp-redshift</span> │ │<span style="color: #8b5cf6;">courier-mcp</span>  │ │<span style="color: #3b82f6;">rewind</span>       │ │<span style="color: #06b6d4;">signoz_mcp</span>   │ │<span style="color: #ec4899;">neo4j_mcp</span>    │ │<span style="color: #10b981; font-weight: bold;">NEW: device</span>  │
+    │-mcp-server   │ │-loads        │ │              │ │              │ │              │ │              │ │<span style="color: #10b981; font-weight: bold;">-diagnostics</span> │
+    │              │ │              │ │              │ │              │ │              │ │              │ │              │
+    │ Live API     │ │ Load Meta    │ │ Carrier Data │ │ Timeline     │ │ Logs Query   │ │ Code Flow    │ │ <span style="color: #10b981;">GPS Position</span> │
+    │ Status       │ │ DWH Query    │ │ Transmission │ │ SSE Stream   │ │ NL Filter    │ │ RCA          │ │ <span style="color: #10b981;">Device Type</span>  │
+    │              │ │              │ │              │ │              │ │              │ │              │ │ <span style="color: #10b981;">ELD Config</span>   │
+    └──────────────┘ └──────────────┘ └──────────────┘ └──────────────┘ └──────────────┘ └──────────────┘ └──────────────┘
+
+<span style="color: #666;">─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span>
+                                              <span style="color: #8b5cf6;">SKILLS LAYER (REUSABLE ACROSS ORG)</span>
+
+    ┌────────────────────┐  ┌────────────────────┐  ┌────────────────────┐  ┌────────────────────┐
+    │ <span style="color: #8b5cf6;">Ocean Tracking</span>     │  │ <span style="color: #8b5cf6;">OTR/TL Tracking</span>   │  │ <span style="color: #8b5cf6;">Air Freight</span>       │  │ <span style="color: #8b5cf6;">LTL Tracking</span>      │
+    │ Skill              │  │ Skill              │  │ Skill              │  │ Skill              │
+    │                    │  │                    │  │                    │  │                    │
+    │ JT scraping        │  │ GPS providers      │  │ Airline APIs       │  │ Hub connectivity   │
+    │ Container events   │  │ ELD integrations   │  │ Flight tracking    │  │ Terminal updates   │
+    │ Port schedules     │  │ Geofence events    │  │ AWB validation     │  │ Appointment slots  │
+    └────────────────────┘  └────────────────────┘  └────────────────────┘  └────────────────────┘
+
+<span style="color: #10b981;">KEY IMPROVEMENTS:</span>
+┌──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ <span style="color: #10b981;">✓</span> Unified trace ID via correlation_id propagation   │ <span style="color: #10b981;">✓</span> YAML patterns encode human analyst expertise                      │
+│ <span style="color: #10b981;">✓</span> All data sources accessible via MCP servers       │ <span style="color: #10b981;">✓</span> NEW device-diagnostics-mcp fills the gap                          │
+│ <span style="color: #10b981;">✓</span> Hypothesis-driven investigation with evidence     │ <span style="color: #10b981;">✓</span> Skills layer reusable across business units                       │
+│ <span style="color: #10b981;">✓</span> HITL for complex cases (not abandonment)          │ <span style="color: #10b981;">✓</span> Real-time agent conversation UI for transparency                  │
+└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+        </section>
+
+        <!-- SECTION 3: Implementation Phases and Gaps -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-number three">3</div>
+                <h2>Implementation Phases and Gaps</h2>
+            </div>
+
+            <div class="phase-grid">
+                <div class="phase-card phase-1">
+                    <div class="phase-number">PHASE 1</div>
+                    <h3>Discovery</h3>
+                    <div class="duration">1-2 Weeks</div>
+                    <ul>
+                        <li>Shadow support ops team</li>
+                        <li>Document manual investigation workflows</li>
+                        <li>Identify JIRA tickets where Cassie failed</li>
+                        <li>Reverse engineer human analyst patterns</li>
+                        <li>Validate Cassie accuracy metrics</li>
+                        <li>Map data source access requirements</li>
+                    </ul>
+                </div>
+                <div class="phase-card phase-2">
+                    <div class="phase-number">PHASE 2</div>
+                    <h3>Data Consolidation & POC</h3>
+                    <div class="duration">2-3 Weeks</div>
+                    <ul>
+                        <li>Build device-diagnostics-mcp server</li>
+                        <li>Create YAML pattern files (100+ scenarios)</li>
+                        <li>Implement multi-agent orchestration</li>
+                        <li>Connect all MCP servers to unified layer</li>
+                        <li>Build hypothesis engine with 18 patterns</li>
+                        <li>POC on 10 real failed cases</li>
+                    </ul>
+                </div>
+                <div class="phase-card phase-3">
+                    <div class="phase-number">PHASE 3</div>
+                    <h3>Testing & Iteration</h3>
+                    <div class="duration">Ongoing</div>
+                    <ul>
+                        <li>A/B testing with support team</li>
+                        <li>Measure resolution time reduction</li>
+                        <li>Expand pattern library from feedback</li>
+                        <li>Skills layer for other business units</li>
+                        <li>Continuous learning from HITL cases</li>
+                        <li>Dashboard for accuracy tracking</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Gaps to Address -->
+            <h3 style="margin: 40px 0 20px; color: var(--accent-yellow);">Critical Gaps to Address</h3>
+            <div class="gap-grid">
+                <div class="gap-card">
+                    <h4><span style="color: var(--accent-red);">GAP</span> No GPS Position Database Access</h4>
+                    <p>Cannot query tracking_positions table to validate GPS timestamps or check location freshness.</p>
+                    <div class="solution">SOLUTION: Build device-diagnostics-mcp with get_gps_position_history tool</div>
+                </div>
+                <div class="gap-card">
+                    <h4><span style="color: var(--accent-red);">GAP</span> No Device Type Registry</h4>
+                    <p>Cannot determine if carrier supports truck vs trailer GPS, causing mismatch failures.</p>
+                    <div class="solution">SOLUTION: Add get_device_type tool to query carrier_tracking_config</div>
+                </div>
+                <div class="gap-card">
+                    <h4><span style="color: var(--accent-red);">GAP</span> No Network ELD Config Visibility</h4>
+                    <p>Cannot check if ELD tracking is enabled at the shipper-carrier relationship level.</p>
+                    <div class="solution">SOLUTION: Add check_eld_enablement tool to query company_relationships</div>
+                </div>
+                <div class="gap-card">
+                    <h4><span style="color: var(--accent-red);">GAP</span> No Unified Trace ID</h4>
+                    <p>Scattered identifiers (tracking_id, load_number, container) prevent E2E visibility.</p>
+                    <div class="solution">SOLUTION: Correlation ID propagation via orchestrator state management</div>
+                </div>
+                <div class="gap-card">
+                    <h4><span style="color: var(--accent-red);">GAP</span> Cassie Skips LOAD_NOT_TRACKING</h4>
+                    <p>Explicit code at main.py:1926 routes to manual intervention without investigation.</p>
+                    <div class="solution">SOLUTION: Remove from skip list OR route to new multi-agent system</div>
+                </div>
+                <div class="gap-card">
+                    <h4><span style="color: var(--accent-red);">GAP</span> Multiple Log Databases</h4>
+                    <p>30-day (SigNoz), 90-day (ClickHouse), 180-day (Athena) require different query strategies.</p>
+                    <div class="solution">SOLUTION: Rewind MCP already handles smart fallback; extend pattern</div>
+                </div>
+            </div>
+
+            <!-- Timeline Diagram -->
+            <h3 style="margin: 40px 0 20px;">Proposed Timeline</h3>
+            <div class="diagram-container">
+<pre style="color: #e4e4e7;">
+<span style="color: #06b6d4;">WEEK</span>        1          2          3          4          5          6          7          8
+         ├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤
+
+<span style="color: #f59e0b;">PHASE 1</span>  ╔══════════════════════╗
+         ║  <span style="color: #f59e0b;">DISCOVERY</span>           ║
+         ║  Shadow ops team     ║
+         ║  Document workflows  ║
+         ║  Identify failures   ║
+         ╚══════════════════════╝
+
+<span style="color: #3b82f6;">PHASE 2</span>                        ╔═══════════════════════════════════╗
+                                ║  <span style="color: #3b82f6;">DATA CONSOLIDATION & POC</span>        ║
+                                ║  Build device-diagnostics-mcp     ║
+                                ║  YAML patterns (100+ scenarios)   ║
+                                ║  Multi-agent orchestration        ║
+                                ║  POC on 10 failed cases           ║
+                                ╚═══════════════════════════════════╝
+
+<span style="color: #10b981;">PHASE 3</span>                                                            ╔═══════════════════════════════▶
+                                                                    ║  <span style="color: #10b981;">TESTING & ITERATION</span>
+                                                                    ║  A/B testing with support
+                                                                    ║  Measure resolution time
+                                                                    ║  Expand patterns (ongoing)
+
+<span style="color: #666;">─────────────────────────────────────────────────────────────────────────────────────────────────</span>
+<span style="color: #ef4444;">DELIVERABLES</span>
+         │          │          │          │          │          │          │          │
+         ▼          ▼          ▼          │          ▼          │          ▼          │
+    <span style="color: #f59e0b;">Workshop</span>  <span style="color: #f59e0b;">Pattern</span>    <span style="color: #3b82f6;">MCP</span>        │     <span style="color: #3b82f6;">POC Demo</span>     │    <span style="color: #10b981;">Pilot</span>       │
+    <span style="color: #f59e0b;">Report</span>    <span style="color: #f59e0b;">Docs</span>       <span style="color: #3b82f6;">Server</span>     │     <span style="color: #3b82f6;">10 cases</span>     │    <span style="color: #10b981;">Launch</span>      │
+
+<span style="color: #8b5cf6;">CHECKPOINTS:</span>
+  <span style="color: #8b5cf6;">▲</span> Week 2: Go/No-Go decision based on discovery findings
+  <span style="color: #8b5cf6;">▲</span> Week 5: POC validation - does multi-agent approach work?
+  <span style="color: #8b5cf6;">▲</span> Week 7: Pilot readiness review with support team lead
+</pre>
+            </div>
+
+            <!-- Success Metrics -->
+            <h3 style="margin: 40px 0 20px;">Success Metrics</h3>
+            <div class="stats-grid">
+                <div class="stat-card green">
+                    <div class="value">70%</div>
+                    <div class="label">Auto-Resolution Target</div>
+                </div>
+                <div class="stat-card green">
+                    <div class="value">&lt;10m</div>
+                    <div class="label">Avg Resolution Time</div>
+                </div>
+                <div class="stat-card blue">
+                    <div class="value">95%</div>
+                    <div class="label">Accuracy Target</div>
+                </div>
+                <div class="stat-card purple">
+                    <div class="value">-80%</div>
+                    <div class="label">Manual Queue Reduction</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Load Not Tracking - Vision & Architecture Document</p>
+            <p style="margin-top: 5px;">Prepared for Support Ops Strategy Meeting • January 22, 2026</p>
+            <p style="margin-top: 10px; color: var(--text-muted);">
+                Reference: rca-backend/docs/LOAD_NOT_TRACKING_GAP_ANALYSIS.html
+            </p>
+        </footer>
+    </div>
+</body>
+</html>

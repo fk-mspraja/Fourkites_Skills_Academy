@@ -1,0 +1,542 @@
+name: ocean-tracking
+version: 1.0.0
+author: "FourKites AI R&D / MSP Raja"
+category: support-operations
+domain: ocean
+status: production
+created: 2026-01-26
+last_updated: 2026-01-26
+
+description: |
+  Root Cause Analysis for ocean container tracking issues including:
+  - JT scraping failures
+  - Missing vessel updates
+  - Container not found errors
+  - Subscription issues
+  - Shipping line not supported
+
+  This skill specializes in diagnosing why ocean containers are not tracking properly
+  by analyzing JT (Just Transform) scraping operations, carrier portal integrations,
+  and system processing logs across the FourKites platform.
+
+# When Router Should Invoke This Skill
+triggers:
+  intent: TRACKING_ISSUE
+  domain: OCEAN
+  keywords:
+    - "container not tracking"
+    - "no vessel updates"
+    - "ocean shipment"
+    - "container number"
+    - "JT scraping"
+    - "container not found"
+    - "no carrier updates"
+    - "missing ocean updates"
+    - "vessel not updating"
+    - "scraping failed"
+    - "subscription disabled"
+    - "carrier not supported"
+
+  modes:
+    - ocean
+    - multimodal
+    - intermodal
+
+  issue_categories:
+    - "jt_scraping_failure"
+    - "missing_vessel_updates"
+    - "container_not_found"
+    - "subscription_disabled"
+    - "shipping_line_not_supported"
+    - "carrier_portal_error"
+    - "scraping_timeout"
+
+  conditions:
+    - "load.mode == 'OCEAN'"
+    - "load.mode == 'INTERMODAL' AND segment.mode == 'OCEAN'"
+    - "tracking_method == 'RPA' OR tracking_source == 'JT'"
+
+# What This Skill Can Do
+capabilities:
+
+  - id: "check_jt_subscription"
+    name: "Check JT Subscription Status"
+    description: |
+      Verify JT subscription exists and is active for the container/booking.
+      Identify subscription_id and scraping configuration.
+    confidence: "high"
+    time_estimate: "2-3 minutes"
+    tools:
+      - "super_api"
+      - "jt_api"
+    outputs:
+      - "subscription_exists"
+      - "subscription_id"
+      - "subscription_status"
+      - "carrier_id"
+      - "last_scrape_time"
+
+  - id: "analyze_jt_scraping"
+    name: "Analyze JT Scraping History"
+    description: |
+      Review JT scraping attempts and outcomes.
+      Compare crawled data vs formatted responses.
+      Identify scraping errors or portal timeouts.
+    confidence: "high"
+    time_estimate: "10-15 minutes"
+    tools:
+      - "jt_api"
+      - "signoz_logs"
+    outputs:
+      - "scraping_attempts"
+      - "scraping_errors"
+      - "last_successful_scrape"
+      - "portal_status"
+      - "event_codes_found"
+
+  - id: "check_vessel_status"
+    name: "Check Vessel Status and Updates"
+    description: |
+      Query vessel status, last update time, and event history.
+      Verify if vessel is actively sending updates to system.
+    confidence: "medium"
+    time_estimate: "5-10 minutes"
+    tools:
+      - "tracking_api"
+      - "super_api"
+      - "signoz_logs"
+    outputs:
+      - "vessel_name"
+      - "vessel_status"
+      - "last_update_time"
+      - "last_update_source"
+      - "events_received"
+
+  - id: "validate_container_identifier"
+    name: "Validate Container Identifier"
+    description: |
+      Ensure container number, booking number, or bill of lading
+      is correctly configured and matches carrier portal expectations.
+    confidence: "high"
+    time_estimate: "3-5 minutes"
+    tools:
+      - "tracking_api"
+      - "super_api"
+    outputs:
+      - "identifier_type"
+      - "identifier_value"
+      - "is_valid"
+      - "carrier_recognizes"
+
+  - id: "check_carrier_support"
+    name: "Check Carrier Support Status"
+    description: |
+      Verify shipping line/carrier is supported by FourKites.
+      Check if JT has active subscription for this carrier.
+    confidence: "high"
+    time_estimate: "2-3 minutes"
+    tools:
+      - "jt_api"
+      - "super_api"
+    outputs:
+      - "carrier_supported"
+      - "jt_carrier_support"
+      - "tracking_methods_available"
+      - "fallback_options"
+
+  - id: "analyze_signoz_logs"
+    name: "Analyze Processing Logs"
+    description: |
+      Deep dive into SigNoz logs for MMCUW (Multimodal Carrier Updates Worker).
+      Identify if updates were received, processed, or dropped.
+    confidence: "medium"
+    time_estimate: "15-20 minutes"
+    tools:
+      - "signoz_logs"
+      - "redshift"
+    outputs:
+      - "processed_events"
+      - "dropped_events"
+      - "processing_errors"
+      - "data_source"
+      - "correlation_ids"
+
+  - id: "correlate_tracking_sources"
+    name: "Correlate Tracking Sources"
+    description: |
+      Compare data across JT, platform, and processing logs.
+      Identify where discrepancies occur in the pipeline.
+    confidence: "medium"
+    time_estimate: "10-15 minutes"
+    tools:
+      - "correlation_engine"
+    outputs:
+      - "timeline"
+      - "discrepancies"
+      - "source_conflicts"
+      - "ground_truth"
+
+# Data Sources
+data_sources:
+
+  - name: jt_api
+    type: rest_api
+    purpose: "Ocean scraping history, carrier updates, subscription management"
+    base_url: "${JT_API_URL}"
+    auth: "basic"
+    credentials: "env:JT_USERNAME,JT_PASSWORD"
+    timeout: 60000
+    endpoints:
+      - method: GET
+        path: "/api/v1/ocean/subscriptions/{subscription_id}"
+        purpose: "Get subscription details"
+      - method: GET
+        path: "/api/v1/ocean/subscriptions/{subscription_id}/history"
+        purpose: "Get scraping history"
+      - method: GET
+        path: "/api/v1/ocean/subscriptions/{subscription_id}/latest"
+        purpose: "Get latest events"
+      - method: GET
+        path: "/api/v1/ocean/events/{event_id}"
+        purpose: "Get event details including crawled vs formatted"
+      - method: GET
+        path: "/api/v1/carriers"
+        purpose: "List supported carriers"
+
+  - name: super_api
+    type: rest_api
+    purpose: "Ocean subscriptions, tracking configuration, DataHub integration"
+    base_url: "${SUPER_API_URL}"
+    auth: "api_key"
+    credentials: "env:SUPER_API_KEY"
+    timeout: 30000
+    endpoints:
+      - method: GET
+        path: "/v1/tracking/config/{load_id}"
+        purpose: "Get tracking configuration"
+      - method: GET
+        path: "/v1/subscriptions/{subscription_id}"
+        purpose: "Get subscription status"
+      - method: GET
+        path: "/v1/ocean/load/{load_id}"
+        purpose: "Get ocean-specific load data"
+
+  - name: tracking_api
+    type: rest_api
+    purpose: "Container status, milestone events, real-time tracking"
+    base_url: "${TRACKING_API_URL}"
+    auth: "api_key"
+    credentials: "env:TRACKING_API_KEY"
+    timeout: 30000
+    endpoints:
+      - method: GET
+        path: "/v1/loads/{load_id}"
+        purpose: "Get load status"
+      - method: GET
+        path: "/v1/containers/{container_number}"
+        purpose: "Get container status"
+      - method: GET
+        path: "/v1/loads/{load_id}/timeline"
+        purpose: "Get event timeline"
+      - method: GET
+        path: "/v1/loads/{load_id}/vessel"
+        purpose: "Get vessel information"
+
+  - name: signoz_logs
+    type: clickhouse
+    purpose: "MMCUW (Multimodal Carrier Updates Worker) logs and processing traces"
+    host: "${SIGNOZ_CLICKHOUSE_HOST}"
+    port: 9000
+    database: "signoz_logs"
+    auth: "basic"
+    credentials: "env:SIGNOZ_USER,SIGNOZ_PASSWORD"
+    timeout: 120000
+    service: "multimodel_carrier_updates_worker"
+    query_keywords:
+      - "PROCESS_OCEAN_UPDATE"
+      - "SCRAPING"
+      - "JT_EVENT"
+    tables:
+      - name: "distributed_logs"
+        retention: "30 days"
+        key_columns:
+          - "service_name"
+          - "body"
+          - "timestamp"
+          - "trace_id"
+          - "span_id"
+          - "severity_text"
+
+  - name: redshift
+    type: database
+    purpose: "Data warehouse queries for carrier relationships, file logs"
+    host: "${REDSHIFT_HOST}"
+    port: 5439
+    database: "dwh"
+    auth: "aws_iam"
+    credentials: "env:REDSHIFT_IAM_ROLE"
+    tables:
+      - "company_relationships"
+      - "fact_carrier_file_logs"
+      - "tracking_update_v3s"
+      - "fact_loads"
+
+  - name: cassie
+    type: api
+    purpose: "Cassie conversational AI for pattern insights"
+    auth: "api_key"
+    credentials: "env:CASSIE_API_KEY"
+    features:
+      - "pattern_analysis"
+      - "anomaly_detection"
+      - "conversation_context"
+
+  - name: foursight
+    type: api
+    purpose: "FourSight analytics for carrier behavior patterns"
+    auth: "api_key"
+    credentials: "env:FOURSIGHT_API_KEY"
+    features:
+      - "carrier_analytics"
+      - "performance_metrics"
+      - "reliability_scoring"
+
+# Pattern Definitions
+patterns:
+  count: 5
+  location: "./patterns/"
+  files:
+    - jt_scraping_failure.yaml
+    - missing_vessel_updates.yaml
+    - container_not_found.yaml
+    - subscription_disabled.yaml
+    - shipping_line_not_supported.yaml
+
+# Confidence Thresholds
+confidence_thresholds:
+  auto_resolve: 0.85
+  human_review: 0.75
+  escalate: 0.50
+
+# Integration Points
+integration_points:
+  cassie: true
+  foursight: true
+  mcp_servers:
+    - "super-api"
+    - "jt-api"
+    - "signoz"
+    - "redshift"
+
+# Root Cause Categories
+root_causes:
+
+  - id: "jt_scraping_failure"
+    name: "JT Scraping Failed"
+    description: |
+      Just Transform was unable to scrape updates from carrier portal.
+      Could be due to portal down, formatting change, or network issues.
+    category: "jt_issue"
+    severity: "high"
+    recovery_options:
+      - "retry_scraping"
+      - "escalate_to_jt"
+      - "use_fallback_source"
+
+  - id: "missing_vessel_updates"
+    name: "Missing Vessel Updates"
+    description: |
+      Vessel is not sending updates to FourKites system.
+      Could indicate port operations, communication gap, or carrier API issue.
+    category: "carrier_issue"
+    severity: "high"
+    recovery_options:
+      - "contact_carrier"
+      - "verify_vessel_status"
+      - "check_alternate_tracking"
+
+  - id: "container_not_found"
+    name: "Container Not Found"
+    description: |
+      Container number doesn't exist in carrier portal or tracking system.
+      May indicate typo, wrong identifier type, or container not yet in system.
+    category: "configuration_issue"
+    severity: "high"
+    recovery_options:
+      - "verify_identifier"
+      - "check_alternate_identifier"
+      - "contact_customer"
+
+  - id: "subscription_disabled"
+    name: "Subscription Disabled"
+    description: |
+      JT subscription for this carrier is disabled or inactive.
+      May indicate intentional pause or subscription expiration.
+    category: "configuration_issue"
+    severity: "high"
+    recovery_options:
+      - "activate_subscription"
+      - "verify_subscription_status"
+      - "check_payment_status"
+
+  - id: "shipping_line_not_supported"
+    name: "Shipping Line Not Supported"
+    description: |
+      Carrier is not in JT's list of supported carriers.
+      Would require adding carrier to supported list or using alternate tracking method.
+    category: "carrier_issue"
+    severity: "high"
+    recovery_options:
+      - "request_carrier_support"
+      - "use_fallback_tracking"
+      - "contact_jt_team"
+
+  - id: "carrier_portal_error"
+    name: "Carrier Portal Error"
+    description: |
+      Carrier's tracking portal returned error or unexpected response.
+      JT correctly attempted to scrape but portal was unavailable/unstable.
+    category: "carrier_issue"
+    severity: "medium"
+    recovery_options:
+      - "retry_scraping"
+      - "contact_carrier"
+      - "wait_for_recovery"
+
+  - id: "scraping_timeout"
+    name: "Scraping Timeout"
+    description: |
+      JT scraping request timed out before completing.
+      Could indicate slow portal response or network latency.
+    category: "jt_issue"
+    severity: "medium"
+    recovery_options:
+      - "retry_scraping"
+      - "check_network_status"
+      - "increase_timeout"
+
+# Output Format
+output_format:
+  type: "ocean_tracking_result"
+  fields:
+    - name: "root_cause"
+      type: "string"
+      enum:
+        - "jt_scraping_failure"
+        - "missing_vessel_updates"
+        - "container_not_found"
+        - "subscription_disabled"
+        - "shipping_line_not_supported"
+        - "carrier_portal_error"
+        - "scraping_timeout"
+        - "unknown"
+
+    - name: "root_cause_category"
+      type: "string"
+      enum:
+        - "jt_issue"
+        - "carrier_issue"
+        - "configuration_issue"
+        - "system_issue"
+
+    - name: "evidence"
+      type: "array"
+      description: "Supporting data points from investigation"
+      items:
+        - "source"
+        - "finding"
+        - "timestamp"
+        - "confidence"
+
+    - name: "confidence_score"
+      type: "float"
+      min: 0.0
+      max: 1.0
+      description: "Overall confidence in diagnosis"
+
+    - name: "last_successful_update"
+      type: "datetime"
+      description: "When container last received a tracking update"
+
+    - name: "recommended_action"
+      type: "object"
+      fields:
+        - "action"
+        - "priority"
+        - "assignee"
+        - "human_approval_required"
+        - "escalation_required"
+
+    - name: "investigation_time"
+      type: "duration"
+      description: "Time spent on investigation"
+
+    - name: "steps_completed"
+      type: "array"
+      description: "Investigation steps executed"
+
+    - name: "escalation"
+      type: "object"
+      description: "Escalation details if needed"
+      fields:
+        - "needed"
+        - "type"
+        - "ticket_template"
+        - "priority"
+        - "assignee_team"
+
+# Performance Targets
+metrics:
+  baseline:
+    time: "20-30 minutes"
+    tools_used: "4-6"
+    data_gathering_time: "75%"
+    analysis_time: "25%"
+
+  target:
+    time: "8-12 minutes"
+    accuracy: "90%"
+    human_handoff_rate: "10%"
+
+  track:
+    - "time_to_complete"
+    - "steps_executed"
+    - "api_calls_made"
+    - "correct_diagnosis"
+    - "human_handoffs"
+    - "first_contact_resolution_rate"
+    - "escalation_rate"
+
+# Human Handoff Triggers
+human_handoff:
+  low_confidence:
+    threshold: 0.7
+    action: "Present findings with alternatives"
+    message: |
+      Unable to definitively identify root cause.
+      Top candidates: {candidates}
+      Additional information needed: {questions}
+
+  stuck_after_steps:
+    max_steps: 5
+    action: "Ask for human guidance"
+    message: |
+      Investigation incomplete after {step_count} steps.
+      Please advise on next steps.
+
+  critical_decision:
+    action: "Require human approval"
+    message: |
+      Root cause identified: {root_cause}
+      Recommended action: {action}
+      Proceed? [Yes] [No] [Modify]
+
+# Domain Knowledge References
+knowledge_base:
+  path: "knowledge_base.md"
+  sources:
+    - "Ocean Tracking Playbook"
+    - "JT API Documentation"
+    - "Carrier Integration Guide"
+    - "FourKites Platform Architecture"
+    - "SigNoz Logging Guide"

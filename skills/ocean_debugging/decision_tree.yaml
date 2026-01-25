@@ -1,0 +1,631 @@
+# Ocean Debugging Decision Tree
+# Based on: Surya's Troubleshooting Mental Model (Jan 7, 2026)
+# Source: Support-Troubleshooting-Mind-Map.html, SUPPORT-TEAM-MENTAL-MODEL.md
+
+entry_point: "step_1_platform_check"
+
+# Data Source Hierarchy (Priority Order)
+data_source_priority:
+  - name: "EA315 (EDI File)"
+    reliability: "high"
+    latency: "hours_to_days"
+    description: "Flat file from carrier - structured, validated format"
+
+  - name: "Carrier API"
+    reliability: "high"
+    latency: "real_time"
+    description: "Direct API integration - real-time updates"
+
+  - name: "RPA/JT (Web Scraping)"
+    reliability: "medium"
+    latency: "~6_hours"
+    description: "Fallback when API/EDI unavailable - 60-70 carriers"
+
+# Identifier Priority (for tracking)
+identifier_priority:
+  - "booking_number"      # Best visibility from carrier portal
+  - "bill_of_lading"      # Good visibility, widely used
+  - "container_number"    # Limited visibility, least preferred
+
+# Main Investigation Flow
+steps:
+
+  # ============================================
+  # STEP 1: PLATFORM CHECK (2-3 minutes)
+  # ============================================
+  step_1_platform_check:
+    name: "Platform Check (Customer View)"
+    description: |
+      First look - see what customer sees.
+      Understand the issue from customer perspective.
+    time_estimate: "2-3 minutes"
+
+    pre_conditions:
+      - "ticket.load_id is not null OR ticket.tracking_id is not null"
+
+    action:
+      type: "api_call"
+      source: "tracking_api"
+      operation: "get_load_details"
+      params:
+        load_id: "{ticket.load_id}"
+      extract:
+        - field: "load_exists"
+          path: "$.exists"
+        - field: "current_state"
+          path: "$.status"
+        - field: "tracking_method"
+          path: "$.tracking.method"
+        - field: "update_source"
+          path: "$.tracking.source"  # RPA, API, EDI, Vessel
+        - field: "mode"
+          path: "$.mode"
+        - field: "carrier_id"
+          path: "$.carrier.id"
+        - field: "shipper_id"
+          path: "$.shipper.id"
+
+    decisions:
+
+      load_not_found:
+        condition: "result.load_exists == false"
+        confidence: 0.95
+        conclusion:
+          root_cause: "load_not_found"
+          explanation: "Load does not exist in system"
+          category: "configuration_issue"
+        next_step: "step_load_creation_check"
+
+      not_ocean_mode:
+        condition: "result.mode != 'OCEAN' AND result.mode != 'INTERMODAL'"
+        confidence: 0.90
+        conclusion:
+          partial_finding: "Load is not ocean mode"
+          explanation: "This skill handles ocean shipments only"
+          category: "wrong_skill"
+        next_step: null  # Route to different skill
+
+      load_tracking_normally:
+        condition: "result.current_state != 'AWAITING_TRACKING_INFO'"
+        confidence: 0.70
+        conclusion:
+          partial_finding: "Load is tracking"
+          explanation: "Load appears to be tracking. Customer may be seeing stale data."
+        next_step: "step_2_get_tracking_config"
+
+      load_awaiting_tracking:
+        condition: "result.current_state == 'AWAITING_TRACKING_INFO'"
+        confidence: 0.85
+        conclusion:
+          partial_finding: "Confirmed: Load stuck in Awaiting Tracking Info"
+          explanation: "This is the #1 issue type (7.7% of loads)"
+        next_step: "step_2_get_tracking_config"
+
+      source_is_rpa:
+        condition: "result.update_source == 'RPA'"
+        note: "Will need to check JT portal"
+        next_step: "step_2_get_tracking_config"
+
+  # ============================================
+  # STEP 2: GET TRACKING CONFIG (1-2 minutes)
+  # ============================================
+  step_2_get_tracking_config:
+    name: "Get Tracking Configuration"
+    description: |
+      Get subscription and tracking details from Super API.
+      Identifies primary tracking identifier and JT subscription ID.
+    time_estimate: "1-2 minutes"
+
+    pre_conditions:
+      - "context.load_id is not null"
+
+    action:
+      type: "api_call"
+      source: "super_api"
+      operation: "get_tracking_config"
+      params:
+        load_id: "{context.load_id}"
+      extract:
+        - field: "primary_identifier"
+          path: "$.tracking.primary_identifier"
+        - field: "identifier_value"
+          path: "$.tracking.identifier_value"
+        - field: "subscription_id"
+          path: "$.tracking.subscription_id"
+        - field: "tracking_source"
+          path: "$.tracking.source"
+
+    decisions:
+
+      no_subscription:
+        condition: "result.subscription_id is null AND result.tracking_source == 'RPA'"
+        confidence: 0.90
+        conclusion:
+          root_cause: "no_jt_subscription"
+          explanation: "Load configured for RPA but no JT subscription exists"
+          category: "configuration_issue"
+          recommended_action:
+            action: "create_subscription"
+            assignee: "engineering"
+        next_step: null
+
+      has_subscription_rpa:
+        condition: "result.subscription_id is not null AND result.tracking_source == 'RPA'"
+        confidence: 0.85
+        conclusion:
+          partial_finding: "JT subscription found"
+          subscription_id: "{result.subscription_id}"
+        next_step: "step_3_check_justtransform"
+
+      source_is_edi:
+        condition: "result.tracking_source == 'EDI'"
+        confidence: 0.85
+        conclusion:
+          partial_finding: "Load uses EDI tracking"
+        next_step: "step_edi_file_check"
+
+      source_is_api:
+        condition: "result.tracking_source == 'API'"
+        confidence: 0.85
+        conclusion:
+          partial_finding: "Load uses Carrier API"
+        next_step: "step_carrier_api_check"
+
+  # ============================================
+  # STEP 3: CHECK JUST TRANSFORM (10-15 minutes)
+  # ============================================
+  step_3_check_justtransform:
+    name: "Check Just Transform (JT) Portal"
+    description: |
+      See exactly what was scraped from carrier portal.
+      Compare crawled output vs formatted response.
+      Look for event codes: VD (Vessel Departure), AG (Arrived Gate), ET (Estimated Time)
+    time_estimate: "10-15 minutes"
+
+    pre_conditions:
+      - "context.subscription_id is not null"
+      - "context.tracking_source == 'RPA'"
+
+    action:
+      type: "api_call"
+      source: "justtransform_api"
+      operation: "get_subscription_history"
+      params:
+        subscription_id: "{context.subscription_id}"
+        time_range: "{ticket.issue_date_range}"  # When issue occurred
+      extract:
+        - field: "events"
+          path: "$.history[*]"
+        - field: "crawled_output"
+          path: "$.history[*].crawled_output"
+        - field: "formatted_response"
+          path: "$.history[*].response"
+
+    post_processing:
+      - operation: "filter_by_event_code"
+        codes: ["VD", "AG", "ET"]
+      - operation: "extract_timestamps"
+      - operation: "compare_crawled_vs_response"
+
+    decisions:
+
+      no_jt_events:
+        condition: "result.events.count == 0"
+        confidence: 0.90
+        conclusion:
+          root_cause: "carrier_not_sending_data"
+          explanation: |
+            JT received no data from carrier portal.
+            Either carrier portal is down or scraping is broken.
+          category: "jt_issue"
+          recommended_action:
+            action: "escalate_to_jt_team"
+            ticket_template: "jt_no_data"
+        next_step: null
+
+      jt_events_exist:
+        condition: "result.events.count > 0"
+        confidence: 0.80
+        conclusion:
+          partial_finding: "JT received events"
+          event_count: "{result.events.count}"
+        next_step: "step_4_signoz_logs"
+
+      crawled_vs_response_mismatch:
+        condition: "result.crawled_output != result.formatted_response"
+        confidence: 0.85
+        conclusion:
+          root_cause: "jt_formatting_error"
+          explanation: |
+            JT scraped correct data but formatted it incorrectly.
+            Crawled: {result.crawled_output}
+            Response: {result.formatted_response}
+          category: "jt_issue"
+          recommended_action:
+            action: "escalate_to_jt_team"
+            ticket_template: "jt_formatting_error"
+        next_step: null
+
+      wrong_timestamp_in_jt:
+        condition: |
+          result.events contains event where
+          event.event_code == ticket.issue_event_code AND
+          event.timestamp != ticket.expected_timestamp
+        confidence: 0.90
+        conclusion:
+          root_cause: "jt_scraped_wrong_data"
+          explanation: |
+            JT scraped incorrect timestamp from carrier portal.
+            Scraped: {result.event.timestamp}
+            Expected: {ticket.expected_timestamp}
+          category: "jt_issue"
+          recommended_action:
+            action: "verify_carrier_portal"
+            next: "escalate_appropriately"
+        next_step: "step_4_signoz_logs"
+
+  # ============================================
+  # STEP 4: SIGNOZ LOGS (15-20 minutes) - MOST TIME CONSUMING
+  # ============================================
+  step_4_signoz_logs:
+    name: "Deep Dive into SigNoz Logs"
+    description: |
+      See what system actually processed.
+      Query multimodel_carrier_updates_worker for PROCESS_OCEAN_UPDATE.
+      This is the most time-consuming step (15-20 minutes manually).
+    time_estimate: "15-20 minutes"
+    pain_point: true
+    note: "Returns raw JSON logs - needs manual parsing. Surya built HTML Log Analyzer to help."
+
+    pre_conditions:
+      - "context.load_id is not null"
+      - "context.container_number is not null OR context.booking_number is not null"
+
+    action:
+      type: "query"
+      source: "signoz_clickhouse"
+      query_template: |
+        SELECT
+          body,
+          timestamp,
+          trace_id,
+          span_id,
+          severity_text
+        FROM signoz_logs.distributed_logs
+        WHERE service_name = 'multimodel_carrier_updates_worker'
+          AND body LIKE '%PROCESS_OCEAN_UPDATE%'
+          AND (
+            body LIKE '%{context.container_number}%'
+            OR body LIKE '%{context.booking_number}%'
+          )
+          AND environment = 'production'
+          AND timestamp >= now() - INTERVAL 30 DAY
+        ORDER BY timestamp DESC
+        LIMIT 1000
+
+    post_processing:
+      - operation: "parse_json_logs"
+        extract:
+          - "event_code"
+          - "event_time"
+          - "container_number"
+          - "correlation_id"
+          - "data_source"
+          - "vessel_name"
+          - "location"
+      - operation: "deduplicate_events"
+      - operation: "identify_corrections"  # Rollovers
+      - operation: "build_timeline"
+
+    decisions:
+
+      no_processing_logs:
+        condition: "result.logs.count == 0"
+        confidence: 0.85
+        conclusion:
+          root_cause: "events_not_processed"
+          explanation: |
+            No processing logs found for this load.
+            Either data never reached processing or was filtered out.
+          category: "system_bug"
+        next_step: "step_5_correlate_findings"
+
+      found_duplicate_events:
+        condition: "result.duplicates.count > 0"
+        confidence: 0.80
+        conclusion:
+          partial_finding: "Found duplicate events"
+          duplicates: "{result.duplicates}"
+          explanation: "Multiple events with same code, different timestamps"
+        next_step: "step_5_correlate_findings"
+
+      found_corrections:
+        condition: "result.corrections.count > 0"
+        confidence: 0.85
+        conclusion:
+          partial_finding: "Found correction events (rollovers)"
+          corrections: "{result.corrections}"
+          explanation: |
+            Rollover = vessel change.
+            Original: {result.corrections[0].original}
+            Corrected: {result.corrections[0].corrected}
+        next_step: "step_5_correlate_findings"
+
+      events_processed_normally:
+        condition: "result.logs.count > 0 AND result.duplicates.count == 0"
+        confidence: 0.75
+        conclusion:
+          partial_finding: "Events processed normally"
+        next_step: "step_5_correlate_findings"
+
+  # ============================================
+  # STEP 5: CORRELATE FINDINGS (5-10 minutes)
+  # ============================================
+  step_5_correlate_findings:
+    name: "Correlate Findings Across Sources"
+    description: |
+      Manual correlation across Platform, JT, SigNoz, API.
+      Build unified timeline and identify discrepancies.
+    time_estimate: "5-10 minutes"
+
+    action:
+      type: "correlation"
+      sources:
+        - "platform_result"
+        - "jt_result"
+        - "signoz_result"
+        - "api_result"
+      operations:
+        - "build_unified_timeline"
+        - "identify_discrepancies"
+        - "match_patterns"
+
+    decisions:
+
+      sources_agree:
+        condition: |
+          platform_result.timestamp == jt_result.timestamp AND
+          jt_result.timestamp == signoz_result.timestamp
+        confidence: 0.90
+        conclusion:
+          partial_finding: "All sources agree"
+          explanation: "Data is consistent across sources"
+        next_step: "step_6_root_cause_decision"
+
+      platform_jt_mismatch:
+        condition: "platform_result.timestamp != jt_result.timestamp"
+        confidence: 0.85
+        conclusion:
+          root_cause: "platform_showing_stale_data"
+          explanation: |
+            Platform shows: {platform_result.timestamp}
+            JT sent: {jt_result.timestamp}
+            Platform may not have processed latest update.
+          category: "system_bug"
+        next_step: "step_6_root_cause_decision"
+
+      jt_signoz_mismatch:
+        condition: "jt_result.timestamp != signoz_result.timestamp"
+        confidence: 0.85
+        conclusion:
+          root_cause: "processing_error"
+          explanation: |
+            JT sent: {jt_result.timestamp}
+            System processed: {signoz_result.timestamp}
+            Data was modified during processing.
+          category: "system_bug"
+        next_step: "step_6_root_cause_decision"
+
+  # ============================================
+  # STEP 6: ROOT CAUSE DECISION
+  # ============================================
+  step_6_root_cause_decision:
+    name: "Root Cause Decision"
+    description: |
+      Based on correlated evidence, determine source of issue.
+      Four possible outcomes: Carrier Issue, JT Issue, Configuration Issue, System Bug.
+
+    action:
+      type: "decision"
+      input: "all_evidence"
+
+    decisions:
+
+      carrier_issue:
+        condition: |
+          jt_result.crawled_output shows wrong data AND
+          jt_result.crawled_output == jt_result.formatted_response
+        confidence: 0.90
+        conclusion:
+          root_cause: "carrier_portal_wrong_data"
+          root_cause_category: "carrier_issue"
+          explanation: |
+            JT scraped correctly, but carrier portal had wrong data.
+            This is a carrier-side issue.
+          recommended_action:
+            action: "inform_customer"
+            message: "Issue is with carrier data, not FourKites system"
+            escalate_to_carrier: "optional"
+        next_step: null
+
+      jt_issue:
+        condition: |
+          jt_result.crawled_output != jt_result.formatted_response OR
+          jt_result.events.count == 0 AND context.tracking_source == 'RPA'
+        confidence: 0.85
+        conclusion:
+          root_cause: "jt_scraping_error"
+          root_cause_category: "jt_issue"
+          explanation: |
+            JT scraped incorrectly or applied wrong formatting logic.
+          recommended_action:
+            action: "create_jt_bug_ticket"
+            ticket_fields:
+              subscription_id: "{context.subscription_id}"
+              evidence: "{jt_result}"
+              expected: "{ticket.expected_value}"
+              actual: "{jt_result.formatted_response}"
+        next_step: null
+
+      configuration_issue:
+        condition: |
+          context.primary_identifier is wrong OR
+          context.subscription_id is null
+        confidence: 0.85
+        conclusion:
+          root_cause: "load_misconfigured"
+          root_cause_category: "configuration_issue"
+          explanation: |
+            Load is misconfigured (wrong identifier, missing subscription).
+          recommended_action:
+            action: "fix_configuration"
+            human_approval_required: true
+        next_step: null
+
+      system_bug:
+        condition: |
+          all_sources_agree AND
+          platform_result != expected_result
+        confidence: 0.80
+        conclusion:
+          root_cause: "platform_processing_bug"
+          root_cause_category: "system_bug"
+          explanation: |
+            Data sources agree, but platform showing wrong data.
+            This indicates a processing bug in FourKites system.
+          recommended_action:
+            action: "create_engineering_ticket"
+            priority: "high"
+        next_step: null
+
+# ============================================
+# BRANCH STEPS (for specific scenarios)
+# ============================================
+
+branch_steps:
+
+  step_load_creation_check:
+    name: "Check Load Creation Path"
+    description: "Investigate how load was created (Conventional vs API)"
+
+    action:
+      type: "query"
+      source: "redshift"
+      query_template: |
+        -- Check load_validation_data_mart for conventional creation
+        SELECT * FROM load_validation_data_mart WHERE load_id = '{context.load_id}'
+        UNION ALL
+        -- Check booking API logs for API creation
+        SELECT * FROM booking_api_logs WHERE load_id = '{context.load_id}'
+
+    decisions:
+      conventional_creation:
+        condition: "result.source == 'conventional'"
+        next_step: "step_conventional_creation_debug"
+
+      api_creation:
+        condition: "result.source == 'booking_api'"
+        next_step: "step_api_creation_debug"
+
+  step_edi_file_check:
+    name: "Check EDI File Processing"
+    description: "Investigate EA315 file reception and parsing"
+
+    action:
+      type: "multi_query"
+      queries:
+        - source: "s3"
+          operation: "list_files"
+          prefix: "edi/ea315/{context.carrier_id}"
+        - source: "redshift"
+          query: "SELECT * FROM fact_carrier_file_logs WHERE carrier_id = '{context.carrier_id}'"
+
+  step_carrier_api_check:
+    name: "Check Carrier API Integration"
+    description: "Investigate direct carrier API status"
+
+    action:
+      type: "api_call"
+      source: "carrier_api_status"
+      operation: "check_integration_health"
+
+# ============================================
+# PARALLEL CHECKS (can run alongside main flow)
+# ============================================
+
+parallel_checks:
+
+  check_similar_loads:
+    name: "Check Similar Loads"
+    description: "Find other loads from same carrier with similar issues"
+    action:
+      type: "query"
+      source: "redshift"
+      query_template: |
+        SELECT COUNT(*) as affected_loads
+        FROM fact_loads
+        WHERE carrier_id = '{context.carrier_id}'
+          AND status = 'AWAITING_TRACKING_INFO'
+          AND created_date >= now() - INTERVAL 7 DAY
+
+  check_network_relationship:
+    name: "Check Network Relationship"
+    description: "Verify carrier-shipper relationship exists"
+    action:
+      type: "query"
+      source: "redshift"
+      query_template: |
+        SELECT
+          relationship_id,
+          status,
+          is_active,
+          created_date
+        FROM company_relationships
+        WHERE shipper_id = '{context.shipper_id}'
+          AND carrier_id = '{context.carrier_id}'
+    critical: true
+    note: "company_relationships is THE MOST CRITICAL TABLE - #1 cause of Awaiting Tracking Info"
+
+# ============================================
+# ESCALATION TEMPLATES
+# ============================================
+
+escalation_templates:
+
+  jt_bug_ticket:
+    type: "jira"
+    project: "JT"
+    issue_type: "Bug"
+    fields:
+      summary: "JT Scraping Issue - {context.carrier_name}"
+      description: |
+        **Subscription ID:** {context.subscription_id}
+        **Issue Date:** {ticket.issue_date}
+
+        **Expected Data:**
+        {ticket.expected_value}
+
+        **Actual Data (from JT):**
+        {jt_result.formatted_response}
+
+        **Evidence:**
+        - Crawled Output: {jt_result.crawled_output}
+        - SigNoz Logs: [link]
+
+        **Impact:** {affected_loads} loads affected
+
+  engineering_bug_ticket:
+    type: "jira"
+    project: "ENG"
+    issue_type: "Bug"
+    fields:
+      summary: "Processing Bug - {root_cause}"
+      description: |
+        **Load ID:** {context.load_id}
+        **Issue:** {root_cause_explanation}
+
+        **Timeline:**
+        {correlation_timeline}
+
+        **Evidence:**
+        {evidence_summary}

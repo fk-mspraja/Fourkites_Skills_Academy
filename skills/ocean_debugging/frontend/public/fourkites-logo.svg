@@ -1,0 +1,21 @@
+<svg width="180" height="40" viewBox="0 0 180 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- FourKites Logo -->
+  <!-- Icon Mark -->
+  <g>
+    <!-- Kite shape made of 4 triangular elements -->
+    <path d="M8 4L16 12L8 20L0 12L8 4Z" fill="#0066FF"/>
+    <path d="M16 12L24 20L16 28L8 20L16 12Z" fill="#00A3A3" opacity="0.8"/>
+    <path d="M8 20L16 28L8 36L0 28L8 20Z" fill="#0066FF" opacity="0.6"/>
+    <path d="M16 12L24 4L32 12L24 20L16 12Z" fill="#00A3A3" opacity="0.9"/>
+  </g>
+
+  <!-- Text -->
+  <text x="42" y="28" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="white" letter-spacing="-0.5">
+    FourKites
+  </text>
+
+  <!-- Tagline -->
+  <text x="42" y="36" font-family="Arial, sans-serif" font-size="8" fill="#9CA3AF" letter-spacing="0.5">
+    SUPPLY CHAIN VISIBILITY
+  </text>
+</svg>

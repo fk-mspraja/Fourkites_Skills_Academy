@@ -1,0 +1,282 @@
+# First-Focus Routing - Proof of Concept
+# Issue Type: Awaiting Tracking Info (Load Not Tracking)
+#
+# This POC implements intelligent routing for the most common support issue
+
+issue_routing:
+  awaiting_tracking_info:
+    description: "Load shows 'Awaiting Tracking Info' status - no updates from carrier"
+    impact: "35% of support tickets, 7.7% of loads affected by network relationship issues"
+    priority: critical
+
+    # Decision tree - each step narrows the scope
+    steps:
+
+      step_1_network_relationship:
+        name: "Check Network Relationship"
+        description: "Verify carrier-shipper relationship exists and is active"
+
+        query:
+          mcp_server: "mcp-unified-redshift"  # Phase 2, for now use direct client
+          tool: "check_network_relationship"
+          params:
+            - shipper_id: "{load.shipper_id}"
+            - carrier_id: "{load.carrier_id}"
+
+          # Fallback SQL for POC (direct Redshift)
+          sql: |
+            SELECT
+              relationship_id,
+              status,
+              is_active,
+              created_date,
+              last_modified_date
+            FROM company_relationships
+            WHERE shipper_id = '{shipper_id}'
+              AND carrier_id = '{carrier_id}'
+
+        decision_logic:
+          no_relationship:
+            condition: "result.count == 0"
+            conclusion: "root_cause_found"
+            action: "create_carrier_shipper_relationship"
+            explanation: |
+              Network relationship between shipper and carrier does NOT exist.
+              This is the #1 cause of 'Awaiting Tracking Info' issues (7.7% of all loads).
+
+              Without this relationship:
+              - Carrier files are not matched to this shipper's loads
+              - Updates never reach the platform
+              - Load stays in 'Awaiting Tracking Info' forever
+
+            recommended_action:
+              primary:
+                label: "Create Relationship"
+                type: "database_update"
+                confidence: "high"
+                instructions: |
+                  1. Verify shipper and carrier IDs are correct
+                  2. Create entry in company_relationships table
+                  3. Set status = 'active', is_active = true
+                  4. Notify customer load will start tracking within 24 hours
+
+              secondary:
+                label: "Contact Account Manager"
+                type: "escalation"
+                instructions: "If relationship should exist, escalate to account manager"
+
+            next_step: null  # End - root cause found
+
+          relationship_inactive:
+            condition: "result.is_active == false OR result.status != 'active'"
+            conclusion: "root_cause_found"
+            action: "activate_relationship"
+            explanation: |
+              Network relationship exists but is INACTIVE.
+              Carrier files are being received but not matched to loads.
+
+            recommended_action:
+              primary:
+                label: "Activate Relationship"
+                type: "database_update"
+                confidence: "high"
+                instructions: |
+                  1. Update company_relationships SET is_active = true, status = 'active'
+                  2. Verify effective_date is in past
+                  3. Trigger file reprocessing for last 7 days
+
+            next_step: null  # End - root cause found
+
+          relationship_ok:
+            condition: "result.is_active == true AND result.status == 'active'"
+            conclusion: "continue_investigation"
+            explanation: "Network relationship is active. Issue is elsewhere."
+            next_step: "step_2_carrier_files"
+
+      step_2_carrier_files:
+        name: "Check Carrier File Reception"
+        description: "Verify carrier is sending files and files are being received"
+
+        query:
+          sql: |
+            SELECT
+              file_id,
+              file_name,
+              carrier_id,
+              received_timestamp,
+              record_count,
+              processing_status
+            FROM fact_carrier_file_logs
+            WHERE carrier_id = '{carrier_id}'
+              AND received_timestamp >= '{load_created_date}'::date - INTERVAL '7 days'
+              AND received_timestamp <= CURRENT_TIMESTAMP
+            ORDER BY received_timestamp DESC
+            LIMIT 50
+
+        decision_logic:
+          no_files:
+            condition: "result.count == 0"
+            conclusion: "root_cause_found"
+            action: "contact_carrier_for_files"
+            explanation: |
+              Carrier has NOT sent any files in the last 7 days.
+              No updates can be processed if carrier isn't sending data.
+
+            recommended_action:
+              primary:
+                label: "Contact Carrier"
+                type: "external_escalation"
+                confidence: "high"
+                instructions: |
+                  1. Check carrier's normal file sending pattern (Confluence)
+                  2. Contact carrier EDI/API team
+                  3. Verify they have load in their system
+                  4. Request immediate file transmission
+
+              secondary:
+                label: "Check Alternate Sources"
+                type: "investigation"
+                instructions: "Check if carrier has API integration or JustTransform subscription"
+
+            next_step: null  # End - root cause found
+
+          files_exist:
+            condition: "result.count > 0"
+            conclusion: "continue_investigation"
+            explanation: |
+              Carrier IS sending files regularly.
+              Files received: {result.count} in last 7 days
+              Issue is in matching or processing.
+            next_step: "step_3_file_matching"
+
+      step_3_file_matching:
+        name: "Check File Matching & Processing"
+        description: "Verify load identifiers in files match database records"
+
+        query:
+          sql: |
+            SELECT
+              fcrl.file_id,
+              fcrl.record_id,
+              fcrl.booking_number,
+              fcrl.bill_of_lading,
+              fcrl.container_number,
+              fcrl.matched_load_id,
+              fcrl.match_status,
+              fcrl.match_failure_reason,
+              fcfl.file_name,
+              fcfl.received_timestamp
+            FROM fact_carrier_record_logs fcrl
+            JOIN fact_carrier_file_logs fcfl ON fcrl.file_id = fcfl.file_id
+            WHERE fcfl.carrier_id = '{carrier_id}'
+              AND fcfl.received_timestamp >= '{load_created_date}'::date - INTERVAL '7 days'
+              AND (
+                fcrl.booking_number = '{load.booking_number}'
+                OR fcrl.bill_of_lading = '{load.bill_of_lading}'
+                OR fcrl.container_number = '{load.container_number}'
+              )
+            ORDER BY fcfl.received_timestamp DESC
+            LIMIT 20
+
+        decision_logic:
+          no_matches:
+            condition: "result.count == 0"
+            conclusion: "root_cause_found"
+            action: "investigate_identifier_mismatch"
+            explanation: |
+              Carrier files received but NO records match this load's identifiers.
+
+              This means:
+              - Carrier is sending files (Step 2 confirmed)
+              - But load identifiers don't match what's in files
+              - Either carrier has different identifiers or load is misconfigured
+
+            recommended_action:
+              primary:
+                label: "Download & Inspect File"
+                type: "manual_investigation"
+                confidence: "medium"
+                instructions: |
+                  1. Download most recent carrier file from S3
+                  2. Use Surya's EDI parser to format file
+                  3. Search file for:
+                     - Load's booking number: {load.booking_number}
+                     - Bill of lading: {load.bill_of_lading}
+                     - Container: {load.container_number}
+                  4. Compare identifiers in file vs database
+                  5. Update load identifiers if needed
+
+              secondary:
+                label: "Check Load Creation"
+                type: "investigation"
+                instructions: |
+                  Query load_validation_data_mart to see how load was created.
+                  Verify identifiers were captured correctly at creation time.
+
+            next_step: null  # End - root cause found
+
+          matches_but_failed:
+            condition: "result.count > 0 AND result[0].match_status == 'failed'"
+            conclusion: "root_cause_found"
+            action: "investigate_match_failure"
+            explanation: |
+              Records found in carrier files that MATCH load identifiers.
+              But matching FAILED with reason: {result[0].match_failure_reason}
+
+            recommended_action:
+              primary:
+                label: "Review Failure Reason"
+                type: "investigation"
+                confidence: "high"
+                instructions: |
+                  Failure reason: {result[0].match_failure_reason}
+
+                  Common reasons:
+                  - Load status mismatch (load cancelled/completed)
+                  - Date out of range (update too old/too new)
+                  - Data validation failure (invalid location, timestamp)
+
+                  Action: Review match_failure_reason and fix underlying issue
+
+            next_step: null  # End - root cause found
+
+          matches_and_processed:
+            condition: "result.count > 0 AND result[0].matched_load_id IS NOT NULL"
+            conclusion: "unexpected_success"
+            explanation: |
+              Records matched and processed successfully.
+              Load should be tracking. This is unexpected!
+
+              Possible reasons:
+              - Updates processed but not visible in UI (cache issue)
+              - Updates processed but immediately overwritten
+              - UI showing stale data
+
+            recommended_action:
+              primary:
+                label: "Check SigNoz Logs"
+                type: "deep_investigation"
+                confidence: "low"
+                instructions: |
+                  Query SigNoz: service=multimodel_carrier_updates_worker
+                  Keyword: PROCESS_OCEAN_UPDATE
+                  Look for: Updates that were processed but then reverted or overwritten
+
+              secondary:
+                label: "Escalate to Engineering"
+                type: "escalation"
+                instructions: "Unusual case - all data looks correct but load still not tracking"
+
+            next_step: null  # End - escalate
+
+# Metadata for POC tracking
+poc_metadata:
+  created_date: "2026-01-13"
+  issue_type: "awaiting_tracking_info"
+  expected_coverage: "35% of support tickets"
+  expected_time_savings: "15-20 minutes per ticket (from 40 min to 20 min)"
+  success_criteria:
+    - "Root cause identified in 3 steps or less: 80%"
+    - "Correct root cause identified: 85%+"
+    - "Support analyst satisfaction: 4.0/5.0+"
+    - "Adoption rate: 70%+ of eligible tickets"

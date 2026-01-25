@@ -1,0 +1,1767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FourKites Data Ingestion & Ocean Debugging Agent - Architecture Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            line-height: 1.8;
+            color: #000;
+            background: #fff;
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            border-bottom: 4px solid #000;
+            padding-bottom: 20px;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        h2 {
+            font-size: 2em;
+            border-bottom: 2px solid #000;
+            padding-bottom: 10px;
+            margin-top: 60px;
+            margin-bottom: 30px;
+            page-break-after: avoid;
+        }
+
+        h3 {
+            font-size: 1.5em;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            border-left: 5px solid #000;
+            padding-left: 15px;
+        }
+
+        h4 {
+            font-size: 1.2em;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            text-decoration: underline;
+        }
+
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .metadata {
+            border: 2px solid #000;
+            padding: 20px;
+            margin-bottom: 40px;
+            background: #f9f9f9;
+        }
+
+        .metadata-item {
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .metadata-label {
+            font-weight: bold;
+            display: inline-block;
+            width: 150px;
+        }
+
+        .section-box {
+            border: 2px solid #000;
+            padding: 25px;
+            margin: 30px 0;
+            background: #fafafa;
+        }
+
+        .code-block {
+            font-family: 'Courier New', monospace;
+            background: #f5f5f5;
+            border: 1px solid #000;
+            padding: 20px;
+            margin: 20px 0;
+            overflow-x: auto;
+            white-space: pre;
+        }
+
+        .mermaid {
+            background: #fff;
+            border: 2px solid #000;
+            padding: 20px;
+            margin: 30px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            border: 2px solid #000;
+        }
+
+        th {
+            background: #000;
+            color: #fff;
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+            border: 1px solid #000;
+        }
+
+        td {
+            padding: 12px 15px;
+            border: 1px solid #000;
+        }
+
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        ul, ol {
+            margin-left: 40px;
+            margin-bottom: 20px;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        .key-insight {
+            border-left: 5px solid #000;
+            padding-left: 20px;
+            margin: 25px 0;
+            font-style: italic;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .warning-box {
+            border: 3px double #000;
+            padding: 20px;
+            margin: 25px 0;
+            background: #f0f0f0;
+        }
+
+        .warning-box::before {
+            content: "⚠ ";
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .flow-step {
+            display: inline-block;
+            border: 2px solid #000;
+            padding: 15px 25px;
+            margin: 10px;
+            background: #fff;
+            font-weight: bold;
+        }
+
+        .flow-arrow {
+            display: inline-block;
+            font-size: 2em;
+            margin: 0 10px;
+        }
+
+        .architecture-layer {
+            border: 2px solid #000;
+            padding: 20px;
+            margin: 15px 0;
+            background: #fafafa;
+        }
+
+        .architecture-layer h4 {
+            margin-top: 0;
+            text-decoration: none;
+            border-bottom: 1px solid #000;
+            padding-bottom: 10px;
+        }
+
+        .page-break {
+            page-break-after: always;
+        }
+
+        @media print {
+            body {
+                padding: 20px;
+            }
+
+            h2 {
+                page-break-after: avoid;
+            }
+
+            .mermaid {
+                page-break-inside: avoid;
+            }
+        }
+
+        .toc {
+            border: 2px solid #000;
+            padding: 30px;
+            margin: 40px 0;
+            background: #f9f9f9;
+        }
+
+        .toc h2 {
+            margin-top: 0;
+            border: none;
+        }
+
+        .toc ul {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .toc li {
+            margin: 10px 0;
+        }
+
+        .toc a {
+            color: #000;
+            text-decoration: none;
+            border-bottom: 1px dotted #000;
+        }
+
+        .toc a:hover {
+            border-bottom: 1px solid #000;
+        }
+    </style>
+</head>
+<body>
+
+<h1>FourKites Data Ingestion Architecture<br/>& Ocean Debugging Agent</h1>
+
+<div class="metadata">
+    <div class="metadata-item">
+        <span class="metadata-label">Document Date:</span> January 14, 2026
+    </div>
+    <div class="metadata-item">
+        <span class="metadata-label">Authors:</span> MSP Raja, Arpit Garg
+    </div>
+    <div class="metadata-item">
+        <span class="metadata-label">Contributors:</span> Surya Subramanian, Prashant Thirugnanam
+    </div>
+    <div class="metadata-item">
+        <span class="metadata-label">Version:</span> 1.0
+    </div>
+    <div class="metadata-item">
+        <span class="metadata-label">Status:</span> Architecture Approved
+    </div>
+</div>
+
+<div class="toc">
+    <h2>Table of Contents</h2>
+    <ul>
+        <li><a href="#section-1">1. Executive Summary</a></li>
+        <li><a href="#section-2">2. Data Ingestion Paths Overview</a></li>
+        <li><a href="#section-3">3. Path 1: Load File Ingestion</a></li>
+        <li><a href="#section-4">4. Path 2: Carrier File Ingestion</a></li>
+        <li><a href="#section-5">5. Path 3: Carrier API Integration</a></li>
+        <li><a href="#section-6">6. Carrier Files Worker (CFW) Deep Dive</a></li>
+        <li><a href="#section-7">7. Network Relationship Complexity</a></li>
+        <li><a href="#section-8">8. Support Team Debugging Workflow</a></li>
+        <li><a href="#section-9">9. Ocean Debugging Agent Architecture</a></li>
+        <li><a href="#section-10">10. Implementation Roadmap</a></li>
+        <li><a href="#section-11">11. Technical Specifications</a></li>
+        <li><a href="#section-12">12. Appendices</a></li>
+    </ul>
+</div>
+
+<div class="page-break"></div>
+
+<h2 id="section-1">1. Executive Summary</h2>
+
+<div class="section-box">
+    <p><strong>Context:</strong> FourKites processes tracking data through three distinct architectural paths. Understanding these flows is critical for debugging stuck loads and building automation.</p>
+
+    <p><strong>Problem:</strong> 60-80% of support tickets involve carrier file/API processing issues. Support analysts spend 30-45 minutes per ticket manually debugging across 5-8 different systems.</p>
+
+    <p><strong>Solution:</strong> Ocean Debugging Agent that automates investigation by following the support team's mental model, checking data sources in parallel, and determining root cause with 85%+ confidence.</p>
+</div>
+
+<h3>Key Statistics</h3>
+
+<table>
+    <tr>
+        <th>Metric</th>
+        <th>Current State</th>
+        <th>Target State</th>
+    </tr>
+    <tr>
+        <td>Average Resolution Time</td>
+        <td>30-45 minutes</td>
+        <td>10-15 minutes</td>
+    </tr>
+    <tr>
+        <td>Data Gathering Time</td>
+        <td>25-35 minutes (80%)</td>
+        <td>Automated</td>
+    </tr>
+    <tr>
+        <td>Systems Accessed</td>
+        <td>5-8 tools</td>
+        <td>1 unified interface</td>
+    </tr>
+    <tr>
+        <td>Tracking via Files/API</td>
+        <td>60-80%</td>
+        <td>Same (but automated debugging)</td>
+    </tr>
+</table>
+
+<h3>Root Cause Distribution (Ocean Loads)</h3>
+
+<table>
+    <tr>
+        <th>Root Cause</th>
+        <th>Frequency</th>
+        <th>Detection Method</th>
+    </tr>
+    <tr>
+        <td>Network Relationship Missing</td>
+        <td><strong>7.7%</strong></td>
+        <td>Redshift query</td>
+    </tr>
+    <tr>
+        <td>JT Scraping Error</td>
+        <td>15%</td>
+        <td>Compare crawled vs formatted</td>
+    </tr>
+    <tr>
+        <td>Carrier Portal Issue</td>
+        <td>20%</td>
+        <td>JT shows correct scrape</td>
+    </tr>
+    <tr>
+        <td>Configuration Issue</td>
+        <td>10%</td>
+        <td>Super API check</td>
+    </tr>
+    <tr>
+        <td>System Bug</td>
+        <td>5%</td>
+        <td>All sources agree, platform wrong</td>
+    </tr>
+</table>
+
+<div class="page-break"></div>
+
+<h2 id="section-2">2. Data Ingestion Paths Overview</h2>
+
+<p>FourKites processes tracking updates through three primary architectural paths, each with distinct entry points, processing logic, and routing mechanisms.</p>
+
+<div class="mermaid">
+graph TB
+    subgraph "Path 1: Load File"
+        L1[Customer Upload] --> L2[Integration Worker]
+        L2 --> L3[Tracking Service Internal]
+        L3 --> L4[Create/Update Loads]
+    end
+
+    subgraph "Path 2: Carrier File"
+        C1[Carrier File Upload] --> C2[Carrier Files Worker]
+        C2 --> C3{Mode Detection}
+        C3 -->|Ocean| C4[Ocean Queue]
+        C3 -->|Truckload| C5[Tracking Queue]
+        C3 -->|LTL| C6[LTL Queue]
+        C4 --> C7[Mode-Specific Workers]
+        C5 --> C7
+        C6 --> C7
+    end
+
+    subgraph "Path 3: Carrier API"
+        A1[Carrier System] --> A2[Tracking Service External]
+        A2 --> A3[S3 File Created]
+        A3 --> A4[CFW Queue]
+        A4 --> C2
+    end
+
+    style L2 fill:#000,stroke:#000,color:#fff
+    style C2 fill:#000,stroke:#000,color:#fff
+    style A2 fill:#000,stroke:#000,color:#fff
+</div>
+
+<div class="key-insight">
+    <strong>Critical Insight:</strong> Path 3 (Carrier API) converts API calls into S3 file representations, then follows the same Carrier Files Worker routing logic as Path 2. This unified processing model simplifies debugging but adds latency.
+</div>
+
+<h3>Comparison Matrix</h3>
+
+<table>
+    <tr>
+        <th>Aspect</th>
+        <th>Path 1: Load File</th>
+        <th>Path 2: Carrier File</th>
+        <th>Path 3: Carrier API</th>
+    </tr>
+    <tr>
+        <td><strong>Entry Point</strong></td>
+        <td>integration-worker</td>
+        <td>carrier-files-worker</td>
+        <td>tracking-service-external</td>
+    </tr>
+    <tr>
+        <td><strong>Source</strong></td>
+        <td>Shipper/Customer</td>
+        <td>Carrier file upload</td>
+        <td>Carrier API push</td>
+    </tr>
+    <tr>
+        <td><strong>Data Format</strong></td>
+        <td>Load manifest</td>
+        <td>Status updates</td>
+        <td>JSON API payload</td>
+    </tr>
+    <tr>
+        <td><strong>S3 File?</strong></td>
+        <td>Yes (original)</td>
+        <td>Yes (original)</td>
+        <td>Yes (generated)</td>
+    </tr>
+    <tr>
+        <td><strong>CFW Involvement</strong></td>
+        <td>No</td>
+        <td>Yes (parse & route)</td>
+        <td>Yes (parse & route)</td>
+    </tr>
+    <tr>
+        <td><strong>Queue Count</strong></td>
+        <td>1 (Tracking Internal)</td>
+        <td>Multiple (by mode)</td>
+        <td>Multiple (by mode)</td>
+    </tr>
+    <tr>
+        <td><strong>Latency</strong></td>
+        <td>Minutes (batch)</td>
+        <td>Minutes (batch)</td>
+        <td>Seconds (~2.5s)</td>
+    </tr>
+    <tr>
+        <td><strong>Use Case</strong></td>
+        <td>Create loads</td>
+        <td>Carrier status feed</td>
+        <td>Real-time tracking</td>
+    </tr>
+</table>
+
+<div class="page-break"></div>
+
+<h2 id="section-3">3. Path 1: Load File Ingestion</h2>
+
+<p><strong>Purpose:</strong> Shipper-provided load manifests for creating and configuring loads in the FourKites platform.</p>
+
+<div class="mermaid">
+sequenceDiagram
+    participant Customer
+    participant IW as Integration Worker
+    participant TS as Tracking Service Internal
+    participant DB as Database
+
+    Customer->>IW: Upload load file (CSV/EDI/API)
+    activate IW
+    IW->>IW: Parse load file
+    IW->>IW: Validate data
+    IW->>IW: Extract loads
+    IW->>TS: Queue to Tracking Service Internal
+    deactivate IW
+
+    activate TS
+    TS->>DB: Create/update loads
+    TS->>DB: Link relationships
+    TS->>DB: Trigger subscriptions
+    deactivate TS
+</div>
+
+<h3>Characteristics</h3>
+
+<ul>
+    <li><strong>Source:</strong> Shipper-provided load information</li>
+    <li><strong>Entry Point:</strong> <code>integration-worker</code></li>
+    <li><strong>Processing:</strong> Single-threaded, sequential</li>
+    <li><strong>Destination:</strong> Tracking Service Internal Queue (single)</li>
+    <li><strong>Purpose:</strong> Load record creation and initial configuration</li>
+    <li><strong>No CFW involvement:</strong> Bypasses carrier files worker entirely</li>
+</ul>
+
+<h3>Key Operations</h3>
+
+<ol>
+    <li><strong>Parse:</strong> Extract load details from shipper file</li>
+    <li><strong>Validate:</strong> Check required fields, data quality</li>
+    <li><strong>Create:</strong> Generate load records in platform</li>
+    <li><strong>Link:</strong> Establish shipper-carrier relationships</li>
+    <li><strong>Subscribe:</strong> Set up tracking subscriptions</li>
+</ol>
+
+<div class="warning-box">
+    <strong>Debugging Note:</strong> This path rarely causes issues. Most support tickets involve Path 2/3 (carrier updates to existing loads).
+</div>
+
+<div class="page-break"></div>
+
+<h2 id="section-4">4. Path 2: Carrier File Ingestion</h2>
+
+<p><strong>Purpose:</strong> Batch status updates from carriers via file uploads (SFTP, portal, API upload).</p>
+
+<div class="mermaid">
+graph TB
+    Start[Carrier File Upload<br/>SFTP/Portal/API] --> CFW[Carrier Files Worker]
+
+    CFW --> Parse[1. PARSE<br/>Extract data from file]
+    Parse --> Identify[2. IDENTIFY<br/>Mode, carrier, identifiers]
+    Identify --> Validate[3. VALIDATE<br/>Data quality, network check]
+    Validate --> Route[4. ROUTE<br/>Send to queue]
+    Route --> Monitor[5. MONITOR<br/>Log metrics]
+
+    Route -->|Ocean| OQ[Ocean Queue]
+    Route -->|Truckload| TQ[Tracking Queue]
+    Route -->|LTL| LQ[LTL Queue]
+    Route -->|Rail| RQ[Rail Queue]
+    Route -->|Air| AQ[Air Queue]
+
+    OQ --> OW[multimodal_carrier_updates_worker]
+    TQ --> TW[global-worker-ex]
+    LQ --> LW[ltl_worker]
+    RQ --> RW[rail_worker]
+    AQ --> AW[air_worker]
+
+    OW --> Update[Update Load Status]
+    TW --> Update
+    LW --> Update
+    RW --> Update
+    AW --> Update
+
+    style CFW fill:#000,stroke:#000,color:#fff
+    style Route fill:#000,stroke:#000,color:#fff
+</div>
+
+<h3>CFW's Five Responsibilities</h3>
+
+<div class="section-box">
+    <h4>1. PARSE</h4>
+    <p>Extract data from carrier file format (CSV, XML, JSON). Each carrier has unique format.</p>
+
+    <h4>2. IDENTIFY</h4>
+    <p>Determine shipment mode (Ocean/Truckload/LTL/Rail/Air) based on data patterns:
+    <ul>
+        <li>Container number → Ocean</li>
+        <li>GPS coordinates → Truckload</li>
+        <li>PRO number → LTL</li>
+        <li>Rail car number → Rail</li>
+    </ul>
+    </p>
+
+    <h4>3. VALIDATE</h4>
+    <p>Check data quality, network relationships, required fields. <strong>Critical:</strong> Network relationship validation happens here.</p>
+
+    <h4>4. ROUTE</h4>
+    <p>Send to appropriate queue(s) based on mode. Can send to multiple queues for multi-modal shipments.</p>
+
+    <h4>5. MONITOR</h4>
+    <p>Log metrics via DataMonitoringUtils for observability and debugging.</p>
+</div>
+
+<div class="key-insight">
+    <strong>CFW Does NOT:</strong>
+    <ul>
+        <li>Process updates (only routes)</li>
+        <li>Update loads (workers do this)</li>
+        <li>Calculate milestones</li>
+    </ul>
+    <strong>CFW is a traffic controller, not a processor.</strong>
+</div>
+
+<h3>DataMonitoringUtils Log Structure</h3>
+
+<div class="code-block">
+{
+  "record_uuid": "a83cbd4a-8019-4425-8fc1-34e709416a9e",
+  "file_uuid": null,
+  "company": "pepsi-logistics-company",
+  "status": "success",
+  "process_completed_timestamp": "2025-11-25T21:16:00Z",
+  "error": null,
+  "load_identifier_1": "9118452",
+  "external_id": "102622",
+  "queued_messages": ["PROCESS_TRUCK_LOCATION"],
+  "skipped_messages": []
+}
+</div>
+
+<p><strong>Source of Truth:</strong> Support team uses this log as definitive record of CFW processing decisions.</p>
+
+<div class="page-break"></div>
+
+<h2 id="section-5">5. Path 3: Carrier API Integration</h2>
+
+<p><strong>Purpose:</strong> Real-time push updates from carrier systems via dispatcher API.</p>
+
+<div class="mermaid">
+sequenceDiagram
+    participant Carrier as Carrier System
+    participant API as Tracking Service External
+    participant S3 as S3 Storage
+    participant CFW as Carrier Files Worker
+    participant Queue as Mode Queue
+    participant Worker as Global Worker
+
+    Carrier->>API: POST /dispatcher_updates
+    Note over Carrier,API: JSON payload with location
+
+    activate API
+    API->>API: Authenticate (client_id + signature)
+    API->>API: Validate payload
+    API->>S3: Create file representation
+    API-->>Carrier: 200 OK (~7ms)
+    deactivate API
+
+    S3->>CFW: S3 event triggers CFW queue
+
+    activate CFW
+    CFW->>S3: Read file
+    CFW->>CFW: Parse as PROCESS_SUPER_RECORD
+    CFW->>CFW: Identify mode, validate
+    CFW->>Queue: Route to appropriate queue
+    Note over CFW,Queue: Same logic as Path 2
+    deactivate CFW
+
+    Queue->>Worker: PROCESS_TRUCK_LOCATION
+    activate Worker
+    Worker->>Worker: Update load status
+    Worker->>Worker: Generate milestones
+    deactivate Worker
+</div>
+
+<h3>Timeline Example (from log_data 38.csv)</h3>
+
+<table>
+    <tr>
+        <th>Time</th>
+        <th>Service</th>
+        <th>Action</th>
+        <th>Duration</th>
+    </tr>
+    <tr>
+        <td>21:15:58.451</td>
+        <td>tracking-service-external</td>
+        <td>API request received</td>
+        <td>-</td>
+    </tr>
+    <tr>
+        <td>21:15:58.459</td>
+        <td>tracking-service-external</td>
+        <td>200 OK response</td>
+        <td>7.39ms</td>
+    </tr>
+    <tr>
+        <td>21:16:00.830</td>
+        <td>carrier-files-worker</td>
+        <td>PROCESS_SUPER_RECORD</td>
+        <td>~2.4s latency</td>
+    </tr>
+    <tr>
+        <td>21:16:00.868</td>
+        <td>carrier-files-worker</td>
+        <td>DataMonitoringUtils (success)</td>
+        <td>38ms processing</td>
+    </tr>
+    <tr>
+        <td>21:16:00.935</td>
+        <td>global-worker-ex</td>
+        <td>PROCESS_TRUCK_LOCATION</td>
+        <td>67ms execution</td>
+    </tr>
+</table>
+
+<p><strong>Total End-to-End:</strong> ~2.5 seconds from API call to load update</p>
+
+<h3>Key Discovery: API → File Conversion</h3>
+
+<div class="warning-box">
+    <strong>Critical Architecture Detail:</strong> API calls are converted to S3 file representations. This means:
+    <ul>
+        <li>API success (200 OK) doesn't guarantee processing</li>
+        <li>S3 file creation can fail silently</li>
+        <li>CFW treats API payloads same as uploaded files</li>
+        <li>Same validation, routing, and error modes as Path 2</li>
+    </ul>
+</div>
+
+<div class="page-break"></div>
+
+<h2 id="section-6">6. Carrier Files Worker (CFW) Deep Dive</h2>
+
+<h3>The Traffic Controller</h3>
+
+<p>CFW is the intelligent routing service that acts as FourKites' "airport traffic control tower" - directing incoming data to the correct processing queue without handling the updates itself.</p>
+
+<div class="mermaid">
+graph LR
+    subgraph "CFW Internal Processing"
+        Input[Raw Carrier Data] --> Parse[Parse Phase]
+        Parse --> Identify[Identify Phase]
+        Identify --> Validate[Validate Phase]
+        Validate --> Route[Route Phase]
+        Route --> Monitor[Monitor Phase]
+    end
+
+    Monitor --> Metrics[DataMonitoringUtils Log]
+    Route --> Q1[Ocean Queue]
+    Route --> Q2[Tracking Queue]
+    Route --> Q3[LTL Queue]
+    Route --> Q4[Rail Queue]
+
+    style Parse fill:#000,stroke:#000,color:#fff
+    style Route fill:#000,stroke:#000,color:#fff
+</div>
+
+<h3>Mode Detection Logic</h3>
+
+<div class="code-block">
+function detectMode(data) {
+    // Container number pattern (4 letters + 7 digits)
+    if (matchesPattern(data.container_number, /^[A-Z]{4}\d{7}$/)) {
+        return "OCEAN";
+    }
+
+    // PRO number pattern
+    if (matchesPattern(data.load_identifier, /^PRO\d{8,12}$/)) {
+        return "LTL";
+    }
+
+    // Rail car number
+    if (data.rail_car_number) {
+        return "RAIL";
+    }
+
+    // GPS coordinates present
+    if (data.latitude && data.longitude) {
+        return "TRUCKLOAD";
+    }
+
+    return "UNKNOWN";
+}
+</div>
+
+<h3>Routing Decision Matrix</h3>
+
+<table>
+    <tr>
+        <th>Data Pattern</th>
+        <th>Mode Detected</th>
+        <th>Queue Destination</th>
+        <th>Message Type</th>
+    </tr>
+    <tr>
+        <td>Container number (MAEU123...)</td>
+        <td>OCEAN</td>
+        <td>ocean_queue</td>
+        <td>PROCESS_OCEAN_UPDATE</td>
+    </tr>
+    <tr>
+        <td>GPS coordinates</td>
+        <td>TRUCKLOAD</td>
+        <td>tracking_queue</td>
+        <td>PROCESS_TRUCK_LOCATION</td>
+    </tr>
+    <tr>
+        <td>PRO number</td>
+        <td>LTL</td>
+        <td>ltl_queue</td>
+        <td>PROCESS_LTL_UPDATE</td>
+    </tr>
+    <tr>
+        <td>Rail car number</td>
+        <td>RAIL</td>
+        <td>rail_queue</td>
+        <td>PROCESS_RAIL_UPDATE</td>
+    </tr>
+    <tr>
+        <td>Container + GPS</td>
+        <td>MULTIMODAL</td>
+        <td>Multiple queues</td>
+        <td>Both messages</td>
+    </tr>
+</table>
+
+<h3>CFW Performance Metrics</h3>
+
+<table>
+    <tr>
+        <th>Metric</th>
+        <th>Typical Value</th>
+        <th>Notes</th>
+    </tr>
+    <tr>
+        <td>Throughput</td>
+        <td>10,000+ messages/min</td>
+        <td>Peak capacity</td>
+    </tr>
+    <tr>
+        <td>Processing Time</td>
+        <td>50-100ms</td>
+        <td>Parse + route decision</td>
+    </tr>
+    <tr>
+        <td>P99 Latency</td>
+        <td>&lt; 500ms</td>
+        <td>Including queue time</td>
+    </tr>
+    <tr>
+        <td>Error Rate</td>
+        <td>~5%</td>
+        <td>Mostly validation failures</td>
+    </tr>
+    <tr>
+        <td>Success Rate</td>
+        <td>~95%</td>
+        <td>Successfully routed</td>
+    </tr>
+</table>
+
+<div class="page-break"></div>
+
+<h2 id="section-7">7. Network Relationship Complexity</h2>
+
+<p><strong>The Core Problem:</strong> Carriers don't send FourKites' internal tracking IDs. The system must perform reverse lookup using identifiers from the carrier's system.</p>
+
+<h3>The Identifier Resolution Challenge</h3>
+
+<div class="mermaid">
+graph TD
+    Start[Carrier sends update] --> Extract[Extract identifier value<br/>e.g., '9118452']
+    Extract --> External[Extract external_id<br/>e.g., '102622']
+
+    External --> Network{Check Network<br/>Configuration}
+    Network -->|Found| Mapped[Use configured<br/>identifier mapping]
+    Network -->|Not Found| Fallback1{Try load_number}
+
+    Mapped --> Match{Find Load}
+    Fallback1 -->|Not Found| Fallback2{Try reference_number}
+    Fallback2 -->|Not Found| Fail[❌ No Match<br/>Load stuck]
+
+    Fallback1 -->|Found| Match
+    Fallback2 -->|Found| Match
+    Match -->|Success| Update[✓ Update Load]
+    Match -->|Fail| Fail
+
+    style Network fill:#000,stroke:#000,color:#fff
+    style Fail fill:#000,stroke:#fff,color:#fff
+</div>
+
+<h3>Network Relationship Missing (7.7% of Ocean Loads)</h3>
+
+<div class="warning-box">
+    <strong>This is the #1 cause of stuck loads.</strong>
+
+    <p>When network relationship doesn't exist:</p>
+    <ul>
+        <li>CFW can't map carrier's identifier to load</li>
+        <li>Update gets skipped</li>
+        <li>Load remains "Awaiting Tracking Info"</li>
+        <li>No error visible to customer</li>
+    </ul>
+
+    <p><strong>Detection:</strong> Query Redshift company_relationships table</p>
+    <p><strong>Fix:</strong> Create shipper-carrier network relationship</p>
+    <p><strong>Impact:</strong> Often affects 10+ similar loads from same carrier</p>
+</div>
+
+<h3>Example: Multiple Identifiers</h3>
+
+<div class="section-box">
+    <h4>Scenario: CR England + Smithfield</h4>
+
+    <p><strong>Carrier:</strong> CR England (has 3 file integrations)</p>
+    <p><strong>Shipper:</strong> Smithfield</p>
+
+    <p><strong>Network Configuration:</strong></p>
+    <ul>
+        <li>Super File 1: identifier_one = <code>load_number</code></li>
+        <li>Super File 2: identifier_one = <code>reference_number_1</code></li>
+        <li>Super File 3: identifier_one = <code>bill_of_lading</code></li>
+    </ul>
+
+    <p><strong>Problem:</strong> Which integration does this update belong to?</p>
+
+    <p><strong>Solution:</strong> Support team checks:</p>
+    <ol>
+        <li>Historical delivered loads → identify tracking method</li>
+        <li>Query CFW logs → find which integration processed</li>
+        <li>Check column mapping → verify identifier field</li>
+    </ol>
+</div>
+
+<h3>Identifier Resolution Algorithm</h3>
+
+<div class="code-block">
+function resolveLoad(identifier, externalId, carrierName) {
+    // Step 1: Lookup carrier and shipper
+    carrier = findCarrier(carrierName);
+    shipper = findShipper(externalId, carrier);
+
+    // Step 2: Check network configuration
+    network = getNetwork(shipper, carrier);
+
+    if (network) {
+        // Use configured identifier mapping
+        identifierType = network.identifier_one;  // e.g., "load_number"
+        load = findLoad(identifierType, identifier);
+        if (load) return load;
+    }
+
+    // Step 3: Fallback to load_number
+    load = findLoad("load_number", identifier);
+    if (load) return load;
+
+    // Step 4: Fallback to reference_number
+    load = findLoad("reference_number", identifier);
+    if (load) return load;
+
+    // Step 5: No match found
+    return null;  // → Load stuck, update skipped
+}
+</div>
+
+<div class="page-break"></div>
+
+<h2 id="section-8">8. Support Team Debugging Workflow</h2>
+
+<p><strong>Context:</strong> 60-80% of support tickets involve carrier file/API processing issues. Support analysts follow a structured debugging workflow.</p>
+
+<h3>The Six-Step Investigation Process</h3>
+
+<div class="mermaid">
+graph TB
+    Start[Support Ticket Received] --> Step1{Can be resolved<br/>from UI?}
+
+    Step1 -->|Yes| Quick[Answer from UI<br/>e.g., No delivery update]
+    Step1 -->|No| Step2[Identify Tracking Method<br/>Files/GPS/API/EDI]
+
+    Step2 --> Step3[Check Carrier Configuration<br/>Edit Company Page]
+    Step3 --> Step4[Check Network Relationship<br/>Network Page]
+    Step4 --> Step5[Query CFW Logs<br/>ClickHouse/Spog]
+    Step5 --> Step6[Identify Discrepancy<br/>Data/Integration/Config]
+
+    Step6 -->|Data Issue| DataFix[Carrier sent wrong data]
+    Step6 -->|Integration Issue| IntFix[Email/format changed]
+    Step6 -->|Config Issue| ConfFix[Network missing/wrong]
+
+    style Step5 fill:#000,stroke:#000,color:#fff
+</div>
+
+<h3>Critical Logs for Debugging</h3>
+
+<table>
+    <tr>
+        <th>Update Type</th>
+        <th>Log to Query</th>
+        <th>Information Available</th>
+    </tr>
+    <tr>
+        <td>API Updates</td>
+        <td><code>process_super_record</code></td>
+        <td>Raw payload before manipulation</td>
+    </tr>
+    <tr>
+        <td>File Updates</td>
+        <td><code>process_super_file_task</code></td>
+        <td>File parsing, column mapping</td>
+    </tr>
+    <tr>
+        <td>Processing Result</td>
+        <td><code>DataMonitoringUtils</code></td>
+        <td>Status, queued/skipped messages, errors</td>
+    </tr>
+    <tr>
+        <td>Worker Execution</td>
+        <td><code>PROCESS_*_UPDATE</code></td>
+        <td>Final update application</td>
+    </tr>
+</table>
+
+<h3>Example Query Pattern</h3>
+
+<div class="code-block">
+-- Find CFW processing for a load
+SELECT
+    timestamp,
+    service_name,
+    JSONExtractString(body, 'status') as status,
+    JSONExtractString(body, 'error') as error,
+    JSONExtractString(body, 'queued_messages') as queued,
+    JSONExtractString(body, 'skipped_messages') as skipped,
+    body
+FROM signoz_logs.distributed_logs
+WHERE service_name = 'carrier-files-worker'
+  AND body LIKE '%DataMonitoringUtils%'
+  AND body LIKE '%9118452%'
+ORDER BY timestamp DESC
+LIMIT 10;
+</div>
+
+<h3>Common Issue Patterns</h3>
+
+<div class="section-box">
+    <h4>1. Identifier Mismatch</h4>
+    <p><strong>Symptom:</strong> CFW logs show "no match found"</p>
+    <p><strong>Root Cause:</strong> Network configured for load_number, carrier sent reference_number</p>
+    <p><strong>Fix:</strong> Update network configuration or ask carrier to send correct identifier</p>
+
+    <h4>2. Network Relationship Missing</h4>
+    <p><strong>Symptom:</strong> DataMonitoringUtils shows skipped_messages</p>
+    <p><strong>Root Cause:</strong> No shipper-carrier relationship in company_relationships table</p>
+    <p><strong>Fix:</strong> Create network relationship (Network Team)</p>
+
+    <h4>3. Integration Email Changed</h4>
+    <p><strong>Symptom:</strong> Files received but not processed</p>
+    <p><strong>Root Cause:</strong> Carrier changed email, FourKites config not updated</p>
+    <p><strong>Fix:</strong> Update file integration email address</p>
+
+    <h4>4. Duplicate Updates</h4>
+    <p><strong>Symptom:</strong> Carrier claims 1000 sent, UI shows 3</p>
+    <p><strong>Root Cause:</strong> 959 duplicates filtered, 41 valid updates</p>
+    <p><strong>Fix:</strong> Show CFW logs proving duplicates received</p>
+</div>
+
+<div class="page-break"></div>
+
+<h2 id="section-9">9. Ocean Debugging Agent Architecture</h2>
+
+<p><strong>Vision:</strong> Automate the support team's investigation workflow by following their mental model, querying data sources in parallel, and determining root cause with high confidence.</p>
+
+<h3>High-Level Architecture</h3>
+
+<div class="mermaid">
+graph TB
+    subgraph "Input Layer"
+        SF[Salesforce Ticket] --> Router[Router Agent]
+        Router --> Extract[LLM: Extract Identifiers]
+    end
+
+    subgraph "State Management"
+        Extract --> State[Investigation State<br/>- ticket_id<br/>- identifiers<br/>- evidence<br/>- confidence]
+    end
+
+    subgraph "Agent Loop"
+        State --> Loop{Investigation<br/>Complete?}
+        Loop -->|No| Tasks[Build Executable Tasks]
+        Tasks --> Parallel[Execute in Parallel]
+        Parallel --> Results[Process Results]
+        Results --> Decide[Decision Engine]
+        Decide --> Loop
+    end
+
+    subgraph "Data Sources (Parallel Queries)"
+        Parallel --> RS[Redshift<br/>Network Check]
+        Parallel --> CH[ClickHouse<br/>CFW Logs]
+        Parallel --> JT[JustTransform<br/>Scraping History]
+        Parallel --> API1[Tracking API<br/>Load Details]
+        Parallel --> API2[Super API<br/>Configuration]
+    end
+
+    subgraph "Output Layer"
+        Loop -->|Yes| Result{Root Cause<br/>Found?}
+        Result -->|Yes| Report[Generate Report]
+        Result -->|No| Human[Human Handoff]
+
+        Report --> Update[Update Salesforce]
+    end
+
+    style State fill:#000,stroke:#000,color:#fff
+    style Parallel fill:#000,stroke:#000,color:#fff
+    style Decide fill:#000,stroke:#000,color:#fff
+</div>
+
+<h3>Investigation State Machine</h3>
+
+<div class="code-block">
+class InvestigationState:
+    # Identity
+    ticket_id: str
+    case_number: str
+
+    # Extracted from ticket
+    identifiers: {
+        load_id: str
+        container_number: str
+        booking_number: str
+        carrier_id: str
+        shipper_id: str
+    }
+
+    # Progress tracking
+    current_step: str
+    completed_steps: List[StepResult]
+    iteration_count: int
+
+    # Evidence accumulation
+    evidence: List[Evidence]
+    confidence: float
+
+    # Outcome
+    root_cause: Optional[str]
+    root_cause_category: str
+    needs_human: bool
+    human_question: Optional[str]
+</div>
+
+<h3>Decision Tree Structure</h3>
+
+<div class="mermaid">
+graph TB
+    Start[Start Investigation] --> Step1[Step 1: Platform Check]
+    Step1 --> D1{Load Exists?}
+
+    D1 -->|No| RC1[Root Cause:<br/>Load Not Found]
+    D1 -->|Yes| D2{Status = Awaiting<br/>Tracking Info?}
+
+    D2 -->|No| RC2[Different Issue]
+    D2 -->|Yes| Step2[Step 2: Get Tracking Config]
+
+    Step2 --> Step3[Step 3-5: Parallel Queries]
+    Step3 --> P1[Check JT History]
+    Step3 --> P2[Check SigNoz Logs]
+    Step3 --> P3[Check Network Relationship]
+
+    P1 --> Step6[Step 6: Correlate Findings]
+    P2 --> Step6
+    P3 --> Step6
+
+    Step6 --> D3{Network<br/>Exists?}
+    D3 -->|No| RC3[Root Cause:<br/>Network Missing<br/>7.7% of loads]
+    D3 -->|Yes| D4{JT Events<br/>Found?}
+
+    D4 -->|No| RC4[Root Cause:<br/>Carrier Portal Issue]
+    D4 -->|Yes| D5{JT Has<br/>Discrepancies?}
+
+    D5 -->|Yes| RC5[Root Cause:<br/>JT Scraping Error]
+    D5 -->|No| RC6[Root Cause:<br/>System Bug]
+
+    style RC3 fill:#000,stroke:#000,color:#fff
+    style Step3 fill:#000,stroke:#000,color:#fff
+</div>
+
+<h3>Parallel Task Execution</h3>
+
+<div class="section-box">
+    <p><strong>Problem:</strong> Support analysts spend 25-35 minutes gathering data sequentially.</p>
+
+    <p><strong>Solution:</strong> Execute independent queries in parallel.</p>
+
+    <h4>Sequential (Current):</h4>
+    <div class="code-block">
+JT History:        ████████████████  (15s)
+SigNoz Logs:                         ████████████████  (10s)
+Network Check:                                         ████████  (5s)
+─────────────────────────────────────────────────────────────────
+Total: 30 seconds
+    </div>
+
+    <h4>Parallel (Agent):</h4>
+    <div class="code-block">
+JT History:        ████████████████
+SigNoz Logs:       ████████████████
+Network Check:     ████████████████
+─────────────────────────────────────────────────────────────────
+Total: 15 seconds (max of three)
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<h3>Evidence Accumulation & Confidence Scoring</h3>
+
+<table>
+    <tr>
+        <th>Evidence Type</th>
+        <th>Source</th>
+        <th>Weight</th>
+        <th>Example</th>
+    </tr>
+    <tr>
+        <td>Database Query</td>
+        <td>Redshift</td>
+        <td>0.9</td>
+        <td>Network relationship missing</td>
+    </tr>
+    <tr>
+        <td>Log Analysis</td>
+        <td>ClickHouse</td>
+        <td>0.8</td>
+        <td>CFW skipped messages</td>
+    </tr>
+    <tr>
+        <td>API Query</td>
+        <td>JT/Tracking</td>
+        <td>0.7</td>
+        <td>No scraping history</td>
+    </tr>
+    <tr>
+        <td>Pattern Match</td>
+        <td>Multiple sources</td>
+        <td>0.95</td>
+        <td>All sources agree</td>
+    </tr>
+    <tr>
+        <td>LLM Analysis</td>
+        <td>Claude</td>
+        <td>0.6</td>
+        <td>Log interpretation</td>
+    </tr>
+</table>
+
+<p><strong>Confidence Calculation:</strong></p>
+<div class="code-block">
+confidence = base_confidence
+           + (evidence_count * 0.1)
+           + (source_diversity * 0.2)
+           + (agreement_score * 0.3)
+
+if confidence >= 0.7:
+    return root_cause
+else:
+    return human_handoff
+</div>
+
+<h3>Human-in-the-Loop Handoff</h3>
+
+<div class="warning-box">
+    <strong>Agent escalates when:</strong>
+    <ul>
+        <li>Confidence < 0.7</li>
+        <li>Stuck after 5 investigation steps</li>
+        <li>Contradictory data from sources</li>
+        <li>Critical decision requires approval</li>
+    </ul>
+
+    <p><strong>Handoff includes:</strong></p>
+    <ul>
+        <li>All evidence collected</li>
+        <li>Attempted steps</li>
+        <li>Specific question for human</li>
+        <li>Ability to resume investigation</li>
+    </ul>
+</div>
+
+<h3>Technology Stack</h3>
+
+<table>
+    <tr>
+        <th>Component</th>
+        <th>Technology</th>
+        <th>Purpose</th>
+    </tr>
+    <tr>
+        <td>LLM</td>
+        <td>Claude Sonnet 4.5</td>
+        <td>Identifier extraction, log analysis</td>
+    </tr>
+    <tr>
+        <td>State Management</td>
+        <td>Pydantic Models</td>
+        <td>Type-safe state tracking</td>
+    </tr>
+    <tr>
+        <td>Async Execution</td>
+        <td>asyncio + aiohttp</td>
+        <td>Parallel task execution</td>
+    </tr>
+    <tr>
+        <td>Database Clients</td>
+        <td>psycopg2 + clickhouse-driver</td>
+        <td>Redshift & ClickHouse queries</td>
+    </tr>
+    <tr>
+        <td>API Clients</td>
+        <td>requests + simple-salesforce</td>
+        <td>REST API calls</td>
+    </tr>
+    <tr>
+        <td>Decision Engine</td>
+        <td>YAML + Python</td>
+        <td>Rule evaluation</td>
+    </tr>
+    <tr>
+        <td>CLI</td>
+        <td>click + rich</td>
+        <td>User interface</td>
+    </tr>
+</table>
+
+<div class="page-break"></div>
+
+<h2 id="section-10">10. Implementation Roadmap</h2>
+
+<h3>Phase 1: Foundation (Week 1-2) ✓ COMPLETE</h3>
+
+<div class="architecture-layer">
+    <h4>Deliverables</h4>
+    <ul>
+        <li>✓ Directory structure created</li>
+        <li>✓ Pydantic models (State, Evidence, Ticket, Result)</li>
+        <li>✓ Configuration management</li>
+        <li>✓ Logging utilities</li>
+        <li>✓ LLM client for extraction</li>
+    </ul>
+</div>
+
+<h3>Phase 2: Data Integration (Week 3-4)</h3>
+
+<div class="architecture-layer">
+    <h4>Base Client Pattern</h4>
+    <ul>
+        <li>Thread-local connections (prevent "simultaneous queries")</li>
+        <li>Exponential backoff retry logic</li>
+        <li>Timeout handling</li>
+        <li>Connection lifecycle management</li>
+    </ul>
+
+    <h4>Client Implementations</h4>
+    <ol>
+        <li><strong>Salesforce Client</strong> - Ticket retrieval, case updates</li>
+        <li><strong>Redshift Client</strong> - Network relationships, historical data</li>
+        <li><strong>ClickHouse Client</strong> - CFW logs, SigNoz queries</li>
+        <li><strong>JustTransform Client</strong> - Scraping history</li>
+        <li><strong>Tracking API Client</strong> - Load details, milestones</li>
+        <li><strong>Super API Client</strong> - Configuration, subscriptions</li>
+    </ol>
+</div>
+
+<h3>Phase 3: Agent Core (Week 5-6)</h3>
+
+<div class="architecture-layer">
+    <h4>Task Executor</h4>
+    <ul>
+        <li>Parallel task execution (asyncio)</li>
+        <li>Dependency graph management</li>
+        <li>Task result aggregation</li>
+        <li>Error handling & retries</li>
+    </ul>
+
+    <h4>Decision Engine</h4>
+    <ul>
+        <li>YAML decision tree loader</li>
+        <li>Condition evaluator</li>
+        <li>Confidence calculator</li>
+        <li>Evidence-based reasoning</li>
+    </ul>
+
+    <h4>Main Agent</h4>
+    <ul>
+        <li>Investigation loop orchestration</li>
+        <li>State management</li>
+        <li>Human handoff logic</li>
+        <li>Result generation</li>
+    </ul>
+</div>
+
+<h3>Phase 4: Integration & Testing (Week 7-8)</h3>
+
+<div class="architecture-layer">
+    <h4>CLI Interface</h4>
+    <ul>
+        <li>Command-line interface (click)</li>
+        <li>Progress indicators (rich)</li>
+        <li>Configuration validation</li>
+        <li>Report generation</li>
+    </ul>
+
+    <h4>Testing</h4>
+    <ul>
+        <li>Unit tests (decision engine, clients)</li>
+        <li>Integration tests (with real test cases from Prashant)</li>
+        <li>Performance benchmarks</li>
+        <li>Accuracy validation against historical tickets</li>
+    </ul>
+</div>
+
+<h3>Phase 5: Deployment & Iteration (Week 9+)</h3>
+
+<div class="architecture-layer">
+    <h4>Internal Workshop</h4>
+    <ul>
+        <li>Demo to Surya + Prashant</li>
+        <li>Gather feedback on accuracy</li>
+        <li>Iterate on decision tree</li>
+        <li>Test with real ongoing tickets</li>
+    </ul>
+
+    <h4>Leadership Demo</h4>
+    <ul>
+        <li>Present to wider audience</li>
+        <li>Show ROI (time savings, accuracy)</li>
+        <li>Discuss deployment strategy</li>
+        <li>Plan for other modes (Truckload, LTL)</li>
+    </ul>
+</div>
+
+<h3>Timeline Visualization</h3>
+
+<div class="mermaid">
+gantt
+    title Ocean Debugging Agent Implementation
+    dateFormat  YYYY-MM-DD
+    section Phase 1
+    Models & Config           :done, p1, 2026-01-01, 7d
+    Utilities                 :done, p1a, 2026-01-08, 7d
+    section Phase 2
+    Base Client              :active, p2, 2026-01-15, 7d
+    Data Clients             :p2a, 2026-01-22, 7d
+    section Phase 3
+    Task Executor            :p3, 2026-01-29, 5d
+    Decision Engine          :p3a, 2026-02-03, 5d
+    Main Agent               :p3b, 2026-02-08, 4d
+    section Phase 4
+    CLI & Testing            :p4, 2026-02-12, 7d
+    Integration Tests        :p4a, 2026-02-19, 7d
+    section Phase 5
+    Internal Workshop        :crit, p5, 2026-02-26, 3d
+    Leadership Demo          :crit, p5a, 2026-03-01, 3d
+</div>
+
+<div class="page-break"></div>
+
+<h2 id="section-11">11. Technical Specifications</h2>
+
+<h3>System Requirements</h3>
+
+<table>
+    <tr>
+        <th>Component</th>
+        <th>Requirement</th>
+        <th>Notes</th>
+    </tr>
+    <tr>
+        <td>Python Version</td>
+        <td>3.11+</td>
+        <td>Type hints, async improvements</td>
+    </tr>
+    <tr>
+        <td>Memory</td>
+        <td>2GB minimum</td>
+        <td>For parallel queries</td>
+    </tr>
+    <tr>
+        <td>Network</td>
+        <td>VPN access</td>
+        <td>For internal APIs</td>
+    </tr>
+    <tr>
+        <td>Database Access</td>
+        <td>Redshift + ClickHouse</td>
+        <td>Read-only credentials</td>
+    </tr>
+    <tr>
+        <td>API Access</td>
+        <td>Salesforce, JT, Tracking, Super</td>
+        <td>Service account tokens</td>
+    </tr>
+</table>
+
+<h3>Configuration Management</h3>
+
+<div class="code-block">
+# .env.example
+SALESFORCE_USERNAME=service-account@fourkites.com
+SALESFORCE_PASSWORD=***
+SALESFORCE_TOKEN=***
+
+REDSHIFT_HOST=redshift-cluster.region.redshift.amazonaws.com
+REDSHIFT_DATABASE=dwh
+REDSHIFT_USER=readonly_user
+REDSHIFT_PASSWORD=***
+
+CLICKHOUSE_HOST=signoz-clickhouse.internal
+CLICKHOUSE_DATABASE=signoz_logs
+CLICKHOUSE_USER=default
+CLICKHOUSE_PASSWORD=***
+
+JT_API_URL=https://jt-api.internal
+JT_USERNAME=***
+JT_PASSWORD=***
+
+TRACKING_API_URL=https://tracking.fourkites.internal
+TRACKING_API_KEY=***
+
+SUPER_API_URL=https://api.fourkites.internal/super
+SUPER_API_KEY=***
+
+ANTHROPIC_API_KEY=***
+LLM_MODEL=claude-sonnet-4-20250514
+
+MAX_PARALLEL_TASKS=5
+DEFAULT_TIMEOUT=60.0
+CONFIDENCE_THRESHOLD=0.7
+</div>
+
+<h3>CLI Usage Examples</h3>
+
+<div class="code-block">
+# Validate configuration
+$ python main.py validate-config
+
+# Investigate a case
+$ python main.py investigate --case SF-12345
+
+# With verbose output
+$ python main.py investigate --case SF-12345 --verbose
+
+# Update Salesforce automatically
+$ python main.py investigate --case SF-12345 --update-sf
+
+# Export report to file
+$ python main.py investigate --case SF-12345 --output report.md
+
+# Batch processing
+$ python main.py batch --cases cases.csv --parallel 3
+</div>
+
+<h3>API Rate Limits</h3>
+
+<table>
+    <tr>
+        <th>API</th>
+        <th>Rate Limit</th>
+        <th>Mitigation</th>
+    </tr>
+    <tr>
+        <td>Salesforce</td>
+        <td>1000 calls/hour</td>
+        <td>Batch queries</td>
+    </tr>
+    <tr>
+        <td>Tracking API</td>
+        <td>100 calls/minute</td>
+        <td>Cache results</td>
+    </tr>
+    <tr>
+        <td>JustTransform</td>
+        <td>50 calls/minute</td>
+        <td>Rate limiting queue</td>
+    </tr>
+    <tr>
+        <td>Claude API</td>
+        <td>Tier-based</td>
+        <td>Exponential backoff</td>
+    </tr>
+</table>
+
+<div class="page-break"></div>
+
+<h2 id="section-12">12. Appendices</h2>
+
+<h3>Appendix A: Key Logs Reference</h3>
+
+<table>
+    <tr>
+        <th>Log Name</th>
+        <th>Service</th>
+        <th>When to Use</th>
+    </tr>
+    <tr>
+        <td>process_super_record</td>
+        <td>carrier-files-worker</td>
+        <td>API updates (raw payload)</td>
+    </tr>
+    <tr>
+        <td>process_super_file_task</td>
+        <td>carrier-files-worker</td>
+        <td>File updates (parsing)</td>
+    </tr>
+    <tr>
+        <td>DataMonitoringUtils</td>
+        <td>carrier-files-worker</td>
+        <td>CFW processing result</td>
+    </tr>
+    <tr>
+        <td>PROCESS_TRUCK_LOCATION</td>
+        <td>global-worker-ex</td>
+        <td>Truckload updates</td>
+    </tr>
+    <tr>
+        <td>PROCESS_OCEAN_UPDATE</td>
+        <td>multimodal_carrier_updates_worker</td>
+        <td>Ocean updates</td>
+    </tr>
+    <tr>
+        <td>TRACKING_SERVICE_API_SUMMARY</td>
+        <td>tracking-service-external</td>
+        <td>API call metrics</td>
+    </tr>
+</table>
+
+<h3>Appendix B: Database Queries</h3>
+
+<h4>B.1: Check Network Relationship</h4>
+<div class="code-block">
+SELECT
+    relationship_id,
+    status,
+    is_active,
+    created_date
+FROM company_relationships
+WHERE shipper_id = '{shipper_id}'
+  AND carrier_id = '{carrier_id}'
+  AND is_active = true;
+</div>
+
+<h4>B.2: Find CFW Processing</h4>
+<div class="code-block">
+SELECT
+    timestamp,
+    JSONExtractString(body, 'status') as status,
+    JSONExtractString(body, 'error') as error,
+    JSONExtractString(body, 'queued_messages') as queued,
+    JSONExtractString(body, 'skipped_messages') as skipped
+FROM signoz_logs.distributed_logs
+WHERE service_name = 'carrier-files-worker'
+  AND body LIKE '%DataMonitoringUtils%'
+  AND body LIKE '%{load_id}%'
+  AND timestamp >= now() - INTERVAL 30 DAY
+ORDER BY timestamp DESC
+LIMIT 10;
+</div>
+
+<h4>B.3: Find Similar Stuck Loads</h4>
+<div class="code-block">
+SELECT
+    load_id,
+    current_status,
+    carrier_id,
+    shipper_id,
+    last_update_date
+FROM fact_loads
+WHERE carrier_id = '{carrier_id}'
+  AND current_status = 'AWAITING_TRACKING_INFO'
+  AND created_date >= CURRENT_DATE - 7
+ORDER BY created_date DESC;
+</div>
+
+<h3>Appendix C: Meeting Notes Summary</h3>
+
+<div class="section-box">
+    <h4>Date: January 14, 2026</h4>
+    <h4>Attendees: Surya, Prashant, Arpit, MSP Raja</h4>
+
+    <p><strong>Key Decisions:</strong></p>
+    <ul>
+        <li>Focus on 2 ocean use cases (depth over breadth)</li>
+        <li>Weekly functional overview sessions (not specific tickets)</li>
+        <li>Internal workshop before leadership demo</li>
+        <li>Prashant to provide data dictionary (carrier files processing)</li>
+    </ul>
+
+    <p><strong>Technical Insights:</strong></p>
+    <ul>
+        <li>CFW logs (process_super_record) are "source of truth"</li>
+        <li>Network relationship missing = 7.7% of stuck loads</li>
+        <li>System has fallback logic: network → load_number → reference_number</li>
+        <li>Carrier-less loads normally use carrier link, but API fallback exists</li>
+    </ul>
+
+    <p><strong>Next Steps:</strong></p>
+    <ul>
+        <li>Raja: Study Prashant's data dictionary</li>
+        <li>Raja: Map CFW flows to decision tree</li>
+        <li>Team: Weekly sync on functional areas</li>
+        <li>All: Build toward internal workshop demo</li>
+    </ul>
+</div>
+
+<h3>Appendix D: Glossary</h3>
+
+<table>
+    <tr>
+        <th>Term</th>
+        <th>Definition</th>
+    </tr>
+    <tr>
+        <td>CFW</td>
+        <td>Carrier Files Worker - routing service for carrier data</td>
+    </tr>
+    <tr>
+        <td>Network Relationship</td>
+        <td>Configuration linking shipper and carrier for tracking</td>
+    </tr>
+    <tr>
+        <td>JT</td>
+        <td>JustTransform - web scraping service for carrier portals</td>
+    </tr>
+    <tr>
+        <td>BOL</td>
+        <td>Bill of Lading - shipping document identifier</td>
+    </tr>
+    <tr>
+        <td>PRO Number</td>
+        <td>Progressive number - LTL shipment identifier</td>
+    </tr>
+    <tr>
+        <td>SigNoz</td>
+        <td>Observability platform, logs stored in ClickHouse</td>
+    </tr>
+    <tr>
+        <td>Super API</td>
+        <td>Internal FourKites API for configuration management</td>
+    </tr>
+    <tr>
+        <td>SCAC</td>
+        <td>Standard Carrier Alpha Code - 4-letter carrier identifier</td>
+    </tr>
+</table>
+
+<div class="page-break"></div>
+
+<h3>Document Revision History</h3>
+
+<table>
+    <tr>
+        <th>Version</th>
+        <th>Date</th>
+        <th>Changes</th>
+        <th>Author</th>
+    </tr>
+    <tr>
+        <td>1.0</td>
+        <td>2026-01-14</td>
+        <td>Initial architecture document</td>
+        <td>MSP Raja</td>
+    </tr>
+</table>
+
+<div class="section-box">
+    <p style="text-align: center; margin-top: 40px;">
+        <strong>End of Document</strong>
+    </p>
+    <p style="text-align: center;">
+        For questions or feedback, contact: raja@fourkites.com
+    </p>
+</div>
+
+<script>
+    mermaid.initialize({
+        startOnLoad: true,
+        theme: 'default',
+        themeVariables: {
+            primaryColor: '#fff',
+            primaryTextColor: '#000',
+            primaryBorderColor: '#000',
+            lineColor: '#000',
+            secondaryColor: '#f5f5f5',
+            tertiaryColor: '#fafafa'
+        }
+    });
+</script>
+
+</body>
+</html>

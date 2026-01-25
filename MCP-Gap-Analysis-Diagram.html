@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCP Server Gap Analysis - FourKites</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: #ffffff;
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 0.5em;
+            text-align: center;
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 40px;
+        }
+
+        .meta {
+            text-align: center;
+            font-size: 0.9em;
+            color: #888;
+            margin-bottom: 50px;
+        }
+
+        .section-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            margin: 50px 0 25px 0;
+            text-align: center;
+            padding: 15px;
+            background: #000;
+            color: #fff;
+            border-radius: 8px;
+        }
+
+        .diagram-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin: 40px 0;
+        }
+
+        .column {
+            background: #f8f8f8;
+            padding: 30px;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+        }
+
+        .column-header {
+            font-size: 1.3em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #000;
+            text-align: center;
+        }
+
+        .system {
+            background: #fff;
+            padding: 20px;
+            margin: 15px 0;
+            border: 2px solid #000;
+            border-radius: 6px;
+        }
+
+        .system-name {
+            font-size: 1.1em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .client-list {
+            list-style: none;
+            margin: 10px 0;
+        }
+
+        .client-list li {
+            padding: 8px 12px;
+            margin: 5px 0;
+            background: #fff;
+            border-left: 4px solid #666;
+            font-size: 0.95em;
+        }
+
+        .direct-client {
+            border-left-color: #e74c3c;
+        }
+
+        .mcp-available {
+            border-left-color: #27ae60;
+        }
+
+        .mcp-missing {
+            border-left-color: #f39c12;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 40px 0;
+            padding: 20px;
+            background: #f0f0f0;
+            border-radius: 8px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .legend-box {
+            width: 40px;
+            height: 20px;
+            border-radius: 3px;
+        }
+
+        .red { background: #e74c3c; }
+        .green { background: #27ae60; }
+        .orange { background: #f39c12; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 40px 0;
+        }
+
+        .stat-box {
+            text-align: center;
+            padding: 30px;
+            background: #fff;
+            border: 2px solid #000;
+            border-radius: 8px;
+        }
+
+        .stat-number {
+            font-size: 3.5em;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+        }
+
+        .problem-box {
+            background: #000;
+            color: #fff;
+            padding: 30px;
+            margin: 40px 0;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .problem-box h2 {
+            font-size: 1.8em;
+            margin-bottom: 15px;
+        }
+
+        .problem-box p {
+            font-size: 1.2em;
+            line-height: 1.6;
+        }
+
+        .mcp-inventory {
+            margin: 40px 0;
+        }
+
+        .mcp-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .mcp-card {
+            background: #fff;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .mcp-card.used {
+            border-color: #27ae60;
+            background: #f0fff4;
+        }
+
+        .mcp-card.unused {
+            border-color: #e74c3c;
+            background: #fff5f5;
+        }
+
+        .mcp-card.missing {
+            border-color: #f39c12;
+            background: #fffbf0;
+            border-style: dashed;
+        }
+
+        .mcp-name {
+            font-weight: 700;
+            margin-bottom: 8px;
+            font-size: 1em;
+        }
+
+        .mcp-purpose {
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        .mcp-status {
+            margin-top: 10px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.75em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .status-unused {
+            background: #e74c3c;
+            color: #fff;
+        }
+
+        .status-missing {
+            background: #f39c12;
+            color: #fff;
+        }
+
+        .status-used {
+            background: #27ae60;
+            color: #fff;
+        }
+
+        .arrow {
+            text-align: center;
+            font-size: 2em;
+            color: #999;
+            margin: 20px 0;
+        }
+
+        @media print {
+            body {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>MCP Server Gap Analysis</h1>
+    <div class="subtitle">Why Support Tools Aren't Using Available MCPs</div>
+    <div class="meta">Created by: Msp Raja, AI R&D Solutions Engineer | Date: January 6, 2026</div>
+
+    <div class="stats-grid">
+        <div class="stat-box">
+            <span class="stat-number">12</span>
+            <span class="stat-label">MCP Servers Built</span>
+        </div>
+        <div class="stat-box">
+            <span class="stat-number">70%</span>
+            <span class="stat-label">Code Duplication</span>
+        </div>
+        <div class="stat-box">
+            <span class="stat-number">0</span>
+            <span class="stat-label">MCPs Used by Support Tools</span>
+        </div>
+    </div>
+
+    <div class="problem-box">
+        <h2>The Problem</h2>
+        <p>We have 12 operational MCP servers, but rewind-app and RCA Bot 2.0 use direct database/API clients instead, creating massive code duplication and inconsistent implementations.</p>
+    </div>
+
+    <div class="section-title">Current State: Direct Client Architecture</div>
+
+    <div class="diagram-container">
+        <div class="column">
+            <div class="column-header">Rewind App (Production)</div>
+            <div class="system">
+                <div class="system-name">rewind-app/backend</div>
+                <ul class="client-list">
+                    <li class="direct-client">clickhouse_client.py (Direct)</li>
+                    <li class="direct-client">rewind_clickhouse_client.py (Direct)</li>
+                    <li class="direct-client">redshift_client.py (Direct)</li>
+                    <li class="direct-client">athena_client.py (Direct)</li>
+                    <li class="direct-client">tracking_api_client.py (Direct)</li>
+                    <li class="direct-client">company_api_client.py (Direct)</li>
+                    <li class="direct-client">jira_client.py (Direct)</li>
+                    <li class="direct-client">llm_client.py (Direct)</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="column">
+            <div class="column-header">RCA Bot 2.0 (CLI/POC)</div>
+            <div class="system">
+                <div class="system-name">rca-bot-2.0/poc</div>
+                <ul class="client-list">
+                    <li class="direct-client">clickhouse_client.py (Direct)</li>
+                    <li class="direct-client">redshift_client.py (Direct)</li>
+                    <li class="direct-client">trino_client.py (Direct)</li>
+                    <li class="direct-client">athena_client.py (Direct)</li>
+                    <li class="direct-client">github_client.py (Direct)</li>
+                    <li class="direct-client">graphdb_client.py (Neo4j Direct)</li>
+                    <li class="direct-client">jira_client.py (Direct)</li>
+                    <li class="direct-client">confluence_client.py (Direct)</li>
+                    <li class="direct-client">tracking_api_client.py (Direct)</li>
+                    <li class="direct-client">company_api_client.py (Direct)</li>
+                    <li class="direct-client">llm_client.py (Direct)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="legend">
+        <div class="legend-item">
+            <div class="legend-box red"></div>
+            <span>Direct Client (Not Using MCP)</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-box green"></div>
+            <span>MCP Available (Should Use)</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-box orange"></div>
+            <span>MCP Missing (Need to Build)</span>
+        </div>
+    </div>
+
+    <div class="section-title">Available vs Missing MCPs</div>
+
+    <div class="mcp-inventory">
+        <h3 style="text-align: center; margin-bottom: 20px; font-size: 1.3em;">MCP Server Inventory</h3>
+
+        <div class="mcp-grid">
+            <!-- Available MCPs Not Being Used -->
+            <div class="mcp-card unused">
+                <div class="mcp-name">signoz_mcp</div>
+                <div class="mcp-purpose">SigNoz ClickHouse logs</div>
+                <div class="mcp-status status-unused">Unused</div>
+            </div>
+
+            <div class="mcp-card unused">
+                <div class="mcp-name">mcp-redshift-loads</div>
+                <div class="mcp-purpose">Redshift ops data</div>
+                <div class="mcp-status status-unused">Unused</div>
+            </div>
+
+            <div class="mcp-card unused">
+                <div class="mcp-name">neo4j_mcp</div>
+                <div class="mcp-purpose">Code graph + RCA</div>
+                <div class="mcp-status status-unused">Unused</div>
+            </div>
+
+            <div class="mcp-card unused">
+                <div class="mcp-name">tracking-api-mcp-server</div>
+                <div class="mcp-purpose">Tracking API wrapper</div>
+                <div class="mcp-status status-unused">Unused</div>
+            </div>
+
+            <div class="mcp-card unused">
+                <div class="mcp-name">mcp-custom-jira</div>
+                <div class="mcp-purpose">Jira integration</div>
+                <div class="mcp-status status-unused">Unused</div>
+            </div>
+
+            <div class="mcp-card unused">
+                <div class="mcp-name">mcp-snowflake</div>
+                <div class="mcp-purpose">Snowflake warehouse</div>
+                <div class="mcp-status status-unused">Unused</div>
+            </div>
+
+            <div class="mcp-card unused">
+                <div class="mcp-name">tracking-mcp-server</div>
+                <div class="mcp-purpose">Elasticsearch tracking</div>
+                <div class="mcp-status status-unused">Unused</div>
+            </div>
+
+            <div class="mcp-card unused">
+                <div class="mcp-name">courier-mcp</div>
+                <div class="mcp-purpose">Carrier analysis</div>
+                <div class="mcp-status status-unused">Unused</div>
+            </div>
+
+            <div class="mcp-card unused">
+                <div class="mcp-name">excel-mcp-server</div>
+                <div class="mcp-purpose">Excel manipulation</div>
+                <div class="mcp-status status-unused">Unused</div>
+            </div>
+
+            <!-- Missing MCPs -->
+            <div class="mcp-card missing">
+                <div class="mcp-name">mcp-github</div>
+                <div class="mcp-purpose">GitHub code search</div>
+                <div class="mcp-status status-missing">Need to Build</div>
+            </div>
+
+            <div class="mcp-card missing">
+                <div class="mcp-name">mcp-trino</div>
+                <div class="mcp-purpose">Historical analytics</div>
+                <div class="mcp-status status-missing">Need to Build</div>
+            </div>
+
+            <div class="mcp-card missing">
+                <div class="mcp-name">mcp-confluence</div>
+                <div class="mcp-purpose">Documentation</div>
+                <div class="mcp-status status-missing">Need to Build</div>
+            </div>
+
+            <div class="mcp-card missing">
+                <div class="mcp-name">mcp-company-api</div>
+                <div class="mcp-purpose">Network relationships</div>
+                <div class="mcp-status status-missing">Need to Build</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-title">Duplication Example: ClickHouse Client</div>
+
+    <div class="diagram-container">
+        <div class="column">
+            <div class="column-header">Implementation 1</div>
+            <div class="system">
+                <div class="system-name">rewind-app/backend/<br>clickhouse_client.py</div>
+                <ul class="client-list">
+                    <li class="direct-client">Connection: Thread-local</li>
+                    <li class="direct-client">Auth: Basic (user/pass)</li>
+                    <li class="direct-client">Port: 9000 (non-SSL)</li>
+                    <li class="direct-client">Table: signoz_logs.distributed_logs</li>
+                    <li class="direct-client">~200 lines of code</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="column">
+            <div class="column-header">Implementation 2</div>
+            <div class="system">
+                <div class="system-name">rca-bot-2.0/poc/<br>clickhouse_client.py</div>
+                <ul class="client-list">
+                    <li class="direct-client">Connection: Direct</li>
+                    <li class="direct-client">Auth: Basic (user/pass)</li>
+                    <li class="direct-client">Port: 9000</li>
+                    <li class="direct-client">Table: signoz_logs.distributed_logs</li>
+                    <li class="direct-client">~250 lines of code</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="arrow">↓</div>
+
+    <div style="text-align: center; margin: 30px 0;">
+        <div style="background: #27ae60; color: #fff; padding: 20px; border-radius: 8px; display: inline-block; max-width: 600px;">
+            <div style="font-size: 1.3em; font-weight: 700; margin-bottom: 10px;">Should Be Using:</div>
+            <div style="font-size: 1.1em;">signoz_mcp (Port 8888)</div>
+            <div style="font-size: 0.9em; margin-top: 10px; opacity: 0.9;">Single implementation, consistent interface, reusable across all agents</div>
+        </div>
+    </div>
+
+    <div class="section-title">Recommendation: Target Architecture</div>
+
+    <div style="background: #f8f8f8; padding: 40px; margin: 40px 0; border-radius: 8px; border: 2px solid #ddd;">
+        <h3 style="text-align: center; font-size: 1.5em; margin-bottom: 30px;">Unified MCP-Based Architecture</h3>
+
+        <div style="text-align: center; font-family: monospace; line-height: 2; font-size: 1.1em;">
+            <div style="background: #fff; padding: 15px; margin: 10px auto; max-width: 400px; border: 2px solid #000; border-radius: 6px; font-weight: 700;">
+                Support Tools (rewind-app, RCA Bot)
+            </div>
+            <div style="font-size: 2em; margin: 10px 0;">↓</div>
+            <div style="background: #fff; padding: 15px; margin: 10px auto; max-width: 400px; border: 2px solid #000; border-radius: 6px; font-weight: 700;">
+                MCP Client Library
+            </div>
+            <div style="font-size: 2em; margin: 10px 0;">↓</div>
+            <div style="background: #fff; padding: 15px; margin: 10px auto; max-width: 400px; border: 2px solid #000; border-radius: 6px; font-weight: 700;">
+                MCP Servers (12+ servers)
+            </div>
+            <div style="font-size: 2em; margin: 10px 0;">↓</div>
+            <div style="background: #fff; padding: 15px; margin: 10px auto; max-width: 400px; border: 2px solid #000; border-radius: 6px; font-weight: 700;">
+                Data Sources
+            </div>
+        </div>
+
+        <div style="margin-top: 40px;">
+            <h4 style="font-size: 1.2em; margin-bottom: 15px; text-align: center;">Benefits</h4>
+            <ul style="list-style: none; max-width: 600px; margin: 0 auto;">
+                <li style="padding: 10px; margin: 5px 0; background: #fff; border-left: 4px solid #27ae60;">✓ Single implementation per data source</li>
+                <li style="padding: 10px; margin: 5px 0; background: #fff; border-left: 4px solid #27ae60;">✓ 50% code reduction</li>
+                <li style="padding: 10px; margin: 5px 0; background: #fff; border-left: 4px solid #27ae60;">✓ Consistent error handling</li>
+                <li style="padding: 10px; margin: 5px 0; background: #fff; border-left: 4px solid #27ae60;">✓ Reusable across all agents (including Cassey)</li>
+                <li style="padding: 10px; margin: 5px 0; background: #fff; border-left: 4px solid #27ae60;">✓ Centralized monitoring and logging</li>
+                <li style="padding: 10px; margin: 5px 0; background: #fff; border-left: 4px solid #27ae60;">✓ Easier testing (mock MCP responses)</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section-title">Action Items for Meeting</div>
+
+    <div style="background: #fff; padding: 40px; margin: 40px 0; border: 2px solid #000; border-radius: 8px;">
+        <h3 style="font-size: 1.3em; margin-bottom: 20px; text-align: center;">Questions for MCP Server Owners</h3>
+
+        <ol style="font-size: 1.1em; line-height: 2; max-width: 800px; margin: 0 auto;">
+            <li style="margin: 15px 0;"><strong>Which MCPs are customer-facing</strong> (Cassey) vs internal-only?</li>
+            <li style="margin: 15px 0;"><strong>Which MCPs should support/ops teams use</strong> for troubleshooting?</li>
+            <li style="margin: 15px 0;"><strong>Are there MCP usage patterns</strong> we should follow?</li>
+            <li style="margin: 15px 0;"><strong>Who maintains each MCP?</strong> (Ownership matrix)</li>
+            <li style="margin: 15px 0;"><strong>Can we consolidate</strong> historic-redshift-mcp + mcp-redshift-loads?</li>
+            <li style="margin: 15px 0;"><strong>What's the plan for missing MCPs</strong> (GitHub, Trino, Confluence, Company API)?</li>
+        </ol>
+
+        <div style="margin-top: 40px; padding: 25px; background: #f8f8f8; border-radius: 6px; text-align: center;">
+            <div style="font-size: 1.2em; font-weight: 700; margin-bottom: 10px;">Goal</div>
+            <div style="font-size: 1.1em; color: #666;">Eliminate duplication by migrating support tools to use existing MCPs and identify which new MCPs need to be built</div>
+        </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 60px; padding-top: 40px; border-top: 2px solid #ddd; color: #888; font-size: 0.9em;">
+        <p>FourKites RCA Agent Project | Created by Msp Raja, AI R&D Solutions Engineer</p>
+        <p style="margin-top: 10px;">Source: /Users/msp.raja/rca-agent-project/</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,763 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>FourKites Log Data - EDA Report</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #667eea;
+            border-bottom: 4px solid #667eea;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        h2 {
+            color: #764ba2;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-left: 5px solid #764ba2;
+            padding-left: 15px;
+        }
+        h3 {
+            color: #555;
+            margin-top: 25px;
+            font-size: 1.3em;
+        }
+        .metadata {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 5px solid #667eea;
+        }
+        .metadata-item {
+            display: inline-block;
+            margin-right: 30px;
+            margin-bottom: 10px;
+        }
+        .metadata-label {
+            font-weight: bold;
+            color: #667eea;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        .stat-box {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            margin: 10px;
+            border-radius: 10px;
+            min-width: 200px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .stat-label {
+            font-size: 1em;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .timeline {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 5px solid #764ba2;
+        }
+        .timeline-item {
+            margin: 15px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .service-badge {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            margin-right: 10px;
+            font-weight: 600;
+        }
+        .message-badge {
+            display: inline-block;
+            background: #764ba2;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        .code-block {
+            background: #f4f4f4;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 15px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            margin: 15px 0;
+        }
+        .warning {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 6px;
+        }
+        .success {
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 6px;
+        }
+        .info {
+            background: #d1ecf1;
+            border-left: 5px solid #17a2b8;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 6px;
+        }
+        .flow-diagram {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .flow-step {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 20px 30px;
+            margin: 0 10px;
+            border-radius: 8px;
+            font-weight: 600;
+            position: relative;
+        }
+        .flow-arrow {
+            display: inline-block;
+            color: #764ba2;
+            font-size: 2em;
+            margin: 0 10px;
+        }
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+            text-align: center;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 FourKites Log Data - Exploratory Data Analysis</h1>
+
+        <div class="metadata">
+            <div class="metadata-item">
+                <span class="metadata-label">Analysis Date:</span> 2026-01-14 18:55:59
+            </div>
+            <div class="metadata-item">
+                <span class="metadata-label">Dataset:</span> log_data (38).csv
+            </div>
+            <div class="metadata-item">
+                <span class="metadata-label">Total Records:</span> 5
+            </div>
+        </div>
+
+        <h2>📈 Key Statistics</h2>
+        <div>
+            <div class="stat-box">
+                <div class="stat-label">Total Log Entries</div>
+                <div class="stat-value">5</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Unique Services</div>
+                <div class="stat-value">3</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Load Number</div>
+                <div class="stat-value" style="font-size: 1.5em;">9118452</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Carrier</div>
+                <div class="stat-value" style="font-size: 1.2em;">pepsi-logistics</div>
+            </div>
+        </div>
+
+        <h2>🔄 Message Flow Analysis</h2>
+        <div class="info">
+            <strong>Transaction Flow:</strong> This dataset captures a single dispatcher update traveling through the FourKites microservices architecture.
+        </div>
+
+        <div class="flow-diagram">
+            <div class="flow-step">tracking-service-external<br/><small>API Ingestion</small></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">carrier-files-worker<br/><small>Processing</small></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">global-worker-ex<br/><small>Execution</small></div>
+        </div>
+
+        <h2>⏱️ Timeline Analysis</h2>
+        <div class="timeline">
+
+            <div class="timeline-item">
+                <strong>02:45:58.451</strong> -
+                <span class="service-badge">tracking-service-external</span>
+                <span class="message-badge">nan</span>
+                <br/>
+                <small style="color: #666;">Correlation ID: nan</small>
+            </div>
+
+            <div class="timeline-item">
+                <strong>02:45:58.459</strong> -
+                <span class="service-badge">tracking-service-external</span>
+                <span class="message-badge">TRACKING_SERVICE_API_SUMMARY</span>
+                <br/>
+                <small style="color: #666;">Correlation ID: nan</small>
+            </div>
+
+            <div class="timeline-item">
+                <strong>02:46:00.830</strong> -
+                <span class="service-badge">carrier-files-worker</span>
+                <span class="message-badge">PROCESS_SUPER_RECORD</span>
+                <br/>
+                <small style="color: #666;">Correlation ID: 7e06fd9157a6</small>
+            </div>
+
+            <div class="timeline-item">
+                <strong>02:46:00.868</strong> -
+                <span class="service-badge">carrier-files-worker</span>
+                <span class="message-badge">nan</span>
+                <br/>
+                <small style="color: #666;">Correlation ID: 7e06fd9157a6</small>
+            </div>
+
+            <div class="timeline-item">
+                <strong>02:46:00.935</strong> -
+                <span class="service-badge">global-worker-ex</span>
+                <span class="message-badge">PROCESS_TRUCK_LOCATION</span>
+                <br/>
+                <small style="color: #666;">Correlation ID: 3d56bb4db0b5</small>
+            </div>
+
+        </div>
+
+        <h2>📋 Detailed Log Records</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Service</th>
+                    <th>Message Type</th>
+                    <th>Severity</th>
+                    <th>K8s Namespace</th>
+                    <th>Trace ID</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <tr>
+                    <td>2025-11-26 02:46:00.935</td>
+                    <td>global-worker-ex</td>
+                    <td>PROCESS_TRUCK_LOCATION</td>
+                    <td>INFO</td>
+                    <td>global-worker</td>
+                    <td><small>beb028ddd4c049fb4511...</small></td>
+                </tr>
+
+                <tr>
+                    <td>2025-11-26 02:46:00.868</td>
+                    <td>carrier-files-worker</td>
+                    <td>nan</td>
+                    <td>INFO</td>
+                    <td>carrier-files-worker</td>
+                    <td><small>nan...</small></td>
+                </tr>
+
+                <tr>
+                    <td>2025-11-26 02:46:00.830</td>
+                    <td>carrier-files-worker</td>
+                    <td>PROCESS_SUPER_RECORD</td>
+                    <td>INFO</td>
+                    <td>carrier-files-worker</td>
+                    <td><small>nan...</small></td>
+                </tr>
+
+                <tr>
+                    <td>2025-11-26 02:45:58.459</td>
+                    <td>tracking-service-external</td>
+                    <td>TRACKING_SERVICE_API_SUMMARY</td>
+                    <td>nan</td>
+                    <td>tracking-service-external</td>
+                    <td><small>nan...</small></td>
+                </tr>
+
+                <tr>
+                    <td>2025-11-26 02:45:58.451</td>
+                    <td>tracking-service-external</td>
+                    <td>nan</td>
+                    <td>INFO</td>
+                    <td>tracking-service-external</td>
+                    <td><small>d4bdbf4402d83420e572...</small></td>
+                </tr>
+
+            </tbody>
+        </table>
+
+        <h2>🌍 Geographic Data</h2>
+
+        <div class="success">
+            <strong>Location Update Detected:</strong><br/>
+            <ul>
+                <li><strong>Latitude:</strong> 40.672000885009766</li>
+                <li><strong>Longitude:</strong> -74.19000244140625</li>
+                <li><strong>Location:</strong> Approximately New York/New Jersey area</li>
+            </ul>
+        </div>
+
+        <h2>⚡ Performance Metrics</h2>
+
+        <div class="success">
+            <strong>API Execution Time:</strong> 7.39 ms<br/>
+            <small>Tracking service dispatcher_updates endpoint performance</small>
+        </div>
+
+        <h2>🔍 Key Insights</h2>
+        <div class="info">
+            <h3>Transaction Summary</h3>
+            <ul>
+                <li><strong>Load ID:</strong> 9118452</li>
+                <li><strong>BOL:</strong> 9118452</li>
+                <li><strong>Carrier:</strong> pepsi-logistics-company</li>
+                <li><strong>External ID:</strong> 102622</li>
+                <li><strong>Source:</strong> dispatcher_updates_api</li>
+                <li><strong>Status:</strong> ✅ Success (confirmed in DataMonitoringUtils)</li>
+            </ul>
+        </div>
+
+        <div class="success">
+            <h3>Processing Flow</h3>
+            <ol>
+                <li><strong>tracking-service-external</strong> receives dispatcher update via API (7.39ms response)</li>
+                <li><strong>carrier-files-worker</strong> processes SUPER_RECORD and generates metrics</li>
+                <li><strong>global-worker-ex</strong> executes PROCESS_TRUCK_LOCATION</li>
+                <li>All services report successful processing</li>
+            </ol>
+        </div>
+
+        <h2>📊 Column Statistics</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Column</th>
+                    <th>Non-Null Count</th>
+                    <th>Data Type</th>
+                    <th>Unique Values</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <tr>
+                    <td>timestamp</td>
+                    <td>5 / 5</td>
+                    <td>datetime64[ns]</td>
+                    <td>5</td>
+                </tr>
+
+                <tr>
+                    <td>body</td>
+                    <td>5 / 5</td>
+                    <td>object</td>
+                    <td>5</td>
+                </tr>
+
+                <tr>
+                    <td>bol_number</td>
+                    <td>2 / 5</td>
+                    <td>object</td>
+                    <td>1</td>
+                </tr>
+
+                <tr>
+                    <td>carrier_id</td>
+                    <td>2 / 5</td>
+                    <td>object</td>
+                    <td>1</td>
+                </tr>
+
+                <tr>
+                    <td>correlation_id</td>
+                    <td>3 / 5</td>
+                    <td>object</td>
+                    <td>2</td>
+                </tr>
+
+                <tr>
+                    <td>event_source</td>
+                    <td>2 / 5</td>
+                    <td>object</td>
+                    <td>1</td>
+                </tr>
+
+                <tr>
+                    <td>load_number</td>
+                    <td>2 / 5</td>
+                    <td>object</td>
+                    <td>1</td>
+                </tr>
+
+                <tr>
+                    <td>log.file.path</td>
+                    <td>5 / 5</td>
+                    <td>object</td>
+                    <td>3</td>
+                </tr>
+
+                <tr>
+                    <td>log.iostream</td>
+                    <td>5 / 5</td>
+                    <td>object</td>
+                    <td>1</td>
+                </tr>
+
+                <tr>
+                    <td>logtag</td>
+                    <td>5 / 5</td>
+                    <td>object</td>
+                    <td>1</td>
+                </tr>
+
+                <tr>
+                    <td>message_type</td>
+                    <td>2 / 5</td>
+                    <td>object</td>
+                    <td>2</td>
+                </tr>
+
+                <tr>
+                    <td>time</td>
+                    <td>5 / 5</td>
+                    <td>datetime64[ns, UTC]</td>
+                    <td>5</td>
+                </tr>
+
+                <tr>
+                    <td>id</td>
+                    <td>5 / 5</td>
+                    <td>object</td>
+                    <td>5</td>
+                </tr>
+
+                <tr>
+                    <td>cloud.provider</td>
+                    <td>5 / 5</td>
+                    <td>object</td>
+                    <td>1</td>
+                </tr>
+
+                <tr>
+                    <td>deployment.environment</td>
+                    <td>5 / 5</td>
+                    <td>object</td>
+                    <td>1</td>
+                </tr>
+
+                <tr>
+                    <td>deployment.region</td>
+                    <td>5 / 5</td>
+                    <td>object</td>
+                    <td>1</td>
+                </tr>
+
+                <tr>
+                    <td>k8s.cluster.name</td>
+                    <td>5 / 5</td>
+                    <td>object</td>
+                    <td>3</td>
+                </tr>
+
+                <tr>
+                    <td>k8s.container.name</td>
+                    <td>5 / 5</td>
+                    <td>object</td>
+                    <td>3</td>
+                </tr>
+
+                <tr>
+                    <td>k8s.container.restart_count</td>
+                    <td>5 / 5</td>
+                    <td>int64</td>
+                    <td>1</td>
+                </tr>
+
+                <tr>
+                    <td>k8s.deployment.name</td>
+                    <td>5 / 5</td>
+                    <td>object</td>
+                    <td>3</td>
+                </tr>
+
+                <tr>
+                    <td>k8s.namespace.name</td>
+                    <td>5 / 5</td>
+                    <td>object</td>
+                    <td>3</td>
+                </tr>
+
+                <tr>
+                    <td>k8s.node.name</td>
+                    <td>5 / 5</td>
+                    <td>object</td>
+                    <td>3</td>
+                </tr>
+
+                <tr>
+                    <td>k8s.pod.ip</td>
+                    <td>5 / 5</td>
+                    <td>object</td>
+                    <td>3</td>
+                </tr>
+
+                <tr>
+                    <td>k8s.pod.name</td>
+                    <td>5 / 5</td>
+                    <td>object</td>
+                    <td>3</td>
+                </tr>
+
+                <tr>
+                    <td>k8s.pod.start_time</td>
+                    <td>5 / 5</td>
+                    <td>object</td>
+                    <td>3</td>
+                </tr>
+
+                <tr>
+                    <td>k8s.pod.uid</td>
+                    <td>5 / 5</td>
+                    <td>object</td>
+                    <td>3</td>
+                </tr>
+
+                <tr>
+                    <td>log.group</td>
+                    <td>5 / 5</td>
+                    <td>object</td>
+                    <td>3</td>
+                </tr>
+
+                <tr>
+                    <td>service.name</td>
+                    <td>5 / 5</td>
+                    <td>object</td>
+                    <td>3</td>
+                </tr>
+
+                <tr>
+                    <td>signoz.component</td>
+                    <td>5 / 5</td>
+                    <td>object</td>
+                    <td>1</td>
+                </tr>
+
+                <tr>
+                    <td>severity_number</td>
+                    <td>5 / 5</td>
+                    <td>int64</td>
+                    <td>2</td>
+                </tr>
+
+                <tr>
+                    <td>severity_text</td>
+                    <td>4 / 5</td>
+                    <td>object</td>
+                    <td>1</td>
+                </tr>
+
+                <tr>
+                    <td>span_id</td>
+                    <td>2 / 5</td>
+                    <td>object</td>
+                    <td>2</td>
+                </tr>
+
+                <tr>
+                    <td>trace_flags</td>
+                    <td>5 / 5</td>
+                    <td>int64</td>
+                    <td>1</td>
+                </tr>
+
+                <tr>
+                    <td>trace_id</td>
+                    <td>2 / 5</td>
+                    <td>object</td>
+                    <td>2</td>
+                </tr>
+
+                <tr>
+                    <td>extracted_message_type</td>
+                    <td>3 / 5</td>
+                    <td>object</td>
+                    <td>3</td>
+                </tr>
+
+                <tr>
+                    <td>execution_time_ms</td>
+                    <td>1 / 5</td>
+                    <td>float64</td>
+                    <td>1</td>
+                </tr>
+
+                <tr>
+                    <td>latitude</td>
+                    <td>3 / 5</td>
+                    <td>float64</td>
+                    <td>1</td>
+                </tr>
+
+                <tr>
+                    <td>longitude</td>
+                    <td>3 / 5</td>
+                    <td>float64</td>
+                    <td>1</td>
+                </tr>
+
+            </tbody>
+        </table>
+
+        <h2>🏗️ Infrastructure Details</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Service</th>
+                    <th>K8s Cluster</th>
+                    <th>Namespace</th>
+                    <th>Node</th>
+                    <th>Region</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <tr>
+                    <td>global-worker-ex</td>
+                    <td>aws-kube-prod</td>
+                    <td>global-worker</td>
+                    <td>ip-172-25-82-37.ec2.internal</td>
+                    <td>us-east-1</td>
+                </tr>
+
+                <tr>
+                    <td>carrier-files-worker</td>
+                    <td>common-eks-prod</td>
+                    <td>carrier-files-worker</td>
+                    <td>ip-172-26-130-207.ec2.internal</td>
+                    <td>us-east-1</td>
+                </tr>
+
+                <tr>
+                    <td>tracking-service-external</td>
+                    <td>otr-eks-production</td>
+                    <td>tracking-service-external</td>
+                    <td>ip-172-25-236-81.ec2.internal</td>
+                    <td>us-east-1</td>
+                </tr>
+
+            </tbody>
+        </table>
+
+        <h2>🔗 Traceability</h2>
+        <div class="info">
+            <strong>Correlation IDs Found:</strong>
+            <ul>
+<li><code>3d56bb4db0b5</code></li><li><code>7e06fd9157a6</code></li>
+            </ul>
+        </div>
+
+        <div class="info">
+            <strong>Trace IDs Found:</strong>
+            <ul>
+<li><code>beb028ddd4c049fb4511e6b917310681</code></li><li><code>d4bdbf4402d83420e57219162efe1d21</code></li>
+            </ul>
+        </div>
+
+        <h2>💡 Recommendations for Ocean Debugging Agent</h2>
+        <div class="warning">
+            <h3>Integration Points for POC</h3>
+            <ul>
+                <li><strong>Query Pattern:</strong> Use correlation_id or trace_id to track messages across services</li>
+                <li><strong>Services to Monitor:</strong>
+                    <ul>
+                        <li>tracking-service-external (API ingestion point)</li>
+                        <li>carrier-files-worker (processing + metrics)</li>
+                        <li>global-worker-ex (final execution)</li>
+                    </ul>
+                </li>
+                <li><strong>Key Fields:</strong>
+                    <ul>
+                        <li>message_type: PROCESS_TRUCK_LOCATION, PROCESS_SUPER_RECORD</li>
+                        <li>status: Look for "success" in DataMonitoringUtils logs</li>
+                        <li>error fields: Check for nil/null values</li>
+                    </ul>
+                </li>
+                <li><strong>Time Windows:</strong> This transaction completed in ~2.5 seconds</li>
+            </ul>
+        </div>
+
+        <div class="footer">
+            <p>Generated by Ocean Debugging Agent POC - EDA Module</p>
+            <p>Analysis completed at 2026-01-14 18:55:59</p>
+        </div>
+    </div>
+</body>
+</html>
