@@ -1,0 +1,104 @@
+# CODEOWNERS - Who owns what in Skills Library
+#
+# This file defines ownership for Skills, Patterns, and Playbooks.
+# When PRs are opened, GitHub will automatically request reviews from owners.
+#
+# Format: path/to/directory @github-username @team-name
+
+# ==============================================================================
+# SKILLS OWNERSHIP (Domain-Level)
+# ==============================================================================
+
+# OTR (Over-the-Road) RCA
+skills/otr-rca/                    @support-ops-team @prashant-kumar
+
+# Ocean Tracking
+skills/ocean-tracking/             @ocean-team @surya
+
+# Drayage Operations
+skills/drayage-ops/                @drayage-team
+
+# Air Freight
+skills/air-freight/                @air-team
+
+# Customer Implementation
+skills/implementation/             @customer-success-team
+
+# Carrier Onboarding
+skills/carrier-onboarding/         @carrier-integrations-team
+
+# Data Quality
+skills/data-quality/               @data-engineering-team
+
+# ==============================================================================
+# PATTERN OWNERSHIP (Pattern-Type-Level)
+# ==============================================================================
+
+# Callback/Webhook patterns (all domains)
+skills/*/patterns/callback_*       @integrations-team
+skills/*/patterns/webhook_*        @integrations-team
+
+# ELD patterns (OTR, Drayage)
+skills/*/patterns/eld_*            @carrier-integrations-team
+skills/*/patterns/device_*         @carrier-integrations-team
+
+# Load creation patterns (all domains)
+skills/*/patterns/load_creation_*  @load-creation-team
+skills/*/patterns/validation_*     @load-creation-team
+
+# Network relationship patterns
+skills/*/patterns/network_*        @network-team
+
+# API provider patterns
+skills/*/patterns/provider_*       @integrations-team
+
+# Ocean-specific patterns
+skills/ocean-tracking/patterns/jt_*           @ocean-team
+skills/ocean-tracking/patterns/vessel_*       @ocean-team
+skills/ocean-tracking/patterns/container_*    @ocean-team
+
+# ==============================================================================
+# PLAYBOOK OWNERSHIP (Investigation-Type-Level)
+# ==============================================================================
+
+# Investigation playbooks
+skills/*/playbooks/investigate_*   @support-ops-leads
+
+# Troubleshooting playbooks
+skills/*/playbooks/troubleshoot_*  @support-ops-leads
+
+# Onboarding playbooks
+skills/*/playbooks/onboard_*       @customer-success-team
+
+# Configuration playbooks
+skills/*/playbooks/configure_*     @solutions-engineering-team
+
+# ==============================================================================
+# BUILDING BLOCKS OWNERSHIP
+# ==============================================================================
+
+# Core framework code
+building_blocks/skill_base.py              @msp-raja @ai-engineering-team
+building_blocks/skills_router.py           @msp-raja @ai-engineering-team
+building_blocks/multi_agent_investigator.py @msp-raja @ai-engineering-team
+
+# ==============================================================================
+# KNOWLEDGE EXTRACTION TEMPLATES
+# ==============================================================================
+
+skills/_templates/                 @msp-raja @support-ops-leads
+
+# ==============================================================================
+# DOCUMENTATION
+# ==============================================================================
+
+README.md                          @msp-raja
+INTEGRATION_GUIDE.md               @msp-raja
+READINESS_ASSESSMENT.md            @msp-raja
+
+# ==============================================================================
+# FALLBACK (Root-Level Ownership)
+# ==============================================================================
+
+# If no specific owner, default to AI R&D and Support Ops leads
+*                                  @msp-raja @support-ops-leads
