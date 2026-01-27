@@ -1,0 +1,1544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FourKites Native AI Framework - Proposal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            background: #000;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .slides-container {
+            width: 100vw;
+            height: 100vh;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+        }
+
+        .slide {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 4rem;
+            scroll-snap-align: start;
+            border-bottom: 1px solid #222;
+            position: relative;
+        }
+
+        .slide-number {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            font-size: 0.875rem;
+            color: #555;
+            font-weight: 600;
+        }
+
+        /* Title Slide */
+        .slide.hero {
+            background: linear-gradient(135deg, #000 0%, #1a1a1a 50%, #000 100%);
+            text-align: center;
+        }
+
+        .slide.hero .eyebrow {
+            font-size: 0.875rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 2rem;
+        }
+
+        .slide.hero h1 {
+            font-size: 5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            letter-spacing: -3px;
+            line-height: 1.1;
+        }
+
+        .slide.hero .tagline {
+            font-size: 2rem;
+            color: #aaa;
+            margin-bottom: 4rem;
+            font-weight: 300;
+            max-width: 900px;
+        }
+
+        .slide.hero .author-box {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid #333;
+            padding: 2rem 3rem;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        .slide.hero .author {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .slide.hero .title {
+            font-size: 1rem;
+            color: #888;
+        }
+
+        /* Section Dividers */
+        .slide.section {
+            background: #0a0a0a;
+            text-align: center;
+        }
+
+        .slide.section .section-number {
+            font-size: 1rem;
+            color: #555;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+        }
+
+        .slide.section h2 {
+            font-size: 4rem;
+            font-weight: 800;
+            letter-spacing: -2px;
+        }
+
+        /* Content Slides */
+        .content-wrapper {
+            width: 100%;
+            max-width: 1400px;
+        }
+
+        .slide h2 {
+            font-size: 3rem;
+            margin-bottom: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -1.5px;
+        }
+
+        .slide h3 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: #ccc;
+            font-weight: 600;
+        }
+
+        /* Diagrams */
+        .diagram-box {
+            background: #0a0a0a;
+            border: 2px solid #222;
+            padding: 3rem;
+            border-radius: 12px;
+            font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+            font-size: 0.875rem;
+            line-height: 2;
+            color: #ddd;
+            white-space: pre;
+            overflow-x: auto;
+            margin: 2rem 0;
+        }
+
+        .diagram-box .layer {
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .diagram-box .arrow {
+            color: #888;
+        }
+
+        .diagram-box .component {
+            color: #aaa;
+        }
+
+        /* Grid Layouts */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .card {
+            background: #0a0a0a;
+            border: 1px solid #222;
+            padding: 2rem;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            border-color: #444;
+            transform: translateY(-4px);
+        }
+
+        .card h4 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .card p {
+            color: #999;
+            line-height: 1.7;
+            font-size: 1rem;
+        }
+
+        .card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .card li {
+            color: #999;
+            line-height: 2;
+            padding-left: 1.5rem;
+            position: relative;
+            font-size: 1rem;
+        }
+
+        .card li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #666;
+            font-size: 1.5rem;
+            line-height: 1.3;
+        }
+
+        /* Stats */
+        .stat-box {
+            background: linear-gradient(135deg, #0a0a0a 0%, #151515 100%);
+            border: 2px solid #222;
+            padding: 2.5rem;
+            text-align: center;
+            border-radius: 12px;
+        }
+
+        .stat-value {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #fff 0%, #999 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+        }
+
+        /* Process Flow */
+        .process-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 3rem 0;
+            padding: 2rem;
+            background: #0a0a0a;
+            border-radius: 12px;
+            border: 1px solid #222;
+        }
+
+        .process-step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+
+        .process-step-number {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #fff;
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin: 0 auto 1rem;
+        }
+
+        .process-step-label {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .process-step-desc {
+            font-size: 0.875rem;
+            color: #777;
+            line-height: 1.5;
+        }
+
+        .process-arrow {
+            font-size: 2rem;
+            color: #444;
+            flex: 0 0 40px;
+            text-align: center;
+        }
+
+        /* Emphasis Box */
+        .emphasis-box {
+            background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+            border-left: 4px solid #fff;
+            padding: 2rem;
+            margin: 2rem 0;
+            border-radius: 8px;
+        }
+
+        .emphasis-box strong {
+            color: #fff;
+            font-size: 1.25rem;
+            display: block;
+            margin-bottom: 0.75rem;
+        }
+
+        .emphasis-box p {
+            color: #aaa;
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+
+        /* Quote */
+        .quote-box {
+            background: #0a0a0a;
+            border-left: 4px solid #fff;
+            padding: 2.5rem;
+            margin: 3rem 0;
+            font-size: 1.75rem;
+            font-style: italic;
+            color: #ddd;
+            line-height: 1.6;
+            border-radius: 8px;
+        }
+
+        /* CTA */
+        .cta-box {
+            background: #fff;
+            color: #000;
+            padding: 3rem;
+            border-radius: 16px;
+            text-align: center;
+            margin: 3rem 0;
+            box-shadow: 0 20px 60px rgba(255,255,255,0.1);
+        }
+
+        .cta-box h3 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #000;
+            font-weight: 800;
+        }
+
+        .cta-box p {
+            font-size: 1.25rem;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        .nav-dots {
+            position: fixed;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            z-index: 100;
+        }
+
+        .nav-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #333;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .nav-dot:hover {
+            background: #666;
+        }
+
+        .nav-dot.active {
+            background: #fff;
+            transform: scale(1.4);
+        }
+
+        /* Visual Flow Diagram */
+        .flow-diagram {
+            background: #0a0a0a;
+            border: 2px solid #222;
+            padding: 3rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+        }
+
+        .flow-layer {
+            background: #151515;
+            border: 1px solid #333;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .flow-layer:last-child {
+            margin-bottom: 0;
+        }
+
+        .flow-layer-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+
+        .flow-layer-items {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .flow-item {
+            background: #1a1a1a;
+            border: 1px solid #444;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            color: #aaa;
+        }
+
+        .flow-connector {
+            text-align: center;
+            padding: 0.5rem 0;
+            color: #666;
+            font-size: 1.5rem;
+        }
+
+        /* Print Styles */
+        @media print {
+            .slide {
+                page-break-after: always;
+                min-height: auto;
+                height: 100vh;
+            }
+            .nav-dots {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="slides-container" id="slidesContainer">
+
+        <!-- Slide 1: Hero -->
+        <div class="slide hero" data-slide="1">
+            <p class="eyebrow">FourKites Engineering</p>
+            <h1>Native AI Company<br/>Framework</h1>
+            <p class="tagline">Building the Organizational Infrastructure for AI-First Operations</p>
+            <div class="author-box">
+                <div class="author">MSP RAJA</div>
+                <div class="title">AI R&D Solutions Engineer</div>
+            </div>
+        </div>
+
+        <!-- Slide 2: The Stakes -->
+        <div class="slide" data-slide="2">
+            <span class="slide-number">02 / 28</span>
+            <div class="content-wrapper">
+                <h2>This Is Not The Future.<br/>This Is Now.</h2>
+                <div class="quote-box">
+                    "Every supply chain company is racing to become AI-native. The companies that systematize AI knowledge capture TODAY will dominate. The rest will become irrelevant."
+                </div>
+                <div class="emphasis-box">
+                    <strong>The Reality:</strong>
+                    <p>We have brilliant analysts solving complex problems every day. But their knowledge lives in their heads. When they leave, that knowledge walks out the door. Our AI agents can't learn from what we haven't captured.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Section - The Core Problem -->
+        <div class="slide section" data-slide="3">
+            <span class="section-number">PART ONE</span>
+            <h2>The Core Problem</h2>
+        </div>
+
+        <!-- Slide 4: Random Brains, Same Data -->
+        <div class="slide" data-slide="4">
+            <span class="slide-number">04 / 28</span>
+            <div class="content-wrapper">
+                <h2>Random Brains, Same Data Sources</h2>
+                <div class="grid-2">
+                    <div class="card">
+                        <h4>The Pattern</h4>
+                        <p>Five analysts investigating "load not tracking":</p>
+                        <ul>
+                            <li>All query the same data (Tracking API, Athena, Redshift)</li>
+                            <li>Each uses DIFFERENT investigation patterns</li>
+                            <li>Each has unique mental models and shortcuts</li>
+                            <li>Some check ELD first, others start with callbacks</li>
+                            <li>Experience determines investigation order</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h4>The Problem</h4>
+                        <ul>
+                            <li>No two investigations are identical</li>
+                            <li>Senior analysts are 3x faster (but we can't clone them)</li>
+                            <li>Knowledge is tribal, not systematic</li>
+                            <li>New analysts take 6-12 months to ramp up</li>
+                            <li>AI agents can't learn from unstructured expertise</li>
+                            <li>Each team rebuilds the same wheels</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="emphasis-box">
+                    <strong>The Opportunity:</strong>
+                    <p>If we can capture HOW the best analysts think (not just WHAT data they query), we can encode that into reusable Skills that both humans AND AI agents can leverage.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Why Traditional AI Fails -->
+        <div class="slide" data-slide="5">
+            <span class="slide-number">05 / 28</span>
+            <div class="content-wrapper">
+                <h2>Why Traditional AI Projects Fail</h2>
+                <div class="grid-3">
+                    <div class="stat-box">
+                        <div class="stat-value">87%</div>
+                        <div class="stat-label">AI Projects Never Reach Production</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">60%</div>
+                        <div class="stat-label">Fail Due To Data Issues</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">80%</div>
+                        <div class="stat-label">Can't Prove ROI</div>
+                    </div>
+                </div>
+                <div class="card" style="margin-top: 2rem;">
+                    <h4>The Traditional Approach (Broken)</h4>
+                    <p style="margin-bottom: 1rem;">Teams jump straight to building AI models without foundational work:</p>
+                    <ul>
+                        <li>No systematic knowledge capture from domain experts</li>
+                        <li>Data sources are siloed and not AI-friendly</li>
+                        <li>No reusable skills library across projects</li>
+                        <li>Each project reinvents the wheel</li>
+                        <li>Models can't access organizational knowledge</li>
+                        <li>No clear ownership or versioning of domain logic</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Section - The Framework -->
+        <div class="slide section" data-slide="6">
+            <span class="section-number">PART TWO</span>
+            <h2>The Framework</h2>
+        </div>
+
+        <!-- Slide 7: 5-Layer Framework -->
+        <div class="slide" data-slide="7">
+            <span class="slide-number">07 / 28</span>
+            <div class="content-wrapper">
+                <h2>FourKites Native AI Framework</h2>
+                <h3>5-Layer Architecture</h3>
+                <div class="flow-diagram">
+                    <div class="flow-layer">
+                        <div class="flow-layer-title">1️⃣ DISCOVERY & SHADOWING</div>
+                        <div class="flow-layer-items">
+                            <div class="flow-item">Shadow SMEs</div>
+                            <div class="flow-item">Observe Support Ops</div>
+                            <div class="flow-item">Document Mental Models</div>
+                            <div class="flow-item">Capture Decision Trees</div>
+                        </div>
+                    </div>
+                    <div class="flow-connector">↓</div>
+                    <div class="flow-layer">
+                        <div class="flow-layer-title">2️⃣ KNOWLEDGE EXTRACTION</div>
+                        <div class="flow-layer-items">
+                            <div class="flow-item">Systematic Templates</div>
+                            <div class="flow-item">12-Section Structure</div>
+                            <div class="flow-item">Pattern Identification</div>
+                            <div class="flow-item">Evidence Rules</div>
+                        </div>
+                    </div>
+                    <div class="flow-connector">↓</div>
+                    <div class="flow-layer">
+                        <div class="flow-layer-title">3️⃣ SKILLS LIBRARY (AI-Friendly Format)</div>
+                        <div class="flow-layer-items">
+                            <div class="flow-item">Reusable Skills</div>
+                            <div class="flow-item">Version Control</div>
+                            <div class="flow-item">Ownership Graph</div>
+                            <div class="flow-item">Cross-Domain Sharing</div>
+                        </div>
+                    </div>
+                    <div class="flow-connector">↓</div>
+                    <div class="flow-layer">
+                        <div class="flow-layer-title">4️⃣ DATA LAYER (AI-Understandable)</div>
+                        <div class="flow-layer-items">
+                            <div class="flow-item">MCP Servers</div>
+                            <div class="flow-item">API Standardization</div>
+                            <div class="flow-item">Knowledge Bases</div>
+                            <div class="flow-item">Context Windows</div>
+                        </div>
+                    </div>
+                    <div class="flow-connector">↓</div>
+                    <div class="flow-layer">
+                        <div class="flow-layer-title">5️⃣ AGENT LAYER (Autonomous Execution)</div>
+                        <div class="flow-layer-items">
+                            <div class="flow-item">Multi-Agent Systems</div>
+                            <div class="flow-item">Orchestration</div>
+                            <div class="flow-item">End-to-End Automation</div>
+                            <div class="flow-item">Human-in-the-Loop</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="emphasis-box">
+                    <strong>Critical Insight:</strong>
+                    <p>Most companies jump to Layer 5 (Agents) without building Layers 1-4. This framework ensures every AI project is built on solid organizational knowledge.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Layer 1 - Discovery -->
+        <div class="slide" data-slide="8">
+            <span class="slide-number">08 / 28</span>
+            <div class="content-wrapper">
+                <h2>Layer 1: Discovery & Shadowing</h2>
+                <div class="grid-2">
+                    <div class="card">
+                        <h4>What We Capture</h4>
+                        <ul>
+                            <li>How analysts think through problems</li>
+                            <li>Which data sources they check first</li>
+                            <li>Decision points and branching logic</li>
+                            <li>Confidence indicators ("I'm 90% sure when...")</li>
+                            <li>Edge cases and failure modes</li>
+                            <li>Communication templates</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h4>Who We Shadow</h4>
+                        <ul>
+                            <li><strong>Support Operations:</strong> RCA investigations, ticket triage</li>
+                            <li><strong>SMEs:</strong> Ocean tracking, OTR debugging, Drayage issues</li>
+                            <li><strong>Customer Success:</strong> Implementation patterns</li>
+                            <li><strong>Engineering:</strong> System debugging, data pipeline issues</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="process-flow">
+                    <div class="process-step">
+                        <div class="process-step-number">1</div>
+                        <div class="process-step-label">Schedule</div>
+                        <div class="process-step-desc">2-4 hour shadow session</div>
+                    </div>
+                    <div class="process-arrow">→</div>
+                    <div class="process-step">
+                        <div class="process-step-number">2</div>
+                        <div class="process-step-label">Observe</div>
+                        <div class="process-step-desc">5-10 real tickets</div>
+                    </div>
+                    <div class="process-arrow">→</div>
+                    <div class="process-step">
+                        <div class="process-step-number">3</div>
+                        <div class="process-step-label">Document</div>
+                        <div class="process-step-desc">Mental models captured</div>
+                    </div>
+                    <div class="process-arrow">→</div>
+                    <div class="process-step">
+                        <div class="process-step-number">4</div>
+                        <div class="process-step-label">Validate</div>
+                        <div class="process-step-desc">Review with SME</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Layer 2 - Knowledge Extraction -->
+        <div class="slide" data-slide="9">
+            <span class="slide-number">09 / 28</span>
+            <div class="content-wrapper">
+                <h2>Layer 2: Knowledge Extraction</h2>
+                <h3>12-Section Systematic Template</h3>
+                <div class="grid-2">
+                    <div class="card">
+                        <h4>Investigation Sections</h4>
+                        <ul>
+                            <li>1. Observation Session</li>
+                            <li>2. Issue Category & Scope</li>
+                            <li>3. Investigation Flow</li>
+                            <li>4. Data Sources & Queries</li>
+                            <li>5. Diagnostic Patterns</li>
+                            <li>6. Decision Tree Logic</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h4>Validation Sections</h4>
+                        <ul>
+                            <li>7. Test Scenarios</li>
+                            <li>8. Edge Cases</li>
+                            <li>9. Performance Metrics</li>
+                            <li>10. Dependencies</li>
+                            <li>11. Knowledge Sources</li>
+                            <li>12. Validation Checklist</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="emphasis-box" style="margin-top: 2rem;">
+                    <strong>Template Output:</strong>
+                    <p>500-800 lines of structured YAML capturing the complete mental model. This becomes the source of truth for creating AI-friendly Skills.</p>
+                </div>
+                <div class="diagram-box">
+# Example: Load Not Tracking Investigation
+domain: "otr"
+issue_category: "LOAD_NOT_TRACKING"
+
+investigation_flow:
+  step_1:
+    action: "Check if load exists in Tracking API"
+    confidence_indicator: "If 404, highly confident (95%) it's creation failure"
+    next_steps:
+      - condition: "load_found"
+        action: "Check ELD configuration"
+      - condition: "load_not_found"
+        action: "Check load_validation_data_mart for creation errors"
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Layer 3 - Skills Library -->
+        <div class="slide" data-slide="10">
+            <span class="slide-number">10 / 28</span>
+            <div class="content-wrapper">
+                <h2>Layer 3: Skills Library Academy</h2>
+                <h3>AI-Friendly, Reusable, Versioned</h3>
+                <div class="diagram-box">
+fourkites-skills-academy/
+├── skills/
+│   ├── otr-rca/
+│   │   ├── SKILL.yaml                    # Skill definition
+│   │   ├── patterns/
+│   │   │   ├── eld_not_enabled.yaml
+│   │   │   ├── callback_failure.yaml
+│   │   │   └── load_creation_failed.yaml
+│   │   ├── playbooks/
+│   │   │   ├── investigate_tracking.yaml
+│   │   │   └── investigate_callbacks.yaml
+│   │   └── test_cases/
+│   │       ├── test_jan22_2026.yaml
+│   │       └── test_jan23_2026.yaml
+│   │
+│   ├── ocean-tracking/
+│   ├── drayage-ops/
+│   └── implementation/
+│
+├── ownership/
+│   └── CODEOWNERS.yaml                   # Who owns what
+│
+└── versions/
+    └── CHANGELOG.md                      # Version history
+                </div>
+                <div class="grid-3" style="margin-top: 2rem;">
+                    <div class="card">
+                        <h4>Reusable</h4>
+                        <p>Any AI agent or application can import Skills. No rebuilding logic.</p>
+                    </div>
+                    <div class="card">
+                        <h4>Versioned</h4>
+                        <p>Git-based version control. Track changes, rollback if needed.</p>
+                    </div>
+                    <div class="card">
+                        <h4>Owned</h4>
+                        <p>Clear ownership. Teams update their domain Skills.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Skills Update Process -->
+        <div class="slide" data-slide="11">
+            <span class="slide-number">11 / 28</span>
+            <div class="content-wrapper">
+                <h2>How Teams Update Skills</h2>
+                <div class="process-flow">
+                    <div class="process-step">
+                        <div class="process-step-number">1</div>
+                        <div class="process-step-label">Discover</div>
+                        <div class="process-step-desc">New pattern identified</div>
+                    </div>
+                    <div class="process-arrow">→</div>
+                    <div class="process-step">
+                        <div class="process-step-number">2</div>
+                        <div class="process-step-label">Document</div>
+                        <div class="process-step-desc">Update YAML file</div>
+                    </div>
+                    <div class="process-arrow">→</div>
+                    <div class="process-step">
+                        <div class="process-step-number">3</div>
+                        <div class="process-step-label">Test</div>
+                        <div class="process-step-desc">Run test cases</div>
+                    </div>
+                    <div class="process-arrow">→</div>
+                    <div class="process-step">
+                        <div class="process-step-number">4</div>
+                        <div class="process-step-label">Deploy</div>
+                        <div class="process-step-desc">Merge to main</div>
+                    </div>
+                </div>
+                <div class="grid-2">
+                    <div class="card">
+                        <h4>Example: New Callback Pattern</h4>
+                        <ul>
+                            <li>Support analyst notices DNS failures causing callbacks to fail</li>
+                            <li>Creates <code>dns_lookup_failure.yaml</code> pattern</li>
+                            <li>Defines evidence rules and confidence weights</li>
+                            <li>Adds test case with real production data</li>
+                            <li>Submits PR → Reviewed → Merged</li>
+                            <li>All AI agents immediately benefit from new pattern</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h4>Version Control</h4>
+                        <ul>
+                            <li><strong>v1.0.0:</strong> Initial 10 OTR patterns</li>
+                            <li><strong>v1.1.0:</strong> Added DNS failure pattern</li>
+                            <li><strong>v1.2.0:</strong> Improved ELD detection accuracy</li>
+                            <li><strong>v2.0.0:</strong> Major refactor - new Ocean skills</li>
+                            <li>Git history tracks all changes</li>
+                            <li>Rollback if pattern causes issues</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12: Contextual Ownership Graph -->
+        <div class="slide" data-slide="12">
+            <span class="slide-number">12 / 28</span>
+            <div class="content-wrapper">
+                <h2>Contextual Ownership Graph</h2>
+                <div class="diagram-box">
+# CODEOWNERS.yaml - Who owns what
+
+skills/otr-rca/              @support-ops-team @prashant-kumar
+skills/ocean-tracking/       @ocean-team @surya-venkat
+skills/drayage-ops/          @drayage-team
+skills/implementation/       @customer-success
+
+patterns/callback_*          @integrations-team
+patterns/eld_*               @carrier-integrations
+patterns/load_creation_*     @load-creation-team
+
+playbooks/investigate_*      @support-ops-leads
+                </div>
+                <div class="grid-2" style="margin-top: 2rem;">
+                    <div class="card">
+                        <h4>Benefits of Clear Ownership</h4>
+                        <ul>
+                            <li>Teams know what they're responsible for</li>
+                            <li>Automatic PR reviewer assignment</li>
+                            <li>Domain experts approve changes</li>
+                            <li>No orphaned skills</li>
+                            <li>Accountability for accuracy</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h4>Cross-Functional Collaboration</h4>
+                        <ul>
+                            <li>Support Ops contributes patterns from tickets</li>
+                            <li>Engineering contributes system debugging skills</li>
+                            <li>Customer Success contributes implementation playbooks</li>
+                            <li>Product contributes feature documentation</li>
+                            <li>Everyone benefits from shared knowledge</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13: Layer 4 - Data Layer -->
+        <div class="slide" data-slide="13">
+            <span class="slide-number">13 / 28</span>
+            <div class="content-wrapper">
+                <h2>Layer 4: AI-Understandable Data Sources</h2>
+                <h3>MCP Servers, APIs, Knowledge Bases</h3>
+                <div class="diagram-box">
+DATA SOURCES (Raw)                    AI-UNDERSTANDABLE INTERFACES
+──────────────────────                ──────────────────────────────
+
+Athena (SQL)                    →     MCP Athena Server
+Redshift (SQL)                  →     MCP Redshift Server
+Tracking API (REST)             →     MCP Tracking Server
+Network API (GraphQL)           →     MCP Network Server
+SigNoz (Logs)                   →     MCP Observability Server
+Confluence (Docs)               →     Knowledge Base + RAG
+Slack (Conversations)           →     Context Window + Search
+Zendesk (Tickets)               →     Historical Case Database
+                </div>
+                <div class="grid-2" style="margin-top: 2rem;">
+                    <div class="card">
+                        <h4>MCP (Model Context Protocol)</h4>
+                        <p style="margin-bottom: 1rem;">Anthropic's standard for connecting AI models to data sources:</p>
+                        <ul>
+                            <li>AI agents call MCP servers like APIs</li>
+                            <li>Servers translate requests to data source queries</li>
+                            <li>Results returned in AI-friendly format</li>
+                            <li>Handles authentication, rate limiting, context</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h4>Why This Matters</h4>
+                        <ul>
+                            <li>AI agents can't query raw databases effectively</li>
+                            <li>Need structured, contextual interfaces</li>
+                            <li>MCP servers provide domain-specific logic</li>
+                            <li>One MCP server → All AI agents benefit</li>
+                            <li>Centralized access control and monitoring</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="emphasis-box">
+                    <strong>Status:</strong>
+                    <p>We already have 10 MCP servers built (Athena, Redshift, Tracking API, etc.). Layer 4 is 70% complete.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 14: Layer 5 - Agent Layer -->
+        <div class="slide" data-slide="14">
+            <span class="slide-number">14 / 28</span>
+            <div class="content-wrapper">
+                <h2>Layer 5: Agent Layer</h2>
+                <h3>Multi-Agent Orchestration for End-to-End Automation</h3>
+                <div class="diagram-box">
+USER REQUEST: "Load U110123982 not tracking"
+    ↓
+ROUTING AGENT
+    → Classifies intent: TRACKING_ISSUE
+    → Detects domain: OTR
+    → Selects skill: otr-rca
+    ↓
+ORCHESTRATOR AGENT
+    → Loads skill: otr-rca/investigate_tracking.yaml
+    → Spawns specialized agents in parallel:
+    ↓
+┌─────────────────┬──────────────────┬────────────────┐
+│ IDENTIFIER      │ TRACKING API     │ NETWORK        │
+│ AGENT           │ AGENT            │ AGENT          │
+│                 │                  │                │
+│ Extract IDs     │ Query load data  │ Check ELD      │
+│ from ticket     │ via MCP server   │ configuration  │
+└─────────────────┴──────────────────┴────────────────┘
+    ↓                    ↓                    ↓
+         Evidence collected from all agents
+                        ↓
+                 HYPOTHESIS AGENT
+         → Evaluates patterns from Skills Library
+         → Ranks by confidence (ELD_NOT_ENABLED: 92%)
+                        ↓
+                 SYNTHESIS AGENT
+         → Generates resolution steps from pattern
+         → Creates ticket response
+         → Auto-resolves (if confidence > 90%)
+                        ↓
+              RESULT (8 minutes)
+                </div>
+                <div class="emphasis-box" style="margin-top: 2rem;">
+                    <strong>Key Point:</strong>
+                    <p>Agents execute the logic defined in Skills Library. Update a skill YAML → All agents immediately use new logic. No code changes to agents required.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 15: Section - Real Examples -->
+        <div class="slide section" data-slide="15">
+            <span class="section-number">PART THREE</span>
+            <h2>Real-World Examples</h2>
+        </div>
+
+        <!-- Slide 16: Example 1 - RCA Load Not Tracking -->
+        <div class="slide" data-slide="16">
+            <span class="slide-number">16 / 28</span>
+            <div class="content-wrapper">
+                <h2>Example 1: RCA Load Not Tracking</h2>
+                <div class="grid-2">
+                    <div class="card">
+                        <h4>Before Framework (Manual)</h4>
+                        <ul>
+                            <li><strong>Time:</strong> 20-30 minutes per ticket</li>
+                            <li>Analyst checks Tracking API</li>
+                            <li>Manually queries Redshift</li>
+                            <li>Checks Network API for relationships</li>
+                            <li>Reviews SigNoz logs</li>
+                            <li>Formulates hypothesis based on experience</li>
+                            <li>Writes resolution steps</li>
+                        </ul>
+                        <p style="margin-top: 1rem; color: #666;"><strong>Issue:</strong> Knowledge stays in analyst's head. New analysts slow. Inconsistent diagnosis.</p>
+                    </div>
+                    <div class="card">
+                        <h4>After Framework (Automated)</h4>
+                        <ul>
+                            <li><strong>Time:</strong> 8-12 minutes (60% reduction)</li>
+                            <li>Agent loads <code>otr-rca</code> skill</li>
+                            <li>Executes investigation playbook automatically</li>
+                            <li>Queries all data sources in parallel via MCP</li>
+                            <li>Evaluates 15 patterns from Skills Library</li>
+                            <li>Identifies root cause: ELD_NOT_ENABLED (92% confidence)</li>
+                            <li>Auto-generates resolution from pattern template</li>
+                        </ul>
+                        <p style="margin-top: 1rem; color: #fff;"><strong>Result:</strong> Consistent diagnosis. Knowledge preserved. New analysts productive Day 1.</p>
+                    </div>
+                </div>
+                <div class="stat-box" style="margin-top: 2rem; max-width: 400px;">
+                    <div class="stat-value">12-18 min</div>
+                    <div class="stat-label">Saved Per Ticket</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 17: Example 2 - Callback Failures -->
+        <div class="slide" data-slide="17">
+            <span class="slide-number">17 / 28</span>
+            <div class="content-wrapper">
+                <h2>Example 2: Callback/Webhook Failures</h2>
+                <h3>Real Production Issue - Jan 22, 2026</h3>
+                <div class="card">
+                    <h4>The Situation</h4>
+                    <p>Customer reports: "Callbacks not sent for 3 loads"</p>
+                    <ul>
+                        <li>Tracking IDs: 626717801, 623705749, 625342806</li>
+                        <li>Different error patterns: DNS failure, event not subscribed, HTTP 503</li>
+                    </ul>
+                </div>
+                <div class="grid-2" style="margin-top: 2rem;">
+                    <div class="card">
+                        <h4>Manual Investigation</h4>
+                        <ul>
+                            <li>Analyst logs into Athena</li>
+                            <li>Writes custom query for callbacks_v2 table</li>
+                            <li>Analyzes error messages manually</li>
+                            <li>Searches Confluence for similar issues</li>
+                            <li>Determines if customer-side or FourKites-side</li>
+                            <li>Drafts response email</li>
+                            <li><strong>Time:</strong> 25 minutes</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h4>Automated with Framework</h4>
+                        <ul>
+                            <li>Agent loads <code>callback_failure</code> playbook</li>
+                            <li>Queries Athena via MCP server</li>
+                            <li>Pattern matching: <code>webhook_5xx</code> (confidence: 0.90)</li>
+                            <li>Retrieves resolution template from Skills Library</li>
+                            <li>Generates customer communication automatically</li>
+                            <li>Identifies: Customer endpoint issue (HTTP 503)</li>
+                            <li><strong>Time:</strong> 8 minutes</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="emphasis-box" style="margin-top: 2rem;">
+                    <strong>Key Insight:</strong>
+                    <p>After this investigation, we created 3 new pattern files (dns_lookup_failure, event_not_subscribed, http_503_error). Next time these occur, instant diagnosis with 95% confidence.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 18: Example 3 - Ocean Container Tracking -->
+        <div class="slide" data-slide="18">
+            <span class="slide-number">18 / 28</span>
+            <div class="content-wrapper">
+                <h2>Example 3: Ocean Container Tracking</h2>
+                <div class="grid-2">
+                    <div class="card">
+                        <h4>Domain Complexity</h4>
+                        <ul>
+                            <li>10+ shipping lines (Maersk, MSC, COSCO, etc.)</li>
+                            <li>Each has different API quirks</li>
+                            <li>JT scraping failures</li>
+                            <li>Vessel schedule delays</li>
+                            <li>Port congestion impact</li>
+                            <li>Container status interpretation varies</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h4>Framework Application</h4>
+                        <ul>
+                            <li><strong>Layer 1:</strong> Shadow Surya (Ocean SME)</li>
+                            <li><strong>Layer 2:</strong> Extract 8 Ocean patterns</li>
+                            <li><strong>Layer 3:</strong> Create <code>ocean-tracking</code> skill</li>
+                            <li><strong>Layer 4:</strong> MCP server for JT API + Super API</li>
+                            <li><strong>Layer 5:</strong> Agent investigates Ocean tickets</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="process-flow" style="margin-top: 2rem;">
+                    <div class="process-step">
+                        <div class="process-step-number">1</div>
+                        <div class="process-step-label">Extract</div>
+                        <div class="process-step-desc">2-day session with Surya</div>
+                    </div>
+                    <div class="process-arrow">→</div>
+                    <div class="process-step">
+                        <div class="process-step-number">2</div>
+                        <div class="process-step-label">Build</div>
+                        <div class="process-step-desc">Create 8 Ocean patterns</div>
+                    </div>
+                    <div class="process-arrow">→</div>
+                    <div class="process-step">
+                        <div class="process-step-number">3</div>
+                        <div class="process-step-label">Test</div>
+                        <div class="process-step-desc">Validate on 20 tickets</div>
+                    </div>
+                    <div class="process-arrow">→</div>
+                    <div class="process-step">
+                        <div class="process-step-number">4</div>
+                        <div class="process-step-label">Deploy</div>
+                        <div class="process-step-desc">Production in 5-8 days</div>
+                    </div>
+                </div>
+                <div class="emphasis-box" style="margin-top: 2rem;">
+                    <strong>Scalability:</strong>
+                    <p>Once framework is established, each new domain takes only 5-8 days to build. Target: 10-12 domains by Q2 2026.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 19: Example 4 - Implementation Playbooks -->
+        <div class="slide" data-slide="19">
+            <span class="slide-number">19 / 28</span>
+            <div class="content-wrapper">
+                <h2>Example 4: Beyond RCA</h2>
+                <h3>Customer Implementation Playbooks</h3>
+                <div class="card">
+                    <p style="margin-bottom: 1.5rem;">The framework isn't limited to RCA. Any repeatable process can become a Skill:</p>
+                </div>
+                <div class="grid-3" style="margin-top: 2rem;">
+                    <div class="card">
+                        <h4>Implementation</h4>
+                        <ul>
+                            <li>Carrier onboarding steps</li>
+                            <li>ELD integration checklist</li>
+                            <li>Network relationship setup</li>
+                            <li>Testing validation</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h4>Data Quality</h4>
+                        <ul>
+                            <li>Address validation rules</li>
+                            <li>Load data completeness</li>
+                            <li>Duplicate detection</li>
+                            <li>Data enrichment patterns</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h4>Product Features</h4>
+                        <ul>
+                            <li>Feature configuration</li>
+                            <li>API usage patterns</li>
+                            <li>Best practices</li>
+                            <li>Common mistakes</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="emphasis-box" style="margin-top: 2rem;">
+                    <strong>Vision:</strong>
+                    <p>Every team at FourKites contributes Skills. Engineering, Product, Customer Success, Sales. The Skills Library becomes the organizational knowledge graph - queryable by humans and AI.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 20: Section - Business Impact -->
+        <div class="slide section" data-slide="20">
+            <span class="section-number">PART FOUR</span>
+            <h2>Business Impact</h2>
+        </div>
+
+        <!-- Slide 21: Quantified Benefits -->
+        <div class="slide" data-slide="21">
+            <span class="slide-number">21 / 28</span>
+            <div class="content-wrapper">
+                <h2>Quantified Business Impact</h2>
+                <div class="grid-3">
+                    <div class="stat-box">
+                        <div class="stat-value">60%</div>
+                        <div class="stat-label">Time Reduction</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">60%</div>
+                        <div class="stat-label">L1 Automation</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">18K</div>
+                        <div class="stat-label">Hours Saved/Year</div>
+                    </div>
+                </div>
+                <div class="grid-2" style="margin-top: 3rem;">
+                    <div class="card">
+                        <h4>Efficiency Gains</h4>
+                        <ul>
+                            <li>Investigation: 20-30 min → 8-12 min</li>
+                            <li>Savings: 12-18 min per ticket</li>
+                            <li>Volume: ~1,000 tickets/week</li>
+                            <li>Annual: 12,000-18,000 hours saved</li>
+                            <li>Cost savings: $1.5M-$2.5M/year</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h4>Quality Improvements</h4>
+                        <ul>
+                            <li>Consistent diagnosis (85%+ accuracy)</li>
+                            <li>Faster time-to-resolution</li>
+                            <li>Reduced escalations</li>
+                            <li>Preserved tribal knowledge</li>
+                            <li>Faster onboarding (12 months → 2 weeks)</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="grid-2" style="margin-top: 2rem;">
+                    <div class="card">
+                        <h4>Strategic Advantages</h4>
+                        <ul>
+                            <li>Reusable across all AI projects</li>
+                            <li>Organizational knowledge graph</li>
+                            <li>Competitive differentiation</li>
+                            <li>Faster product development</li>
+                            <li>Better customer experience</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h4>Scalability</h4>
+                        <ul>
+                            <li>5-8 days per new domain</li>
+                            <li>10-12 domains by Q2 2026</li>
+                            <li>50+ skills by Q3 2026</li>
+                            <li>Every team contributes</li>
+                            <li>Continuous improvement loop</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 22: Section - Implementation -->
+        <div class="slide section" data-slide="22">
+            <span class="section-number">PART FIVE</span>
+            <h2>Implementation Roadmap</h2>
+        </div>
+
+        <!-- Slide 23: 4-Phase Rollout -->
+        <div class="slide" data-slide="23">
+            <span class="slide-number">23 / 28</span>
+            <div class="content-wrapper">
+                <h2>4-Phase Rollout Strategy</h2>
+                <div class="flow-diagram">
+                    <div class="flow-layer">
+                        <div class="flow-layer-title">PHASE 1: Foundation (Weeks 1-2)</div>
+                        <div class="flow-layer-items">
+                            <div class="flow-item">Setup Skills Library infrastructure</div>
+                            <div class="flow-item">Define ownership model</div>
+                            <div class="flow-item">Create contribution guidelines</div>
+                            <div class="flow-item">Training for first 5 contributors</div>
+                        </div>
+                    </div>
+                    <div class="flow-connector">↓</div>
+                    <div class="flow-layer">
+                        <div class="flow-layer-title">PHASE 2: Pilot Domain (Weeks 3-6)</div>
+                        <div class="flow-layer-items">
+                            <div class="flow-item">Deep dive: OTR RCA with Prashant</div>
+                            <div class="flow-item">Extract 15+ patterns</div>
+                            <div class="flow-item">Build collaborative agents</div>
+                            <div class="flow-item">Validate: 90%+ accuracy on 50 test cases</div>
+                        </div>
+                    </div>
+                    <div class="flow-connector">↓</div>
+                    <div class="flow-layer">
+                        <div class="flow-layer-title">PHASE 3: Scale (Months 2-3)</div>
+                        <div class="flow-layer-items">
+                            <div class="flow-item">Extract 4 more domains (Ocean, Drayage, Air, Implementation)</div>
+                            <div class="flow-item">50+ total patterns</div>
+                            <div class="flow-item">Deploy to test environment</div>
+                            <div class="flow-item">Measure impact on L1 tickets</div>
+                        </div>
+                    </div>
+                    <div class="flow-connector">↓</div>
+                    <div class="flow-layer">
+                        <div class="flow-layer-title">PHASE 4: Production (Months 4-6)</div>
+                        <div class="flow-layer-items">
+                            <div class="flow-item">60% L1 automation achieved</div>
+                            <div class="flow-item">Skills Library embedded in workflows</div>
+                            <div class="flow-item">All teams contributing</div>
+                            <div class="flow-item">Continuous improvement process established</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 24: Immediate Next Steps -->
+        <div class="slide" data-slide="24">
+            <span class="slide-number">24 / 28</span>
+            <div class="content-wrapper">
+                <h2>Immediate Next Steps</h2>
+                <h3>Week 1: Decision & Kickoff</h3>
+                <div class="grid-2">
+                    <div class="card">
+                        <h4>Leadership Actions</h4>
+                        <ul>
+                            <li>Review and approve framework</li>
+                            <li>Allocate resources (2 engineers + 1 PM)</li>
+                            <li>Approve Phase 1 budget</li>
+                            <li>Communication to org</li>
+                            <li>Set success metrics</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h4>Team Actions</h4>
+                        <ul>
+                            <li>Setup Skills Library GitHub repo</li>
+                            <li>Define CODEOWNERS structure</li>
+                            <li>Schedule first extraction session</li>
+                            <li>Prepare knowledge extraction templates</li>
+                            <li>Identify pilot participants</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="process-flow" style="margin-top: 3rem;">
+                    <div class="process-step">
+                        <div class="process-step-number">1</div>
+                        <div class="process-step-label">Day 1-2</div>
+                        <div class="process-step-desc">Decision & kickoff</div>
+                    </div>
+                    <div class="process-arrow">→</div>
+                    <div class="process-step">
+                        <div class="process-step-number">2</div>
+                        <div class="process-step-label">Day 3-5</div>
+                        <div class="process-step-desc">Infrastructure setup</div>
+                    </div>
+                    <div class="process-arrow">→</div>
+                    <div class="process-step">
+                        <div class="process-step-number">3</div>
+                        <div class="process-step-label">Week 2</div>
+                        <div class="process-step-desc">Training & onboarding</div>
+                    </div>
+                    <div class="process-arrow">→</div>
+                    <div class="process-step">
+                        <div class="process-step-number">4</div>
+                        <div class="process-step-label">Week 3</div>
+                        <div class="process-step-desc">First extraction session</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 25: Success Criteria -->
+        <div class="slide" data-slide="25">
+            <span class="slide-number">25 / 28</span>
+            <div class="content-wrapper">
+                <h2>Success Criteria</h2>
+                <div class="grid-2">
+                    <div class="card">
+                        <h4>Phase 1 (Week 2)</h4>
+                        <ul>
+                            <li>✓ Skills Library infrastructure live</li>
+                            <li>✓ First 5 contributors trained</li>
+                            <li>✓ Ownership model defined</li>
+                            <li>✓ Contribution process documented</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h4>Phase 2 (Week 6)</h4>
+                        <ul>
+                            <li>✓ 15+ OTR patterns extracted</li>
+                            <li>✓ 90%+ accuracy on 50 test cases</li>
+                            <li>✓ Measurable time savings demonstrated</li>
+                            <li>✓ SME feedback: Process is valuable</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h4>Phase 3 (Month 3)</h4>
+                        <ul>
+                            <li>✓ 5 domains extracted</li>
+                            <li>✓ 50+ total patterns</li>
+                            <li>✓ 30%+ L1 automation achieved</li>
+                            <li>✓ 3+ teams actively contributing</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h4>Phase 4 (Month 6)</h4>
+                        <ul>
+                            <li>✓ 60% L1 automation achieved</li>
+                            <li>✓ 60% time reduction per ticket</li>
+                            <li>✓ 10+ teams using Skills Library</li>
+                            <li>✓ Process embedded in workflows</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="cta-box" style="margin-top: 3rem;">
+                    <h3>Gate Check at Each Phase</h3>
+                    <p>Review metrics, adjust approach, decide to continue or pivot</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 26: The Stakes (Reprise) -->
+        <div class="slide" data-slide="26">
+            <span class="slide-number">26 / 28</span>
+            <div class="content-wrapper">
+                <h2>Why This Must Happen Now</h2>
+                <div class="grid-2">
+                    <div class="card">
+                        <h4>If We Build This</h4>
+                        <ul>
+                            <li>FourKites becomes Native AI Company</li>
+                            <li>Every AI project has solid foundation</li>
+                            <li>Organizational knowledge preserved and queryable</li>
+                            <li>Faster product development</li>
+                            <li>Competitive differentiation in supply chain</li>
+                            <li>Customers see immediate value from AI</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h4>If We Don't</h4>
+                        <ul>
+                            <li>Knowledge loss continues</li>
+                            <li>Each AI project starts from scratch</li>
+                            <li>87% failure rate persists</li>
+                            <li>Competitors systematize first</li>
+                            <li>We become "AI vendor" not "AI-native"</li>
+                            <li>Miss the AI transformation window</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="quote-box" style="margin-top: 3rem;">
+                    "In 3 years, every supply chain company will have AI agents. The winners will be those who built systematic knowledge capture in 2026. The losers will be those who waited."
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 27: Call to Action -->
+        <div class="slide" data-slide="27">
+            <span class="slide-number">27 / 28</span>
+            <div class="content-wrapper">
+                <h2>The Choice Is Clear</h2>
+                <div class="cta-box">
+                    <h3>We Must Act Now</h3>
+                    <p style="margin-bottom: 2rem;">This is not a future we're preparing for. This IS the present. Every day we delay, we fall further behind.</p>
+                    <p style="font-size: 1.5rem; font-weight: 700; color: #000; margin-bottom: 2rem;">The race has started. We can lead it, or lose it.</p>
+                    <p>Approve Phase 1. Let's build FourKites' AI foundation.</p>
+                </div>
+                <div class="emphasis-box" style="margin-top: 3rem;">
+                    <strong>Next Step:</strong>
+                    <p>Schedule 30-minute decision meeting with leadership. Bring questions. Let's move forward.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 28: Thank You -->
+        <div class="slide hero" data-slide="28">
+            <h1>Thank You</h1>
+            <p class="tagline">Questions & Discussion</p>
+            <div class="author-box" style="margin-top: 3rem;">
+                <div class="author">MSP RAJA</div>
+                <div class="title">AI R&D Solutions Engineer</div>
+            </div>
+            <p style="margin-top: 2rem; color: #666;">Skills Library Repo: github.com/fk-mspraja/Fourkites_Skills_Academy</p>
+        </div>
+
+    </div>
+
+    <!-- Navigation Dots -->
+    <div class="nav-dots" id="navDots"></div>
+
+    <script>
+        // Initialize navigation
+        const slides = document.querySelectorAll('.slide');
+        const navDots = document.getElementById('navDots');
+
+        slides.forEach((slide, index) => {
+            const dot = document.createElement('div');
+            dot.className = 'nav-dot';
+            if (index === 0) dot.classList.add('active');
+            dot.addEventListener('click', () => {
+                slide.scrollIntoView({ behavior: 'smooth' });
+            });
+            navDots.appendChild(dot);
+        });
+
+        // Update active dot on scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const index = Array.from(slides).indexOf(entry.target);
+                    document.querySelectorAll('.nav-dot').forEach((dot, i) => {
+                        dot.classList.toggle('active', i === index);
+                    });
+                }
+            });
+        }, { threshold: 0.5 });
+
+        slides.forEach(slide => observer.observe(slide));
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            const currentIndex = Array.from(slides).findIndex(slide => {
+                const rect = slide.getBoundingClientRect();
+                return rect.top >= 0 && rect.top < window.innerHeight / 2;
+            });
+
+            if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                if (currentIndex < slides.length - 1) {
+                    slides[currentIndex + 1].scrollIntoView({ behavior: 'smooth' });
+                }
+            } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+                e.preventDefault();
+                if (currentIndex > 0) {
+                    slides[currentIndex - 1].scrollIntoView({ behavior: 'smooth' });
+                }
+            } else if (e.key === 'Home') {
+                e.preventDefault();
+                slides[0].scrollIntoView({ behavior: 'smooth' });
+            } else if (e.key === 'End') {
+                e.preventDefault();
+                slides[slides.length - 1].scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    </script>
+</body>
+</html>
