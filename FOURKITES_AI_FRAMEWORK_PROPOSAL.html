@@ -446,6 +446,178 @@
             font-size: 1.5rem;
         }
 
+        /* Professional Number Badges */
+        .number-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: #fff;
+            color: #000;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.875rem;
+            margin-right: 0.5rem;
+        }
+
+        /* Status Indicators */
+        .status-indicator {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        .status-complete {
+            background: #10b981;
+            box-shadow: 0 0 8px rgba(16, 185, 129, 0.3);
+        }
+
+        .status-partial {
+            background: #f59e0b;
+            box-shadow: 0 0 8px rgba(245, 158, 11, 0.3);
+        }
+
+        .status-missing {
+            background: #6b7280;
+            box-shadow: 0 0 8px rgba(107, 114, 128, 0.3);
+        }
+
+        .status-building {
+            background: #3b82f6;
+            box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Domain Icon Badges */
+        .domain-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-right: 12px;
+        }
+
+        /* Professional Status Cell */
+        .status-cell {
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .status-text {
+            font-size: 13px;
+            color: #ccc;
+        }
+
+        .status-complete .status-text { color: #10b981; }
+        .status-partial .status-text { color: #f59e0b; }
+        .status-missing .status-text { color: #6b7280; }
+        .status-building .status-text { color: #3b82f6; }
+
+        /* Ready Badges */
+        .ready-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .ready-yes {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .ready-partial {
+            background: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .ready-no {
+            background: rgba(107, 114, 128, 0.15);
+            color: #9ca3af;
+            border: 1px solid rgba(107, 114, 128, 0.3);
+        }
+
+        /* Checkmark Icon (SVG) */
+        .check-icon {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
+        }
+
+        /* Professional Table Styling */
+        .comparison-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 2rem 0;
+        }
+
+        .comparison-table thead {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .comparison-table th {
+            padding: 18px 16px;
+            text-align: left;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 11px;
+            color: #999;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .comparison-table th:first-child {
+            padding-left: 24px;
+        }
+
+        .comparison-table tbody tr {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.2s ease;
+        }
+
+        .comparison-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .comparison-table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .comparison-table td {
+            padding: 20px 16px;
+            vertical-align: middle;
+        }
+
+        .comparison-table td:first-child {
+            padding-left: 24px;
+            font-weight: 500;
+            font-size: 15px;
+        }
+
+        .domain-name {
+            display: flex;
+            align-items: center;
+        }
+
         /* Print Styles */
         @media print {
             .slide {
@@ -578,7 +750,7 @@
                 <h3>5-Layer Architecture</h3>
                 <div class="flow-diagram">
                     <div class="flow-layer">
-                        <div class="flow-layer-title">1️⃣ DISCOVERY & SHADOWING</div>
+                        <div class="flow-layer-title"><span class="number-badge">1</span>DISCOVERY & SHADOWING</div>
                         <div class="flow-layer-items">
                             <div class="flow-item">Shadow SMEs</div>
                             <div class="flow-item">Observe Support Ops</div>
@@ -588,7 +760,7 @@
                     </div>
                     <div class="flow-connector">↓</div>
                     <div class="flow-layer">
-                        <div class="flow-layer-title">2️⃣ KNOWLEDGE EXTRACTION</div>
+                        <div class="flow-layer-title"><span class="number-badge">2</span>KNOWLEDGE EXTRACTION</div>
                         <div class="flow-layer-items">
                             <div class="flow-item">Systematic Templates</div>
                             <div class="flow-item">12-Section Structure</div>
@@ -598,7 +770,7 @@
                     </div>
                     <div class="flow-connector">↓</div>
                     <div class="flow-layer">
-                        <div class="flow-layer-title">3️⃣ SKILLS LIBRARY (AI-Friendly Format)</div>
+                        <div class="flow-layer-title"><span class="number-badge">3</span>SKILLS LIBRARY (AI-Friendly Format)</div>
                         <div class="flow-layer-items">
                             <div class="flow-item">Reusable Skills</div>
                             <div class="flow-item">Version Control</div>
@@ -608,7 +780,7 @@
                     </div>
                     <div class="flow-connector">↓</div>
                     <div class="flow-layer">
-                        <div class="flow-layer-title">4️⃣ DATA LAYER (AI-Understandable)</div>
+                        <div class="flow-layer-title"><span class="number-badge">4</span>DATA LAYER (AI-Understandable)</div>
                         <div class="flow-layer-items">
                             <div class="flow-item">MCP Servers</div>
                             <div class="flow-item">API Standardization</div>
@@ -618,7 +790,7 @@
                     </div>
                     <div class="flow-connector">↓</div>
                     <div class="flow-layer">
-                        <div class="flow-layer-title">5️⃣ AGENT LAYER (Autonomous Execution)</div>
+                        <div class="flow-layer-title"><span class="number-badge">5</span>AGENT LAYER (Autonomous Execution)</div>
                         <div class="flow-layer-items">
                             <div class="flow-item">Multi-Agent Systems</div>
                             <div class="flow-item">Orchestration</div>
@@ -1003,7 +1175,7 @@ ORCHESTRATOR AGENT
                 </div>
                 <div class="flow-diagram" style="margin-top: 2rem;">
                     <div class="flow-layer">
-                        <div class="flow-layer-title">Layer 1: Discovery ✅</div>
+                        <div class="flow-layer-title">Layer 1: Discovery <span class="status-cell status-complete"><span class="status-indicator status-complete"></span><span class="status-text">Complete</span></span></div>
                         <div class="flow-layer-items">
                             <div class="flow-item">Shadowed SME 2-4 hours?</div>
                             <div class="flow-item">Observed 5-10 tickets?</div>
@@ -1012,7 +1184,7 @@ ORCHESTRATOR AGENT
                     </div>
                     <div class="flow-connector">↓</div>
                     <div class="flow-layer">
-                        <div class="flow-layer-title">Layer 2: Extraction ✅</div>
+                        <div class="flow-layer-title">Layer 2: Extraction <span class="status-cell status-complete"><span class="status-indicator status-complete"></span><span class="status-text">Complete</span></span></div>
                         <div class="flow-layer-items">
                             <div class="flow-item">12-section template filled?</div>
                             <div class="flow-item">500-800 lines YAML?</div>
@@ -1021,7 +1193,7 @@ ORCHESTRATOR AGENT
                     </div>
                     <div class="flow-connector">↓</div>
                     <div class="flow-layer">
-                        <div class="flow-layer-title">Layer 3: Skills Library ✅</div>
+                        <div class="flow-layer-title">Layer 3: Skills Library <span class="status-cell status-complete"><span class="status-indicator status-complete"></span><span class="status-text">Complete</span></span></div>
                         <div class="flow-layer-items">
                             <div class="flow-item">5+ pattern files created?</div>
                             <div class="flow-item">Test cases with 90%+ accuracy?</div>
@@ -1030,7 +1202,7 @@ ORCHESTRATOR AGENT
                     </div>
                     <div class="flow-connector">↓</div>
                     <div class="flow-layer">
-                        <div class="flow-layer-title">Layer 4: Data Access ✅</div>
+                        <div class="flow-layer-title">Layer 4: Data Access <span class="status-cell status-complete"><span class="status-indicator status-complete"></span><span class="status-text">Complete</span></span></div>
                         <div class="flow-layer-items">
                             <div class="flow-item">MCP servers exist?</div>
                             <div class="flow-item">Queries tested?</div>
@@ -1039,7 +1211,7 @@ ORCHESTRATOR AGENT
                     </div>
                     <div class="flow-connector">↓</div>
                     <div class="flow-layer" style="background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%); border-color: #fff;">
-                        <div class="flow-layer-title">Layer 5: BUILD AGENTS 🚀</div>
+                        <div class="flow-layer-title">Layer 5: BUILD AGENTS <span style="font-weight: 700; color: #fff;">— READY TO BUILD</span></div>
                         <div class="flow-layer-items">
                             <div class="flow-item">Multi-agent system</div>
                             <div class="flow-item">Orchestration</div>
@@ -1058,43 +1230,43 @@ ORCHESTRATOR AGENT
                 <h3>10 Production-Ready AI-Understandable Data Sources</h3>
                 <div class="grid-3">
                     <div class="card">
-                        <h4>✅ Athena</h4>
+                        <h4><span class="status-indicator status-complete"></span>Athena</h4>
                         <p>Callbacks, events, raw data</p>
                     </div>
                     <div class="card">
-                        <h4>✅ Redshift</h4>
+                        <h4><span class="status-indicator status-complete"></span>Redshift</h4>
                         <p>Load validation, data marts</p>
                     </div>
                     <div class="card">
-                        <h4>✅ Tracking API</h4>
+                        <h4><span class="status-indicator status-complete"></span>Tracking API</h4>
                         <p>Load search, status</p>
                     </div>
                     <div class="card">
-                        <h4>✅ Network API</h4>
+                        <h4><span class="status-indicator status-complete"></span>Network API</h4>
                         <p>Relationships, ELD config</p>
                     </div>
                     <div class="card">
-                        <h4>✅ Company API</h4>
+                        <h4><span class="status-indicator status-complete"></span>Company API</h4>
                         <p>Company settings</p>
                     </div>
                     <div class="card">
-                        <h4>✅ SigNoz</h4>
+                        <h4><span class="status-indicator status-complete"></span>SigNoz</h4>
                         <p>Logs, metrics, traces</p>
                     </div>
                     <div class="card">
-                        <h4>✅ Neo4j</h4>
+                        <h4><span class="status-indicator status-complete"></span>Neo4j</h4>
                         <p>Graph relationships</p>
                     </div>
                     <div class="card">
-                        <h4>✅ DataHub</h4>
+                        <h4><span class="status-indicator status-complete"></span>DataHub</h4>
                         <p>Data catalog, lineage</p>
                     </div>
                     <div class="card">
-                        <h4>✅ Slack</h4>
+                        <h4><span class="status-indicator status-complete"></span>Slack</h4>
                         <p>Historical conversations</p>
                     </div>
                     <div class="card">
-                        <h4>✅ Confluence</h4>
+                        <h4><span class="status-indicator status-complete"></span>Confluence</h4>
                         <p>Documentation</p>
                     </div>
                 </div>
@@ -1104,7 +1276,7 @@ ORCHESTRATOR AGENT
                 </div>
                 <div class="grid-2" style="margin-top: 2rem;">
                     <div class="card">
-                        <h4>🔨 In Development</h4>
+                        <h4><span class="status-indicator status-building"></span>In Development</h4>
                         <ul>
                             <li>JT Scraping API (Ocean) - 2-3 weeks</li>
                             <li>Carrier Files API - 4-6 weeks</li>
@@ -1128,59 +1300,229 @@ ORCHESTRATOR AGENT
                     <thead>
                         <tr>
                             <th>Domain</th>
-                            <th>Layer 1</th>
-                            <th>Layer 2</th>
-                            <th>Layer 3</th>
-                            <th>Layer 4</th>
-                            <th>Layer 5</th>
-                            <th>Ready?</th>
+                            <th>Layer 1<br><span style="font-weight: 400; font-size: 10px; text-transform: none; opacity: 0.7;">Discovery</span></th>
+                            <th>Layer 2<br><span style="font-weight: 400; font-size: 10px; text-transform: none; opacity: 0.7;">Extraction</span></th>
+                            <th>Layer 3<br><span style="font-weight: 400; font-size: 10px; text-transform: none; opacity: 0.7;">Skills</span></th>
+                            <th>Layer 4<br><span style="font-weight: 400; font-size: 10px; text-transform: none; opacity: 0.7;">Data</span></th>
+                            <th>Layer 5<br><span style="font-weight: 400; font-size: 10px; text-transform: none; opacity: 0.7;">Agents</span></th>
+                            <th style="text-align: center;">Ready?</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td><strong>OTR RCA</strong></td>
-                            <td>✅ Complete</td>
-                            <td>✅ Complete</td>
-                            <td>✅ 12 patterns</td>
-                            <td>✅ 100%</td>
-                            <td>🔨 Building</td>
-                            <td style="color: #0f0;">✅ YES</td>
+                            <td>
+                                <div class="domain-name">
+                                    <div class="domain-icon" style="background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3);">
+                                        <span style="color: #10b981;">OTR</span>
+                                    </div>
+                                    <span><strong>OTR RCA</strong></span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="status-cell status-complete">
+                                    <span class="status-indicator status-complete"></span>
+                                    <span class="status-text">Complete</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="status-cell status-complete">
+                                    <span class="status-indicator status-complete"></span>
+                                    <span class="status-text">Complete</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="status-cell status-complete">
+                                    <span class="status-indicator status-complete"></span>
+                                    <span class="status-text">12 patterns</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="status-cell status-complete">
+                                    <span class="status-indicator status-complete"></span>
+                                    <span class="status-text">100%</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="status-cell status-building">
+                                    <span class="status-indicator status-building"></span>
+                                    <span class="status-text">Building</span>
+                                </div>
+                            </td>
+                            <td style="text-align: center;">
+                                <span class="ready-badge ready-yes">Ready</span>
+                            </td>
                         </tr>
                         <tr>
-                            <td><strong>Ocean Tracking</strong></td>
-                            <td>🟡 Partial</td>
-                            <td>🟡 Partial</td>
-                            <td>🟡 Definition</td>
-                            <td>✅ 85%</td>
-                            <td>❌ Not started</td>
-                            <td style="color: #f90;">🟡 5-6 days</td>
+                            <td>
+                                <div class="domain-name">
+                                    <div class="domain-icon" style="background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.3);">
+                                        <span style="color: #f59e0b;">OCN</span>
+                                    </div>
+                                    <span><strong>Ocean Tracking</strong></span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="status-cell status-partial">
+                                    <span class="status-indicator status-partial"></span>
+                                    <span class="status-text">Partial</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="status-cell status-partial">
+                                    <span class="status-indicator status-partial"></span>
+                                    <span class="status-text">Partial</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="status-cell status-partial">
+                                    <span class="status-indicator status-partial"></span>
+                                    <span class="status-text">Definition</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="status-cell status-partial">
+                                    <span class="status-indicator status-partial"></span>
+                                    <span class="status-text">85%</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="status-cell status-missing">
+                                    <span class="status-indicator status-missing"></span>
+                                    <span class="status-text">Not started</span>
+                                </div>
+                            </td>
+                            <td style="text-align: center;">
+                                <span class="ready-badge ready-partial">5-6 days</span>
+                            </td>
                         </tr>
                         <tr>
-                            <td><strong>Drayage</strong></td>
-                            <td>❌ Not started</td>
-                            <td>❌ Not started</td>
-                            <td>❌ Not started</td>
-                            <td>✅ 100%</td>
-                            <td>❌ Not started</td>
-                            <td style="color: #f33;">❌ Start L1</td>
+                            <td>
+                                <div class="domain-name">
+                                    <div class="domain-icon" style="background: rgba(107, 114, 128, 0.1); border-color: rgba(107, 114, 128, 0.3);">
+                                        <span style="color: #9ca3af;">DRY</span>
+                                    </div>
+                                    <span><strong>Drayage</strong></span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="status-cell status-missing">
+                                    <span class="status-indicator status-missing"></span>
+                                    <span class="status-text">Not started</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="status-cell status-missing">
+                                    <span class="status-indicator status-missing"></span>
+                                    <span class="status-text">Not started</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="status-cell status-missing">
+                                    <span class="status-indicator status-missing"></span>
+                                    <span class="status-text">Not started</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="status-cell status-complete">
+                                    <span class="status-indicator status-complete"></span>
+                                    <span class="status-text">100%</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="status-cell status-missing">
+                                    <span class="status-indicator status-missing"></span>
+                                    <span class="status-text">Not started</span>
+                                </div>
+                            </td>
+                            <td style="text-align: center;">
+                                <span class="ready-badge ready-no">Start L1</span>
+                            </td>
                         </tr>
                         <tr>
-                            <td><strong>Air</strong></td>
-                            <td>❌ Not started</td>
-                            <td>❌ Not started</td>
-                            <td>❌ Not started</td>
-                            <td>✅ 100%</td>
-                            <td>❌ Not started</td>
-                            <td style="color: #f33;">❌ Start L1</td>
+                            <td>
+                                <div class="domain-name">
+                                    <div class="domain-icon" style="background: rgba(107, 114, 128, 0.1); border-color: rgba(107, 114, 128, 0.3);">
+                                        <span style="color: #9ca3af;">AIR</span>
+                                    </div>
+                                    <span><strong>Air Freight</strong></span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="status-cell status-missing">
+                                    <span class="status-indicator status-missing"></span>
+                                    <span class="status-text">Not started</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="status-cell status-missing">
+                                    <span class="status-indicator status-missing"></span>
+                                    <span class="status-text">Not started</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="status-cell status-missing">
+                                    <span class="status-indicator status-missing"></span>
+                                    <span class="status-text">Not started</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="status-cell status-complete">
+                                    <span class="status-indicator status-complete"></span>
+                                    <span class="status-text">100%</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="status-cell status-missing">
+                                    <span class="status-indicator status-missing"></span>
+                                    <span class="status-text">Not started</span>
+                                </div>
+                            </td>
+                            <td style="text-align: center;">
+                                <span class="ready-badge ready-no">Start L1</span>
+                            </td>
                         </tr>
                         <tr>
-                            <td><strong>Implementation</strong></td>
-                            <td>❌ Not started</td>
-                            <td>❌ Not started</td>
-                            <td>❌ Not started</td>
-                            <td>✅ 100%</td>
-                            <td>❌ Not started</td>
-                            <td style="color: #f33;">❌ Start L1</td>
+                            <td>
+                                <div class="domain-name">
+                                    <div class="domain-icon" style="background: rgba(107, 114, 128, 0.1); border-color: rgba(107, 114, 128, 0.3);">
+                                        <span style="color: #9ca3af;">IMP</span>
+                                    </div>
+                                    <span><strong>Implementation</strong></span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="status-cell status-missing">
+                                    <span class="status-indicator status-missing"></span>
+                                    <span class="status-text">Not started</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="status-cell status-missing">
+                                    <span class="status-indicator status-missing"></span>
+                                    <span class="status-text">Not started</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="status-cell status-missing">
+                                    <span class="status-indicator status-missing"></span>
+                                    <span class="status-text">Not started</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="status-cell status-complete">
+                                    <span class="status-indicator status-complete"></span>
+                                    <span class="status-text">100%</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="status-cell status-missing">
+                                    <span class="status-indicator status-missing"></span>
+                                    <span class="status-text">Not started</span>
+                                </div>
+                            </td>
+                            <td style="text-align: center;">
+                                <span class="ready-badge ready-no">Start L1</span>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
