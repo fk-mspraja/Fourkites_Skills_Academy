@@ -1,306 +1,340 @@
-# FourKites AI Framework - RCA Agent Implementation
+# FourKites Native AI Framework - Skills Library Pattern
 
 ## Overview
 
-This repository contains the architecture and implementation approach for building AI-powered Root Cause Analysis (RCA) agents using the FourKites Native AI Framework with Skills Library pattern.
+This repository contains the **FourKites Native AI Framework** - a reusable, product-agnostic architecture for building intelligent AI agents using the Skills Library pattern.
+
+**Key Principle:** Skills are organizational assets that encode domain expertise in machine-executable form, reusable across products, agents, and use cases.
 
 ## Architecture
 
-Based on the **5-Layer AI Framework**:
+The **5-Layer AI Framework** provides clear separation of concerns:
 
 ```
-Layer 1: Classification & Routing (Cassie Agent)
+Layer 1: Classification & Routing
     ↓
-Layer 2: Skills Library (Diagnostic Intelligence)
+Layer 2: Skills Library (Reusable Intelligence)
     ↓
 Layer 3: Investigation Engine (Orchestration)
     ↓
-Layer 4: MCP Integration Layer (Data Access)
+Layer 4: Data Integration Layer
     ↓
-Layer 5: Data Sources (Redshift, Clickhouse, APIs)
+Layer 5: Data Sources
 ```
 
-## Skills Library - Hierarchical Organization
+### Layer Responsibilities
 
-Skills are organized as **hierarchical trees**, not flat lists. Parent skills orchestrate sub-skills with early exit when root cause is found.
+**Layer 1: Classification & Routing**
+- Intent classification
+- Domain identification
+- Agent selection
+- Request routing
 
-### OTR Tracking Diagnostics (Parent Skill)
+**Layer 2: Skills Library** ⭐ **Core Innovation**
+- Domain expertise encoding
+- Pattern-based intelligence
+- Hierarchical skill organization
+- Cross-product reusability
 
-```
-📦 otr_tracking_diagnostics
-├─ 🔧 configuration_checks (Tier 1: Fast - Redshift ~100ms)
-│   ├─ eld_enabled_check
-│   │   • Query: network_configurations.eld_tracking_enabled
-│   │   • Confidence: HIGH (100%)
-│   │   • Auto-resolve: YES
-│   │
-│   ├─ network_config_check
-│   │   • Query: network_configurations table
-│   │   • Confidence: HIGH (95%)
-│   │   • Auto-resolve: YES
-│   │
-│   └─ feature_flag_check
-│       • Query: feature_flags table
-│       • Confidence: HIGH (100%)
-│       • Auto-resolve: YES
-│
-├─ 🎯 asset_validation (Tier 1: Fast - Redshift ~200ms)
-│   ├─ asset_assignment_check
-│   │   • Query: load_tracking.truck_number, trailer_number, device_id
-│   │   • Confidence: HIGH (100%)
-│   │   • Auto-resolve: YES
-│   │
-│   ├─ carrier_capability_check
-│   │   • Query: carriers table (supports truck GPS vs trailer GPS)
-│   │   • Confidence: MEDIUM (85%)
-│   │   • Auto-resolve: PARTIAL
-│   │
-│   └─ device_assignment_check
-│       • Query: device assignment status
-│       • Confidence: HIGH (95%)
-│       • Auto-resolve: YES
-│
-└─ 📊 data_flow_analysis (Tier 2: Slow - Clickhouse ~2-10s)
-    ├─ gps_provider_health
-    │   • Query: Clickhouse gps_provider_api_logs (last 2 hours)
-    │   • Pattern match: "null timestamp", "API timeout", "invalid coordinates"
-    │   • Confidence: MEDIUM (80%)
-    │   • Auto-resolve: PARTIAL
-    │
-    ├─ outlier_detection_logs
-    │   • Query: Clickhouse outlier_detection logs
-    │   • Pattern match: "speed-based rejection", "stale coordinates"
-    │   • Confidence: MEDIUM (75%)
-    │   • Auto-resolve: NO (diagnostic guidance only)
-    │
-    └─ ingestion_status
-        • Query: Clickhouse ingestion service logs
-        • Cross-domain escalation: Routes to ingestion_diagnostics skill
-        • Confidence: MEDIUM (70%)
-        • Auto-resolve: NO (requires cross-domain investigation)
-```
+**Layer 3: Investigation Engine**
+- Skill orchestration
+- Execution sequencing
+- Context management
+- Cross-skill coordination
 
-### Network Configuration Diagnostics
+**Layer 4: Data Integration**
+- Unified data access
+- Query optimization
+- Result caching
+- Performance management
+
+**Layer 5: Data Sources**
+- Databases
+- APIs
+- External services
+- Log systems
+
+## Skills Library - Core Concepts
+
+### What is a Skill?
+
+A **skill** is:
+- Domain expertise encoded in machine-executable format
+- Self-contained diagnostic or operational intelligence
+- Reusable across products and use cases
+- Versioned and independently testable
+
+A skill is **NOT**:
+- Product-specific code
+- Static documentation
+- Data access logic
+- Business process workflow
+
+### Hierarchical Organization
+
+Skills are organized as **trees**, not flat lists:
 
 ```
-📦 network_configuration_diagnostics
-├─ 🔧 connectivity_checks
-│   ├─ connect_config_enabled
-│   ├─ api_credentials_valid
-│   └─ network_pairing_status
-│
-├─ 🎯 integration_health
-│   ├─ webhook_delivery_status
-│   ├─ api_rate_limit_check
-│   └─ authentication_failures
-│
-└─ 📊 data_sync_analysis
-    ├─ load_sync_status
-    ├─ carrier_data_freshness
-    └─ mapping_configuration
+📦 parent_skill (orchestrator)
+├─ 🔧 skill_family_1 (fast checks)
+│   ├─ sub_skill_1a
+│   ├─ sub_skill_1b
+│   └─ sub_skill_1c
+├─ 🎯 skill_family_2 (medium complexity)
+│   ├─ sub_skill_2a
+│   └─ sub_skill_2b
+└─ 📊 skill_family_3 (deep analysis)
+    ├─ sub_skill_3a
+    └─ sub_skill_3b (may escalate to another parent skill)
 ```
 
-### Ingestion Diagnostics (Cross-Domain)
+**Execution pattern:**
+- Parent skill orchestrates sub-skills sequentially
+- Early exit when objective achieved
+- No wasted computation on unnecessary checks
+
+### Skill Anatomy
+
+```yaml
+skill_id: example_diagnostic_skill
+family: diagnostics
+tier: 1  # 1=fast, 2=medium, 3=slow
+category: configuration
+
+# What the skill checks
+objective: "Verify system configuration state"
+
+# Data requirements
+data_sources:
+  - source: primary_db
+    query_template: "SELECT config_value FROM configs WHERE..."
+  
+# Decision logic
+checks:
+  - name: "config_enabled"
+    condition: "config_value == true"
+    confidence: HIGH
+    
+# Execution constraints
+optimization:
+  timeout_ms: 500
+  cache_ttl_seconds: 300
+  
+# Outcomes
+outcomes:
+  - condition: "config_enabled == false"
+    result: "Configuration disabled"
+    confidence: 100
+    action: auto_resolve
+    template: "Enable {config_name} in system settings"
+  - condition: "config_enabled == true"
+    result: "Configuration valid"
+    action: continue
+    
+# Cross-skill dependencies
+escalation:
+  - trigger: "symptoms_present AND no_root_cause"
+    target_skill: "deeper_analysis_skill"
+    context: ["symptom_data", "checked_configurations"]
+```
+
+## Execution Patterns
+
+### Pattern 1: Sequential with Early Exit
 
 ```
-📦 ingestion_diagnostics
-├─ 🔧 polling_service_health
-│   ├─ gps_polling_active
-│   ├─ polling_frequency_check
-│   └─ api_connectivity
-│
-├─ 🎯 data_ingestion_pipeline
-│   ├─ kafka_lag_check
-│   ├─ message_processing_rate
-│   └─ dead_letter_queue_analysis
-│
-└─ 📊 provider_integration_health
-    ├─ provider_api_status
-    ├─ authentication_health
-    └─ data_quality_checks
-```
+Input: Problem report
 
-## Execution Flow
-
-### Sequential Execution with Early Exit
-
-```
-Case: Load Not Tracking
-
-Step 1: Run otr_tracking_diagnostics
-  └─ configuration_checks.eld_enabled_check
-      ├─ Query Redshift: 100ms
-      ├─ Result: eld_tracking_enabled = FALSE
-      ├─ Confidence: 100%
-      └─ ✅ ROOT CAUSE FOUND → Auto-resolve
-          STOP (skip remaining 14 checks)
+Step 1: Run parent_skill
+  └─ family_1.sub_skill_1a
+      ├─ Execute check (100ms)
+      ├─ Result: OBJECTIVE_ACHIEVED
+      └─ ✅ STOP (skip remaining 14 skills)
 
 Total Time: ~150ms
-Response: "ELD tracking not enabled at network level. Enable in Connect configuration."
+Efficiency: Avoided 14 unnecessary checks
 ```
 
+### Pattern 2: Cross-Domain Escalation
+
 ```
-Case: Load Not Tracking (Cross-Domain)
+Input: Problem report
 
-Step 1: Run otr_tracking_diagnostics
-  ├─ configuration_checks → All PASS ✓
-  ├─ asset_validation → All PASS ✓
-  └─ data_flow_analysis.ingestion_status
-      ├─ Symptoms: Asset assigned but no GPS data received
-      ├─ Root cause NOT in OTR domain
-      └─ ⚡ ESCALATE to ingestion_diagnostics skill
+Step 1: Run domain_a_skill
+  ├─ family_1 checks → PASS ✓
+  ├─ family_2 checks → PASS ✓
+  └─ family_3.deep_analysis
+      ├─ Symptoms found but no root cause in domain A
+      └─ ⚡ ESCALATE to domain_b_skill
 
-Step 2: Run ingestion_diagnostics (cross-domain handoff)
-  └─ polling_service_health.gps_polling_active
-      ├─ Query Clickhouse: 2-3s
-      ├─ Result: GPS polling service DOWN
-      ├─ Confidence: 90%
-      └─ ✅ ROOT CAUSE FOUND → Create engineering ticket
+Step 2: Run domain_b_skill (cross-domain handoff)
+  └─ family_1.critical_check
+      ├─ Execute check (2s)
+      ├─ Result: ROOT_CAUSE_FOUND
+      └─ ✅ RESOLVED
 
 Total Time: ~5s
-Response: "GPS polling service not running. Engineering ticket created."
+Cross-domain: Domain A → Domain B handoff successful
 ```
 
-## Performance Strategy
+## Performance Architecture
 
 ### Tiered Execution by Speed
 
-**Tier 1: Configuration & Assignment Checks (Fast)**
-- Data source: Redshift
-- Response time: 100-300ms
+**Tier 1: Fast Checks (100-300ms)**
+- Data source: Primary database
+- Query type: Boolean flags, simple lookups
 - Coverage: 70-80% of cases
-- Checks: Boolean flags, simple joins
+- Example: Configuration validation, assignment checks
 
-**Tier 2: Log Analysis (Slow)**
-- Data source: Clickhouse
-- Response time: 2-10s
+**Tier 2: Medium Analysis (1-5s)**
+- Data source: Analytical databases
+- Query type: Aggregations, pattern matching
 - Coverage: 15-20% of cases
-- Optimization:
-  - Time-boxed queries (last 2 hours only)
-  - Row limits (100 max)
-  - Result caching (5 min TTL)
-  - Query only when Tier 1 passes but no root cause
+- Example: Log analysis, trend detection
 
-**Tier 3: Cross-Domain Investigation (Slowest)**
-- Multiple data sources
-- Response time: 5-15s
+**Tier 3: Deep Investigation (5-15s)**
+- Data source: Multiple systems
+- Query type: Complex joins, cross-domain queries
 - Coverage: 5-10% of cases
-- Requires agent handoff or collaboration
+- Example: Cross-system correlation, historical analysis
 
-### Query Optimization
+### Optimization Strategies
+
+**1. Query Optimization**
 
 Skills define WHAT to check:
 ```yaml
-skill: gps_provider_health
-check: "Query GPS provider logs for error patterns"
-patterns:
-  - "null timestamp"
-  - "API timeout"
-  - "invalid coordinates"
+check: "Analyze system logs for error patterns"
+patterns: ["timeout", "connection_refused", "null_pointer"]
 ```
 
-Investigation Engine optimizes HOW to query:
+Investigation Engine optimizes HOW:
 ```sql
 -- Engine adds optimization constraints
-SELECT timestamp, provider_name, error_message, location_data
-FROM gps_provider_api_logs
-WHERE load_id = ?
-  AND timestamp >= NOW() - INTERVAL '2 hours'  -- Time-box
-  AND error_message IS NOT NULL
+SELECT timestamp, error_type, error_message
+FROM system_logs
+WHERE timestamp >= NOW() - INTERVAL '2 hours'  -- Time-box
+  AND error_type IN ('timeout', 'connection_refused', 'null_pointer')
 ORDER BY timestamp DESC
 LIMIT 100  -- Result limit
 ```
 
-### Caching Strategy
+**2. Result Caching**
 
 ```
-First case for Load #12345 → Query Clickhouse (3s)
-  └─ Cache result with 5 min TTL
+First execution for entity #12345 → Query database (3s)
+  └─ Cache result with TTL
 
-Second case for Load #12345 within 5 min → Use cache (10ms)
-  └─ Massive performance win for duplicate investigations
+Subsequent execution within TTL → Use cache (10ms)
+  └─ 300x performance improvement
 ```
 
-## Gap Analysis Findings
+**3. Parallel Execution**
 
-The comprehensive Gap Analysis (367KB PDF) identified:
+When skills have no dependencies:
+```
+Run skill_a, skill_b, skill_c in parallel
+Wait for all results
+Aggregate findings
+```
 
-### What's Working
-- ✅ Classification & Routing (Cassie Agent)
-- ✅ MCP Infrastructure (5 production MCPs)
-- ✅ React Agent execution engine
-- ✅ 100+ patterns documented (Arpit's category sheet)
+## Example Application: RCA Diagnostics
 
-### Critical Gaps
-- ❌ MCP approach fundamentally flawed (built for human-assisted RCA, not autonomous)
-- ❌ No diagnostic intelligence in specialized prompts
-- ❌ No cross-domain investigation capability
-- ❌ 100% escalation rate (0% auto-resolution)
-- ❌ Decision loop bugs in classification layer
+This section shows how the framework is applied to build diagnostic agents. **These are examples, not the framework itself.**
 
-### Strategic Decision
-- **Abandon incremental MCP fixes** → Would still result in 100% manual intervention
-- **Adopt 5-Layer AI Framework** → Proper architecture with Skills Library as intelligence layer
-- **Timeline: April 2026** → 16-week implementation for production-ready system
+### Example Skill: OTR Tracking Diagnostics
 
-## Implementation Roadmap
+```
+📦 otr_tracking_diagnostics (example parent skill)
+├─ 🔧 configuration_checks (Tier 1: Fast ~100ms)
+│   ├─ eld_enabled_check
+│   ├─ network_config_check
+│   └─ feature_flag_check
+├─ 🎯 asset_validation (Tier 1: Fast ~200ms)
+│   ├─ asset_assignment_check
+│   ├─ carrier_capability_check
+│   └─ device_assignment_check
+└─ 📊 data_flow_analysis (Tier 2: Slow ~2-10s)
+    ├─ gps_provider_health
+    ├─ outlier_detection_logs
+    └─ ingestion_status (cross-domain escalation)
+```
 
-### Phase 1: Skills Library Foundation (Weeks 1-4)
-- Convert 20 HIGH-feasibility patterns to skills
-- Implement hierarchical skill structure
-- Build skill execution engine
+### Example Execution
 
-### Phase 2: Investigation Orchestration (Weeks 5-8)
-- Tier 1 fast checks (Redshift)
-- Tier 2 log analysis (Clickhouse with optimization)
-- Query optimization layer
+```
+Case: System not functioning as expected
 
-### Phase 3: Cross-Domain Investigation (Weeks 9-12)
-- Agent handoff mechanism
-- Context passing between skills
-- Investigation audit trail
+Step 1: configuration_checks.eld_enabled_check
+  ├─ Query: config_db (100ms)
+  ├─ Result: enabled = FALSE
+  ├─ Confidence: 100%
+  └─ ✅ ROOT CAUSE FOUND → Auto-resolve
 
-### Phase 4: Production Deployment (Weeks 13-16)
-- Testing on historical cases
-- Shadow mode validation
-- Phased rollout (10% → 50% → 100%)
-
-## Success Metrics
-
-| Metric | Current | Target (April 2026) |
-|--------|---------|---------------------|
-| Auto-Resolution Rate | 0% | 60-70% |
-| Avg Investigation Time | 15-30 min | 30s - 3 min |
-| Root Cause Accuracy | 0% | 85%+ |
-| Customer Satisfaction | N/A | 80%+ |
-| Manual Intervention | 100% | 10-20% (complex cases only) |
-
-## Key Documents
-
-- **FOURKITES_AI_FRAMEWORK_PROPOSAL.html** - Complete framework architecture with visual slides
-- **docs/index.html** - Architecture diagrams and component breakdown
-- **Gap Analysis PDF** (local only) - Detailed technical analysis of current system failures
+Total Time: ~150ms
+Response: "Feature disabled in configuration. Enable in settings."
+```
 
 ## Architecture Principles
 
-1. **Skills Library as Intelligence Layer** - Diagnostic intelligence belongs in Skills, not in data tools (MCPs)
-2. **Hierarchical Skills** - Parent skills orchestrate sub-skills, not flat 85+ skill list
-3. **Early Exit Pattern** - Stop execution when root cause found, don't waste time on remaining checks
-4. **Tiered by Speed** - Fast checks first, slow log analysis only when needed
+1. **Skills Library as Intelligence Layer** - Domain expertise belongs in Skills, not in data access tools
+2. **Hierarchical Organization** - Parent skills orchestrate sub-skills, not flat skill lists
+3. **Early Exit Pattern** - Stop when objective achieved, don't waste computation
+4. **Tiered by Speed** - Fast checks first, slow analysis only when needed
 5. **Separation of Concerns** - Skills define WHAT, Investigation Engine optimizes HOW
-6. **Cross-Domain Capability** - Skills can escalate to other domain skills when root cause crosses boundaries
-7. **Evidence-Based Confidence** - Quantifiable confidence scores determine auto-resolve vs escalation
+6. **Cross-Domain Capability** - Skills can escalate to other domain skills
+7. **Evidence-Based Confidence** - Quantifiable confidence scores drive automation decisions
+8. **Product Agnostic** - Skills are reusable organizational assets, not product-specific code
 
 ## Technology Stack
 
-- **Classification Layer**: Cassie Agent (existing)
-- **Skills Library**: YAML-based skill definitions
+- **Skills Definition**: YAML-based declarative format
 - **Investigation Engine**: Python orchestration layer
-- **Data Access**: MCP integration (Redshift, Clickhouse, Salesforce, Knowledge, Support AI, Atlassian)
-- **Caching**: Redis (5 min TTL for log query results)
-- **Monitoring**: Investigation audit trail, performance metrics
+- **Data Integration**: Pluggable adapters for any data source
+- **Caching**: Redis or similar (configurable TTL)
+- **Monitoring**: Execution traces, performance metrics, skill analytics
+
+## Strategic Value
+
+### For Engineering
+- **Reusability**: Write diagnostic logic once, use in multiple products
+- **Maintainability**: Update skill = instant deployment across all agents
+- **Testability**: Skills are independently testable units
+- **Scalability**: Add new skills without changing core architecture
+
+### For Organization
+- **Knowledge Capture**: Expert knowledge becomes organizational asset
+- **Onboarding**: New hires learn from Skills Library
+- **Consistency**: Same diagnostic approach across all products
+- **Continuous Improvement**: Skills evolve based on operational data
+
+### For Products
+- **Faster Time-to-Market**: Leverage existing skills for new features
+- **Higher Quality**: Reuse proven diagnostic patterns
+- **Lower Maintenance**: Shared intelligence layer reduces duplication
+- **Innovation Enablement**: Focus on product features, not diagnostic reinvention
+
+## Key Documents
+
+- **FOURKITES_AI_FRAMEWORK_PROPOSAL.html** - Complete framework architecture with visual presentation
+- **docs/index.html** - Architecture diagrams and component breakdown
+
+## Use Cases
+
+The Skills Library framework enables:
+
+- **Diagnostic Agents**: Automated root cause analysis
+- **Operational Agents**: System health monitoring and remediation
+- **Support Agents**: Intelligent ticket routing and resolution
+- **Data Quality Agents**: Automated data validation and cleansing
+- **Security Agents**: Threat detection and response
+- **Compliance Agents**: Policy enforcement and audit automation
+
+Any domain where **pattern-based intelligence** + **systematic investigation** creates value.
 
 ---
 
-**Status**: Framework approved by Engineering Leadership (January 2026)  
-**Next Steps**: Begin Phase 1 implementation (Skills Library foundation)
+**Framework Status**: Approved for implementation (January 2026)  
+**Current Application**: Diagnostic agents for support operations  
+**Future Applications**: Cross-product skill reuse across Ocean, Yard, Visibility, and Operations domains
