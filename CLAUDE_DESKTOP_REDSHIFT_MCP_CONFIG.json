@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "redshift": {
+      "command": "node",
+      "args": [
+        "/Users/msp.raja/agent-cassie/investigation-agent/mcp-server-redshift/dist/index.js"
+      ],
+      "env": {
+        "REDSHIFT_HOST": "productiondwh.c5iyekvfm1hi.us-east-1.redshift.amazonaws.com",
+        "REDSHIFT_PORT": "5439",
+        "REDSHIFT_DATABASE": "productiondwh",
+        "REDSHIFT_USER": "fkin10365",
+        "REDSHIFT_PASSWORD": "H3r*3^tyC3Bh",
+        "REDSHIFT_SCHEMAS": "public,hadoop",
+        "TRANSPORT_TYPE": "stdio"
+      }
+    }
+  }
+}

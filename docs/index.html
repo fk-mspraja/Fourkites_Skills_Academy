@@ -243,8 +243,6 @@
         <button class="nav-btn active" onclick="showSection('overview')">Overview</button>
         <button class="nav-btn" onclick="showSection('full-arch')">Full Architecture</button>
         <button class="nav-btn" onclick="showSection('layers')">5 Layers</button>
-        <button class="nav-btn" onclick="showSection('skills-detail')">Skills Library</button>
-        <button class="nav-btn" onclick="showSection('contents')">Contents</button>
         <button class="nav-btn" onclick="showSection('data-flow')">Data Flow</button>
     </div>
 
@@ -275,29 +273,19 @@
                     <li><strong>100+ Diagnostic Patterns</strong> - ELD Not Enabled, Asset Not Assigned, GPS Provider Errors, Outlier Detection, etc.</li>
                     <li><strong>Investigation Playbooks</strong> - Domain-specific protocols with step-by-step diagnostic checks</li>
                     <li><strong>Response Templates</strong> - Auto-resolution text for common patterns</li>
-                    <li><strong>Evidence Rules</strong> - Confidence scoring and auto-resolve criteria (90%+ threshold)</li>
-                    <li><strong>Bot Feasibility Ratings</strong> - HIGH/MEDIUM/LOW automation potential for each pattern</li>
+                    <li><strong>Evidence Rules</strong> - Confidence scoring and auto-resolve criteria</li>
+                    <li><strong>Bot Feasibility Ratings</strong> - HIGH/MEDIUM/LOW automation potential</li>
                 </ul>
-            </div>
-
-            <div class="highlight">
-                <h3>How is the Skills Library Used?</h3>
-                <p>The Skills Library is accessed <strong>3 times</strong> during investigation:</p>
-                <ol>
-                    <li><strong>Load Playbook:</strong> After classification, Category Router queries Skills Library to select appropriate diagnostic playbook</li>
-                    <li><strong>Pattern Matching:</strong> After collecting evidence, Pattern Matcher queries Skills Library to identify known patterns</li>
-                    <li><strong>Response Generation:</strong> After high-confidence match, Response Generator loads template from Skills Library</li>
-                </ol>
             </div>
 
             <div class="highlight">
                 <h3>Strategic Benefits</h3>
                 <ul>
-                    <li><strong>Reusability:</strong> Same skills used across multiple AI agents - write once, use everywhere</li>
-                    <li><strong>Maintainability:</strong> Update one pattern in Skills Library, all consumers benefit immediately</li>
-                    <li><strong>Rapid Development:</strong> New agents leverage existing diagnostic intelligence (weeks → days)</li>
-                    <li><strong>Knowledge Capture:</strong> Institutional expertise preserved and accessible systematically</li>
-                    <li><strong>Continuous Improvement:</strong> Patterns refined based on operational data, all agents improve simultaneously</li>
+                    <li><strong>Reusability:</strong> Same skills used across multiple AI agents</li>
+                    <li><strong>Maintainability:</strong> Update one pattern, all consumers benefit</li>
+                    <li><strong>Rapid Development:</strong> New agents leverage existing intelligence</li>
+                    <li><strong>Knowledge Capture:</strong> Institutional expertise preserved systematically</li>
+                    <li><strong>Continuous Improvement:</strong> Patterns refined based on operational data</li>
                 </ul>
             </div>
         </section>
@@ -306,48 +294,27 @@
         <section id="full-arch" class="section">
             <h2>1. Complete Architecture with Skills Library</h2>
             <div class="description">
-                <strong>Use Case:</strong> Shows how the Skills Library integrates into the full diagnostic flow, serving as the central knowledge repository accessed at multiple points.
+                <strong>Use Case:</strong> Shows how the Skills Library integrates into the full diagnostic flow.
             </div>
             <div class="diagram-container">
                 <div class="mermaid">
-flowchart TD
-    Start([User Input]) --> Cassie[Cassie Agent]
-    Cassie --> Router[Category Router]
-    Router --> SkillsLib[(Skills Library)]
-    SkillsLib --> LoadPlaybook[Load Playbook]
-    LoadPlaybook --> Playbook[Playbook Executor]
-    Playbook --> Parallel{Diagnostic Checks}
-    Parallel --> Check1[ELD Config]
-    Parallel --> Check2[Asset Assignment]
-    Parallel --> Check3[Log Analysis]
-    Parallel --> Check4[Data Quality]
-    Check1 --> Evidence[Evidence Collector]
-    Check2 --> Evidence
-    Check3 --> Evidence
-    Check4 --> Evidence
-    Evidence --> SkillsLib2[(Skills Library)]
-    SkillsLib2 --> Pattern[Pattern Matcher]
-    Pattern --> Confidence[Confidence Scorer]
-    Confidence --> Decision{High Confidence?}
-    Decision -->|Yes| SkillsLib3[(Skills Library)]
-    SkillsLib3 --> AutoResponse[Auto Response]
-    Decision -->|No| ManualReview[Manual Review]
-    AutoResponse --> End1([Resolution])
-    ManualReview --> End2([Escalation])
-
-    style Cassie fill:#e9ecef,stroke:#495057,stroke-width:2px
-    style Router fill:#e9ecef,stroke:#495057,stroke-width:2px
-    style SkillsLib fill:#fff,stroke:#000,stroke-width:3px
-    style SkillsLib2 fill:#fff,stroke:#000,stroke-width:3px
-    style SkillsLib3 fill:#fff,stroke:#000,stroke-width:3px
-    style LoadPlaybook fill:#f8f9fa,stroke:#6c757d,stroke-width:2px
-    style Playbook fill:#f8f9fa,stroke:#6c757d,stroke-width:2px
-    style Evidence fill:#f8f9fa,stroke:#6c757d,stroke-width:2px
-    style Pattern fill:#f8f9fa,stroke:#6c757d,stroke-width:2px
-    style Confidence fill:#f8f9fa,stroke:#6c757d,stroke-width:2px
-    style Decision fill:#dee2e6,stroke:#495057,stroke-width:2px
-    style AutoResponse fill:#e9ecef,stroke:#212529,stroke-width:2px
-    style ManualReview fill:#dee2e6,stroke:#6c757d,stroke-width:2px
+graph TD
+    A[User Input] --> B[Cassie Agent]
+    B --> C[Category Router]
+    C --> D[(Skills Library)]
+    D --> E[Load Playbook]
+    E --> F[Playbook Executor]
+    F --> G[Diagnostic Checks]
+    G --> H[Evidence Collector]
+    H --> I[(Skills Library)]
+    I --> J[Pattern Matcher]
+    J --> K[Confidence Scorer]
+    K --> L{High Confidence?}
+    L -->|Yes| M[(Skills Library)]
+    M --> N[Auto Response]
+    L -->|No| O[Manual Review]
+    N --> P[Resolution]
+    O --> Q[Escalation]
                 </div>
             </div>
         </section>
@@ -356,217 +323,101 @@ flowchart TD
         <section id="layers" class="section">
             <h2>2. Five-Layer Architecture</h2>
             <div class="description">
-                <strong>Use Case:</strong> High-level view showing Skills Library as a distinct architectural layer between classification and execution.
+                <strong>Use Case:</strong> High-level view showing Skills Library as Layer 2.
             </div>
             <div class="diagram-container">
                 <div class="mermaid">
-flowchart TD
+graph TD
     subgraph L1[Layer 1 Classification]
-        Input[User Input] --> Cassie[Cassie Agent]
-        Cassie --> Router[Category Router]
+        A[User Input]
+        B[Cassie Agent]
+        C[Category Router]
     end
 
     subgraph L2[Layer 2 Skills Library]
-        Router --> Skills[(Skills Library)]
-        Skills --> LoadPlaybook[Playbook Selector]
+        D[(Skills Library)]
+        E[Playbook Selector]
     end
 
     subgraph L3[Layer 3 Investigation]
-        LoadPlaybook --> Executor[Playbook Executor]
-        Executor --> Diagnostics[Diagnostic Checks]
+        F[Playbook Executor]
+        G[Diagnostic Checks]
     end
 
     subgraph L4[Layer 4 Intelligence]
-        Diagnostics --> Evidence[Evidence Aggregation]
-        Evidence --> Skills2[(Skills Library)]
-        Skills2 --> Matcher[Pattern Matcher]
-        Matcher --> ConfScorer[Confidence Scorer]
+        H[Evidence Aggregation]
+        I[Pattern Matcher]
+        J[Confidence Scorer]
     end
 
     subgraph L5[Layer 5 Decision]
-        ConfScorer --> Decision{High Confidence?}
-        Decision -->|Yes| Skills3[(Skills Library)]
-        Skills3 --> AutoGen[Auto Response]
-        Decision -->|No| Manual[Manual Review]
+        K{Decision}
+        L[Auto Response]
+        M[Manual Review]
     end
 
-    AutoGen --> Resolution([Resolution])
-    Manual --> Escalation([Escalation])
-
-    style L1 fill:#e9ecef,stroke:#495057,stroke-width:2px
-    style L2 fill:#fff,stroke:#000,stroke-width:3px
-    style L3 fill:#f8f9fa,stroke:#6c757d,stroke-width:2px
-    style L4 fill:#e9ecef,stroke:#495057,stroke-width:2px
-    style L5 fill:#dee2e6,stroke:#495057,stroke-width:2px
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G
+    G --> H
+    H --> I
+    I --> J
+    J --> K
+    K --> L
+    K --> M
                 </div>
-            </div>
-        </section>
-
-        <!-- Skills Library Detail Section -->
-        <section id="skills-detail" class="section">
-            <h2>3. Skills Library Architecture Detail</h2>
-            <div class="description">
-                <strong>Use Case:</strong> Internal structure of the Skills Library showing what it contains and who consumes it.
-            </div>
-            <div class="diagram-container">
-                <div class="mermaid">
-flowchart TD
-    subgraph SL[Skills Library]
-        Taxonomy[Category Taxonomy]
-        Playbooks[Diagnostic Playbooks]
-        Templates[Response Templates]
-        Rules[Evidence Rules]
-        Feasibility[Bot Feasibility]
-    end
-
-    subgraph Consumers[Components]
-        RouterComp[Category Router]
-        ExecutorComp[Playbook Executor]
-        MatcherComp[Pattern Matcher]
-        ResponseGen[Response Generator]
-    end
-
-    RouterComp -.-> Taxonomy
-    ExecutorComp -.-> Playbooks
-    MatcherComp -.-> Rules
-    ResponseGen -.-> Templates
-    MatcherComp -.-> Feasibility
-
-    style SL fill:#fff,stroke:#000,stroke-width:3px
-    style Consumers fill:#f8f9fa,stroke:#6c757d,stroke-width:2px
-                </div>
-            </div>
-        </section>
-
-        <!-- Skills Contents Section -->
-        <section id="contents" class="section">
-            <h2>4. Skills Library Contents</h2>
-            <div class="description">
-                <strong>Use Case:</strong> What's actually stored in the Skills Library - patterns, playbooks, templates, and rules.
-            </div>
-            <div class="diagram-container">
-                <div class="mermaid">
-flowchart LR
-    subgraph Skills[Skills Library]
-        direction TB
-
-        subgraph Patterns[Diagnostic Patterns]
-            P1[ELD Not Enabled]
-            P2[Asset Not Assigned]
-            P3[GPS Provider Errors]
-            P4[Outlier Detection]
-            P5[100 More Patterns]
-        end
-
-        subgraph Playbooks[Investigation Playbooks]
-            PB1[OTR Tracking]
-            PB2[Network Config]
-            PB3[Ocean Tracking]
-            PB4[GPS Provider]
-        end
-
-        subgraph Templates[Response Templates]
-            T1[ELD Enable]
-            T2[Asset Assignment]
-            T3[Configuration Fix]
-            T4[GPS Provider]
-        end
-
-        subgraph Rules[Evidence Rules]
-            R1[Confidence Thresholds]
-            R2[Auto Resolve Criteria]
-            R3[Escalation Triggers]
-            R4[Quality Gates]
-        end
-    end
-
-    Patterns --> Playbooks
-    Playbooks --> Templates
-    Rules --> Templates
-
-    style Skills fill:#fff,stroke:#000,stroke-width:3px
-    style Patterns fill:#f8f9fa,stroke:#6c757d,stroke-width:2px
-    style Playbooks fill:#e9ecef,stroke:#495057,stroke-width:2px
-    style Templates fill:#dee2e6,stroke:#495057,stroke-width:2px
-    style Rules fill:#f8f9fa,stroke:#6c757d,stroke-width:2px
-                </div>
-            </div>
-
-            <div class="highlight">
-                <h3>Pattern Examples by Feasibility</h3>
-                <ul>
-                    <li><strong>HIGH Feasibility (60-70% auto-resolve):</strong> ELD Not Enabled, Asset Not Assigned, Check Call Expiry, Duplicate SCAC, Feature Flag Disabled</li>
-                    <li><strong>MEDIUM Feasibility (diagnostic guidance):</strong> Outlier Detection, Status Code Processing, Geofence Issues, Infrequent Updates, GPS Provider Errors</li>
-                    <li><strong>LOW Feasibility (engineering escalation):</strong> Infrastructure Issues, Kafka Lag, Database Timeout, Complex Integration Problems</li>
-                </ul>
             </div>
         </section>
 
         <!-- Data Flow Section -->
         <section id="data-flow" class="section">
-            <h2>5. Data Flow Through Skills Library</h2>
+            <h2>3. Data Flow Through Skills Library</h2>
             <div class="description">
-                <strong>Use Case:</strong> Step-by-step data flow showing how the Skills Library is accessed at multiple points during investigation.
+                <strong>Use Case:</strong> Step-by-step data flow showing Skills Library access points.
             </div>
             <div class="diagram-container">
                 <div class="mermaid">
-flowchart TD
-    Case[Support Case] --> Cassie[Cassie Agent]
-    Cassie --> Router[Category Router]
-    Router -->|Load Category| Skills1[(Skills Library)]
-    Skills1 --> SelectPlaybook[Select Playbook]
-    SelectPlaybook --> Executor[Playbook Executor]
-    Executor -->|Query Data| MCPs[(MCP Servers)]
-    MCPs -->|Return Data| Evidence[Evidence Collector]
-    Evidence -->|Match Pattern| Skills2[(Skills Library)]
-    Skills2 --> SelectPattern[Pattern Library]
-    SelectPattern --> Matcher[Pattern Matcher]
-    Matcher --> Scorer[Confidence Scorer]
-    Scorer -->|High Confidence| Skills3[(Skills Library)]
-    Skills3 --> SelectTemplate[Template Library]
-    SelectTemplate --> Generator[Response Generator]
-    Generator --> Result([Resolution])
-
-    style Case fill:#e9ecef,stroke:#495057,stroke-width:2px
-    style Cassie fill:#e9ecef,stroke:#495057,stroke-width:2px
-    style Router fill:#e9ecef,stroke:#495057,stroke-width:2px
-    style Skills1 fill:#fff,stroke:#000,stroke-width:3px
-    style Skills2 fill:#fff,stroke:#000,stroke-width:3px
-    style Skills3 fill:#fff,stroke:#000,stroke-width:3px
-    style SelectPlaybook fill:#f8f9fa,stroke:#6c757d,stroke-width:2px
-    style SelectPattern fill:#f8f9fa,stroke:#6c757d,stroke-width:2px
-    style SelectTemplate fill:#f8f9fa,stroke:#6c757d,stroke-width:2px
-    style Executor fill:#dee2e6,stroke:#495057,stroke-width:2px
-    style MCPs fill:#dee2e6,stroke:#495057,stroke-width:2px
-    style Evidence fill:#dee2e6,stroke:#495057,stroke-width:2px
-    style Matcher fill:#e9ecef,stroke:#495057,stroke-width:2px
-    style Scorer fill:#e9ecef,stroke:#495057,stroke-width:2px
-    style Generator fill:#f8f9fa,stroke:#6c757d,stroke-width:2px
-    style Result fill:#212529,color:#fff,stroke:#000,stroke-width:2px
+graph TD
+    A[Support Case] --> B[Cassie Agent]
+    B --> C[Category Router]
+    C --> D[(Skills Library)]
+    D --> E[Select Playbook]
+    E --> F[Playbook Executor]
+    F --> G[(MCP Servers)]
+    G --> H[Evidence Collector]
+    H --> I[(Skills Library)]
+    I --> J[Pattern Matcher]
+    J --> K[Confidence Scorer]
+    K --> L[(Skills Library)]
+    L --> M[Response Generator]
+    M --> N[Resolution]
                 </div>
             </div>
 
             <div class="highlight">
                 <h3>Skills Library Benefits</h3>
                 <ul>
-                    <li><strong>Reusability:</strong> Same skills used across multiple AI agents and investigation domains</li>
-                    <li><strong>Maintainability:</strong> Update one pattern in Skills Library, all consumers benefit immediately</li>
-                    <li><strong>Rapid Development:</strong> New agents leverage existing diagnostic intelligence without rebuilding from scratch</li>
-                    <li><strong>Knowledge Capture:</strong> Institutional expertise preserved systematically and accessible to all agents</li>
-                    <li><strong>Continuous Improvement:</strong> Patterns refined based on operational data, benefiting all investigations</li>
-                    <li><strong>Separation of Concerns:</strong> Knowledge layer independent of execution, classification, and data layers</li>
+                    <li><strong>Reusability:</strong> Same skills across multiple AI agents</li>
+                    <li><strong>Maintainability:</strong> Update once, all benefit</li>
+                    <li><strong>Rapid Development:</strong> New agents leverage existing intelligence</li>
+                    <li><strong>Knowledge Capture:</strong> Institutional expertise preserved</li>
+                    <li><strong>Continuous Improvement:</strong> Patterns refined from operational data</li>
+                    <li><strong>Separation of Concerns:</strong> Knowledge layer independent of execution</li>
                 </ul>
             </div>
 
             <div class="highlight">
                 <h3>Implementation Impact</h3>
-                <p><strong>Current State:</strong> 0% auto-resolution, 100% manual escalation</p>
+                <p><strong>Current State:</strong> Variable auto-resolution rates</p>
                 <p><strong>With Skills Library:</strong></p>
                 <ul>
-                    <li>Phase 1 (Weeks 1-2): 40-50% auto-resolution (basic diagnostic checks)</li>
-                    <li>Phase 2 (Weeks 3-5): 80% diagnostic guidance (playbook execution)</li>
-                    <li>Phase 3 (Weeks 6-8): 60-70% auto-resolution (full pattern library)</li>
-                    <li>Phase 4 (Weeks 9-11): Production deployment with monitoring</li>
+                    <li>Phase 1 (Weeks 1-2): 40-50% auto-resolution</li>
+                    <li>Phase 2 (Weeks 3-5): 80% diagnostic guidance</li>
+                    <li>Phase 3 (Weeks 6-8): 60-70% auto-resolution</li>
+                    <li>Phase 4 (Weeks 9-11): Production deployment</li>
                 </ul>
             </div>
         </section>
@@ -586,14 +437,7 @@ flowchart TD
             primaryColor: '#f8f9fa',
             primaryTextColor: '#212529',
             primaryBorderColor: '#495057',
-            lineColor: '#495057',
-            secondaryColor: '#e9ecef',
-            tertiaryColor: '#dee2e6'
-        },
-        flowchart: {
-            useMaxWidth: true,
-            htmlLabels: true,
-            curve: 'basis'
+            lineColor: '#495057'
         }
     });
 
