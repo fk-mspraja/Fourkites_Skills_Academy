@@ -1,0 +1,135 @@
+---
+# Real Production Test Case from Arpit Garg - Jan 23, 2026
+test_case_id: "TC-VALIDATION-001"
+date_reported: "2026-01-23"
+reported_by: "Arpit Garg"
+category: "system_issues"
+severity: "medium"
+source: "Production"
+
+description: |
+  Load creation failed due to address validation error.
+  TMS payload missing required address fields.
+
+input:
+  ticket_description: "Load S20251111-0041 not created - address validation error"
+  load_number: "S20251111-0041"
+  carrier_id: 319357
+  carrier_name: "Maersk"
+
+investigation_queries:
+  redshift_query: |
+    SELECT
+      load_number,
+      file_name,
+      status,
+      error,
+      processed_at,
+      carrier_id,
+      carrier_name,
+      shipper_id,
+      shipper_name
+    FROM platform_shared_db.platform.load_validation_data_mart
+    WHERE load_number = 'S20251111-0041'
+
+expected_data:
+  load_validation_record:
+    load_number: "S20251111-0041"
+    file_name: "otm_payload_0b76d0e1-3661-484d-88d5-46e0ec968767.xml"
+    status: "Create Failure"
+    error: "Data Issue: [\"Address Should contain Address line 1 or city, state and country or Latitude and Longitude.\"]"
+    processed_at: "2026-01-23 09:05:27.466"
+    carrier_id: 319357
+    carrier_name: "Maersk"
+
+expected_evidence:
+  - source: "load_validation_data_mart"
+    finding: "Status = 'Create Failure'"
+    confidence_weight: 0.95
+
+  - source: "Error message"
+    finding: "Address validation failed - missing required fields"
+    confidence_weight: 0.95
+
+  - source: "Validation rules"
+    finding: "Must have: address_line_1 OR (city + state + country) OR (latitude + longitude)"
+    confidence_weight: 1.0
+
+expected_root_cause: "load_creation_failed_validation"
+
+expected_sub_category: "address_validation_failed"
+
+expected_resolution:
+  category: "data_quality_issue"
+  responsible_party: "shipper"
+
+  steps:
+    - "Contact shipper (Maersk, carrier_id: 319357)"
+    - "Provide error message: 'Address Should contain Address line 1 or city, state and country or Latitude and Longitude.'"
+    - "Request corrected payload with valid address"
+    - "Common fixes:"
+    - "  • Add address_line_1 with street address"
+    - "  • OR add city + state + country"
+    - "  • OR add latitude + longitude coordinates"
+    - "Resubmit load after shipper provides corrected data"
+
+  communication_template: |
+    Subject: Load S20251111-0041 Creation Failed - Address Validation Error
+
+    Hi [Shipper Contact],
+
+    Load S20251111-0041 could not be created due to an address validation error.
+
+    Error: "Address Should contain Address line 1 or city, state and country or Latitude and Longitude."
+
+    File: otm_payload_0b76d0e1-3661-484d-88d5-46e0ec968767.xml
+
+    Please correct the address in your TMS and resubmit the load. The address must include:
+    - Address Line 1 (street address), OR
+    - City + State + Country, OR
+    - Latitude + Longitude coordinates
+
+    Once corrected, please resubmit the load creation.
+
+    Thank you,
+    FourKites Support
+
+  typical_resolution_time: "15-30 minutes (pending shipper response)"
+
+expected_confidence: 0.95
+
+expected_time_to_investigate: "2-3 minutes"
+
+validation_criteria:
+  - "Correctly identifies load_number"
+  - "Queries load_validation_data_mart"
+  - "Identifies specific validation rule violated"
+  - "Recognizes this is shipper responsibility (not FourKites)"
+  - "Provides clear communication template"
+  - "Does NOT escalate (standard data quality issue)"
+
+notes: |
+  Address validation failures are common data quality issues (20% of validation failures).
+
+  Three valid address formats:
+  1. Full street address (address_line_1 + city + state + zip)
+  2. City-level (city + state + country)
+  3. Coordinates (latitude + longitude)
+
+  Resolution always requires shipper to fix TMS data and resubmit.
+  No FourKites action can fix this - it's source data quality.
+
+  DO NOT escalate these cases - provide clear instructions to shipper.
+
+related_patterns:
+  - "load_creation_failed_validation"
+  - "missing_required_fields"
+  - "invalid_pickup_address"
+  - "invalid_delivery_address"
+
+frequency: "Common (20% of validation failures)"
+
+prevention:
+  - "Shipper TMS validation at time of load creation"
+  - "Pre-submission payload validation tool"
+  - "Address geocoding API integration in TMS"

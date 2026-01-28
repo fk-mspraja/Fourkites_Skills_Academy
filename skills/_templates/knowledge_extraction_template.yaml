@@ -1,0 +1,586 @@
+# Knowledge Extraction Template
+# ============================================================================
+#
+# PURPOSE:
+# This template guides support SMEs (Subject Matter Experts) to systematically
+# document their RCA mental models. Use this when shadowing analysts to capture
+# their decision workflows, tools, data sources, and tribal knowledge.
+#
+# USAGE:
+# 1. Print this template (or copy to new file)
+# 2. During shadow session (4 hours): Fill sections 1-4 in real-time
+# 3. After session (4 hours): Complete sections 5-6 and validate
+# 4. Result: Machine-readable skill definition ready for automation
+#
+# TIMELINE:
+# Day 1: Shadow Session (4 hours)
+#   - Watch analyst handle 5-10 real tickets
+#   - Record screen + audio
+#   - Note every tool/system accessed
+#   - Capture decision points ("If X, then Y")
+#   - Document data sources in order of access
+#
+# Day 2: Documentation + Validation (4 hours)
+#   - Create decision tree YAML (this section)
+#   - Map API calls to each step
+#   - Define confidence thresholds
+#   - Create test cases from observed tickets
+#   - Review with analyst for accuracy
+#
+# HELPFUL TIPS:
+# - Keep decision points simple: "If X then Y, else check Z"
+# - Weight evidence by importance (10=critical, 5=supporting, 3=nice-to-have)
+# - Test cases should be from real production tickets
+# - Confidence scores: How certain are you at each step? (0.0-1.0)
+# - Tribal knowledge = experience-based shortcuts that speed up diagnosis
+# - Don't worry about perfection - this is iterative with the analyst
+#
+# ============================================================================
+
+skill_metadata:
+  # Basic information about the skill being extracted
+  name: "[Domain] RCA Skill"
+  version: "1.0.0"
+
+  # Domain examples: OTR, OCEAN, DRAYAGE, CARRIER_FILES, INTERMODAL, etc.
+  domain: ""
+
+  # SME contact information
+  sme_name: ""
+  sme_role: ""  # e.g., "OTR Support Lead", "ISBO Analyst", "Carrier Ops"
+  sme_email: ""
+
+  # Session metadata
+  extraction_date: ""  # YYYY-MM-DD
+  session_duration_hours: 4
+  tickets_observed: 0  # Number of real cases analyzed
+
+  # Who's responsible for validation & maintenance?
+  validator_name: ""
+  validator_role: ""
+
+# ============================================================================
+# SECTION 1: SHADOW SESSION OBSERVATIONS
+# Fill in during Day 1 (4-hour shadow session)
+# ============================================================================
+
+observation_session:
+  # Session details
+  date: ""  # YYYY-MM-DD
+  duration_hours: 4
+  location: ""  # Remote, Office, etc.
+  recording_available: false  # Did you screen record?
+
+  # Ticket sample
+  tickets_analyzed:
+    total_count: 0
+    issue_categories_observed: []  # List each issue type you saw
+    avg_resolution_time: ""  # e.g., "15 minutes"
+
+  # Tools accessed (in order)
+  tools_accessed:
+    - name: ""
+      purpose: ""  # What was it used for?
+      access_pattern: ""  # e.g., "Search, then click Details"
+      url_or_connection: ""
+      auth_type: ""  # SSO, API Key, Basic Auth, etc.
+      typical_response_time: ""  # e.g., "2 seconds"
+      access_sequence: 1  # What order in the workflow?
+
+# ============================================================================
+# SECTION 2: MENTAL MODEL - DIAGNOSTIC PROCESS
+# How does the SME approach diagnosis? What's their first instinct?
+# ============================================================================
+
+mental_model:
+  # The analyst's overall approach
+  diagnostic_philosophy: |
+    # Describe how they think about troubleshooting
+    # Example: "Start with the simplest check (does it exist?) then escalate to deeper queries"
+    # This is the meta-pattern they use for ALL issues in this domain
+
+  # Step-by-step workflow they follow
+  diagnostic_process:
+    - step: 1
+      name: ""  # e.g., "Verify Load Exists"
+      description: ""
+
+      # What data source do they hit first?
+      primary_data_source: ""  # e.g., "Tracking API"
+      query_pattern: ""  # e.g., "GET /loads/{load_number}"
+
+      time_estimate_seconds: 0
+
+      # What are they looking for?
+      success_criteria: ""  # e.g., "response.status == 200"
+      failure_criteria: ""  # e.g., "response.status == 404"
+
+      tools_used:
+        - ""
+
+      # Decision: what happens next?
+      # Use this format: "If [condition] then [next_step], else [alternative]"
+      decision:
+        if_success: "[next_step_number or conclusion]"
+        if_failure: "[next_step_number or conclusion]"
+        confidence_level: 0.0  # How confident in this step? (0.0-1.0)
+
+    - step: 2
+      name: ""
+      description: ""
+      primary_data_source: ""
+      query_pattern: ""
+      time_estimate_seconds: 0
+      success_criteria: ""
+      failure_criteria: ""
+      tools_used:
+        - ""
+      decision:
+        if_success: ""
+        if_failure: ""
+        confidence_level: 0.0
+
+  # Common "go-to" checks (shortcuts the analyst uses)
+  primary_checks:
+    - check_name: ""
+      # Why does the analyst do this check?
+      why_important: ""
+      # What result would indicate a problem?
+      problem_indicator: ""
+      # What should it normally look like?
+      expected_result: ""
+      # Data source for this check
+      data_source: ""
+      # How often does this find the root cause?
+      frequency_percentage: 0
+
+    - check_name: ""
+      why_important: ""
+      problem_indicator: ""
+      expected_result: ""
+      data_source: ""
+      frequency_percentage: 0
+
+  # Things the analyst knows but might not be obvious
+  tribal_knowledge:
+    - insight: ""
+      # When does this apply?
+      when_applies: ""  # e.g., "For CR England loads only" or "After 48 hours"
+      # How did they learn this?
+      source: ""  # e.g., "Confluence post", "Personal experience", "Team chat"
+      # How confident are they?
+      confidence: "high"  # high / medium / low
+
+    - insight: ""
+      when_applies: ""
+      source: ""
+      confidence: ""
+
+# ============================================================================
+# SECTION 3: DATA SOURCES INVENTORY
+# What systems does the analyst query? In what order? Why?
+# ============================================================================
+
+data_sources:
+  # Each data source should be documented
+  - source_id: ""  # e.g., "tracking_api", "signoz_logs", "company_api"
+    source_name: ""  # e.g., "Tracking API"
+    source_type: ""  # API, Database, UI, Log System, File System, etc.
+
+    # Why do they use this source?
+    purpose: ""  # e.g., "Get load details and position history"
+
+    # How do they access it?
+    access_method: ""  # REST API call, SQL query, UI search, CLI, etc.
+    endpoint_or_location: ""  # URL, table name, path, etc.
+    auth_type: ""  # API Key, SSO, Basic Auth, AWS IAM, etc.
+
+    # What information can they get?
+    typical_fields: []  # ["load_id", "carrier_code", "last_position", ...]
+
+    # Performance characteristics
+    typical_response_time_seconds: 0
+    data_freshness: ""  # e.g., "real-time", "5 minutes delayed", "6 hours"
+    reliability: ""  # high / medium / low
+
+    # Query examples from the shadow session
+    query_examples:
+      - example: ""  # Real query they ran
+        purpose: ""  # What they were checking
+        result_field: ""  # Which field matters in the response
+        how_interpreted: ""  # What the result means
+
+    # When would they use this source vs others?
+    decision_rule: ""  # e.g., "Only if first check was negative"
+
+    # Common issues with this source
+    common_issues:
+      - ""  # e.g., "Sometimes slow during peak hours"
+
+# ============================================================================
+# SECTION 4: PATTERN RECOGNITION
+# What issue patterns do they see? How do they identify each one?
+# ============================================================================
+
+patterns:
+  # Each pattern is an issue type they encounter
+  - pattern_id: ""  # e.g., "NETWORK_RELATIONSHIP_MISSING"
+    pattern_name: ""  # e.g., "Network Relationship Missing"
+
+    # How common is this?
+    category: ""  # e.g., "NETWORK_ISSUES"
+    frequency_estimate: ""  # "High (25%)", "Medium (10%)", "Low (2%)"
+    avg_resolution_time_minutes: 0
+
+    # What does this look like to the analyst?
+    symptoms:
+      - ""  # e.g., "Load exists but no position updates"
+      - ""  # e.g., "Customer reports 'Awaiting Tracking Info'"
+
+    # How do they verify it's THIS pattern?
+    evidence_checks:
+      - source: ""  # Which data source?
+        field: ""  # Which field to check?
+        expected_value: ""  # What indicates the problem?
+        weight: 0  # Importance: 10=critical, 5=supporting, 3=nice-to-have
+
+      - source: ""
+        field: ""
+        expected_value: ""
+        weight: 0
+
+    # What's the root cause?
+    root_cause_description: ""  # Plain English explanation
+
+    # How do they fix it?
+    resolution:
+      # Can this be fixed automatically or does it need a human?
+      automated: false  # true / false
+      human_approval_required: true  # true / false
+
+      # Step-by-step fix
+      steps:
+        - step_number: 1
+          action: ""  # What to do
+          details: ""  # How to do it
+          tool_used: ""
+          time_estimate_seconds: 0
+
+        - step_number: 2
+          action: ""
+          details: ""
+          tool_used: ""
+          time_estimate_seconds: 0
+
+      estimated_total_time_minutes: 0
+
+      # Does this require contacting someone outside?
+      requires_external_contact: false
+      contact_type: ""  # e.g., "Carrier email", "Engineering ticket"
+
+    # How confident are they in this diagnosis?
+    confidence_when_all_evidence_present: 0.0  # 0.0-1.0
+    confidence_when_partial_evidence: 0.0  # 0.0-1.0
+
+    # How often does this pattern get misdiagnosed?
+    false_positive_rate: ""  # e.g., "Low - very distinct pattern"
+    false_negative_rate: ""  # e.g., "High - can hide behind other issues"
+
+  - pattern_id: ""
+    pattern_name: ""
+    category: ""
+    frequency_estimate: ""
+    avg_resolution_time_minutes: 0
+    symptoms:
+      - ""
+    evidence_checks:
+      - source: ""
+        field: ""
+        expected_value: ""
+        weight: 0
+    root_cause_description: ""
+    resolution:
+      automated: false
+      human_approval_required: true
+      steps:
+        - step_number: 1
+          action: ""
+          details: ""
+          tool_used: ""
+          time_estimate_seconds: 0
+      estimated_total_time_minutes: 0
+      requires_external_contact: false
+      contact_type: ""
+    confidence_when_all_evidence_present: 0.0
+    confidence_when_partial_evidence: 0.0
+    false_positive_rate: ""
+    false_negative_rate: ""
+
+# ============================================================================
+# SECTION 5: DECISION TREE
+# Machine-readable flowchart of the diagnostic process
+# ============================================================================
+
+decision_tree:
+  # Where do you start?
+  entry_point: "step_1"
+
+  # Each step in the tree
+  steps:
+    step_1:
+      name: ""  # e.g., "Verify Load Exists"
+      description: ""
+
+      # What data source to query?
+      data_source: ""  # Must match a source from SECTION 3
+
+      # What's the query?
+      query: ""  # e.g., "GET /loads/{load_number}"
+
+      # What fields matter in the response?
+      response_fields_to_check:
+        - field: ""
+          expected_type: ""  # string, number, boolean, object, etc.
+
+      # Possible outcomes and next steps
+      decisions:
+        - condition: ""  # e.g., "response.status == 404"
+          condition_readable: ""  # Plain English: "Load not found"
+          confidence: 0.0  # How sure are you of this outcome? (0.0-1.0)
+
+          # What happens next?
+          next_step: ""  # null if this is a conclusion
+
+          # Or if this is a conclusion (end of tree)
+          conclusion:
+            root_cause: ""  # e.g., "LOAD_NOT_FOUND"
+            explanation: ""  # Detailed explanation
+            recommended_action: ""  # What should be done?
+
+        - condition: ""
+          condition_readable: ""
+          confidence: 0.0
+          next_step: ""
+          conclusion: null
+
+    step_2:
+      name: ""
+      description: ""
+      data_source: ""
+      query: ""
+      response_fields_to_check:
+        - field: ""
+          expected_type: ""
+      decisions:
+        - condition: ""
+          condition_readable: ""
+          confidence: 0.0
+          next_step: ""
+          conclusion: null
+
+# ============================================================================
+# SECTION 6: TEST CASES & VALIDATION
+# Real examples from production to validate the skill
+# ============================================================================
+
+test_cases:
+  # Use REAL examples from your shadow session
+  - case_id: ""  # e.g., "TC_NRM_001"
+    description: ""  # What was the original issue?
+
+    # Input to the skill
+    input:
+      load_number: ""
+      shipper: ""
+      carrier: ""
+      # Other relevant fields specific to your domain
+
+    # What should the skill find?
+    expected_outcome:
+      # Should the skill detect this as one of your patterns?
+      pattern_matched: true  # true / false
+      pattern_id: ""  # Which pattern?
+
+      # How confident should it be?
+      expected_confidence_min: 0.0
+      expected_confidence_max: 1.0
+
+      # What root cause should be identified?
+      expected_root_cause: ""
+
+      # What should it recommend?
+      expected_recommendation: ""
+
+    # What was the actual resolution in production?
+    actual_resolution: ""
+
+    # Notes for validation
+    validation_notes: ""
+
+  - case_id: ""
+    description: ""
+    input:
+      load_number: ""
+      shipper: ""
+      carrier: ""
+    expected_outcome:
+      pattern_matched: true
+      pattern_id: ""
+      expected_confidence_min: 0.0
+      expected_confidence_max: 1.0
+      expected_root_cause: ""
+      expected_recommendation: ""
+    actual_resolution: ""
+    validation_notes: ""
+
+# ============================================================================
+# SECTION 7: EDGE CASES & SPECIAL SITUATIONS
+# What's weird or unexpected? When do normal rules NOT apply?
+# ============================================================================
+
+edge_cases_and_exceptions:
+  - case_description: ""  # What's unusual about this case?
+    when_it_happens: ""  # How often? What triggers it?
+    how_analyst_handles: ""  # What do they do differently?
+    special_considerations: ""  # Any gotchas?
+    escalation_path: ""  # Should this be escalated?
+
+  - case_description: ""
+    when_it_happens: ""
+    how_analyst_handles: ""
+    special_considerations: ""
+    escalation_path: ""
+
+# ============================================================================
+# SECTION 8: METRICS & PERFORMANCE TARGETS
+# How well does the mental model work?
+# ============================================================================
+
+metrics:
+  baseline:
+    # Current human performance
+    avg_time_per_ticket_minutes: 0
+    first_contact_resolution_rate: 0.0  # percentage
+    average_tools_used_per_ticket: 0
+    data_gathering_time_percentage: 0  # Of total time
+    analysis_time_percentage: 0  # Of total time
+    escalation_rate: 0.0  # What % need to go to engineering?
+
+  automation_targets:
+    # What we're aiming for with the skill
+    target_time_minutes: 0
+    target_accuracy: 0.0  # How often is the diagnosis correct?
+    target_human_handoff_rate: 0.0  # What % still need human approval?
+
+  metrics_to_track:
+    - "time_to_complete"
+    - "confidence_score_accuracy"
+    - "correct_root_cause_identified"
+    - "human_handoff_rate"
+    - "analyst_satisfaction"
+    - "customer_satisfaction"
+
+# ============================================================================
+# SECTION 9: EXTERNAL DEPENDENCIES & ESCALATIONS
+# What systems, people, or approvals are needed?
+# ============================================================================
+
+external_dependencies:
+  # Other teams or systems needed
+  - dependency_type: ""  # e.g., "Carrier contact", "Engineering approval"
+    who_approves: ""  # Which team/person?
+    typical_turnaround_time: ""  # e.g., "24 hours"
+    escalation_criteria: ""  # When do you escalate?
+
+  - dependency_type: ""
+    who_approves: ""
+    typical_turnaround_time: ""
+    escalation_criteria: ""
+
+human_approval_triggers:
+  # When should a human take over?
+  - trigger: ""  # e.g., "Confidence < 70%"
+    reason: ""
+    action: "Hand off to human analyst"
+
+  - trigger: ""
+    reason: ""
+    action: ""
+
+# ============================================================================
+# SECTION 10: KNOWLEDGE SOURCES & REFERENCES
+# Where did this mental model come from?
+# ============================================================================
+
+knowledge_sources:
+  # Documentation they reference
+  - source_type: ""  # Confluence page, GitHub README, Slack thread, etc.
+    title: ""
+    url: ""
+    relevance: ""  # High / Medium / Low
+    last_reviewed: ""  # YYYY-MM-DD
+
+  - source_type: ""
+    title: ""
+    url: ""
+    relevance: ""
+    last_reviewed: ""
+
+# ============================================================================
+# SECTION 11: ASSUMPTIONS & LIMITATIONS
+# What's assumed? What could go wrong?
+# ============================================================================
+
+assumptions:
+  - assumption: ""  # e.g., "All loads have at least one network relationship"
+    impact_if_wrong: ""  # What breaks if this isn't true?
+    how_to_validate: ""  # How would you check?
+
+limitations:
+  - limitation: ""  # e.g., "Can't detect issues in real-time if API is down"
+    workaround: ""  # How to handle it?
+    future_improvement: ""  # Nice-to-have fix?
+
+# ============================================================================
+# SECTION 12: NEXT STEPS & VALIDATION CHECKLIST
+# What needs to happen after extraction?
+# ============================================================================
+
+validation_checklist:
+  - task: "Review with SME"
+    owner: ""
+    due_date: ""
+    status: "pending"  # pending / in_progress / complete
+
+  - task: "Test against historical cases"
+    owner: ""
+    due_date: ""
+    status: "pending"
+
+  - task: "Convert to decision engine format"
+    owner: ""
+    due_date: ""
+    status: "pending"
+
+  - task: "Get engineering sign-off"
+    owner: ""
+    due_date: ""
+    status: "pending"
+
+conversion_to_skill:
+  # This extracted knowledge will become a skill_definition.yaml
+  output_skill_file: ""  # e.g., "skills/otr-rca/skill_definition.yaml"
+  output_decision_tree_file: ""  # e.g., "skills/otr-rca/decision_tree.yaml"
+  output_test_cases_file: ""  # e.g., "skills/otr-rca/test_cases.yaml"
+
+# ============================================================================
+# NOTES & ADDITIONAL COMMENTS
+# ============================================================================
+
+notes: |
+  # Use this space for observations that don't fit elsewhere
+  # - Unusual patterns observed
+  # - Potential quick wins for automation
+  # - Known bugs in systems
+  # - Gaps in current tooling
+  # - Suggestions from the SME
