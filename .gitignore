@@ -29,3 +29,16 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Documents (keep local only)
+*.pdf
+*.docx
+*.doc
+*.json
+*.yaml
+*.yml
+
+# Directories (keep local only)
+building_blocks/
+fourkites-skills-academy/
+skills/
