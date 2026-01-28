@@ -1,6 +1,6 @@
-# Dependencies
-node_modules/
-**/node_modules/
+# Markdown files (keep local, not in git)
+*.md
+!docs/README.md
 
 # Python
 __pycache__/
@@ -8,37 +8,18 @@ __pycache__/
 *$py.class
 *.so
 .Python
-env/
 venv/
-ENV/
-env.bak/
-venv.bak/
-*.egg-info/
-.eggs/
-dist/
-build/
+env/
 
 # IDEs
 .vscode/
 .idea/
 *.swp
 *.swo
-*~
 
 # OS
 .DS_Store
 Thumbs.db
 
-# Environment
-.env
-.env.local
-.env.*.local
-
 # Logs
 *.log
-logs/
-
-# Build outputs
-*.wasm
-*.node
-target/
