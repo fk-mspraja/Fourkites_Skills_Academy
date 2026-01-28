@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cassie Agent Architecture - Skills Library Framework</title>
-    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -157,14 +156,6 @@
             color: #495057;
         }
 
-        .diagram-container {
-            background: #ffffff;
-            padding: 30px;
-            margin: 20px 0;
-            border-radius: 4px;
-            border: 1px solid #dee2e6;
-        }
-
         .section {
             display: none;
         }
@@ -200,6 +191,60 @@
             line-height: 1.8;
             margin: 15px 0;
             color: #495057;
+        }
+
+        /* Simple Visual Flow Diagram */
+        .flow-diagram {
+            background: #ffffff;
+            padding: 40px 20px;
+            margin: 30px 0;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+        }
+
+        .flow-step {
+            background: #f8f9fa;
+            border: 2px solid #495057;
+            padding: 20px;
+            margin: 15px auto;
+            max-width: 600px;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: 600;
+            position: relative;
+        }
+
+        .flow-step.skills-library {
+            background: #fff;
+            border: 3px solid #000;
+            border-style: double;
+        }
+
+        .flow-arrow {
+            text-align: center;
+            font-size: 24px;
+            color: #495057;
+            margin: 10px 0;
+        }
+
+        .layer-box {
+            background: #f8f9fa;
+            border: 2px solid #495057;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .layer-box h4 {
+            margin: 0 0 15px 0;
+            color: #212529;
+            font-size: 18px;
+        }
+
+        .layer-box.skills-library {
+            background: #fff;
+            border: 3px solid #000;
+            border-style: double;
         }
 
         @media (max-width: 768px) {
@@ -305,34 +350,63 @@
             <div class="description">
                 <strong>Use Case:</strong> Shows the complete diagnostic flow with Skills Library integration at three access points.
             </div>
-            <div class="diagram-container">
-                <div class="mermaid">
-graph TD
-    A[User Input] --> B[Cassie Agent]
-    B --> C[Category Router]
-    C --> D[Skills Library Access 1]
-    D --> E[Load Playbook]
-    E --> F[Playbook Executor]
-    F --> G[Diagnostic Checks]
-    G --> H[Evidence Collector]
-    H --> I[Skills Library Access 2]
-    I --> J[Pattern Matcher]
-    J --> K[Confidence Scorer]
-    K --> L[High Confidence Branch]
-    K --> M[Low Confidence Branch]
-    L --> N[Skills Library Access 3]
-    N --> O[Auto Response Generator]
-    M --> P[Manual Review]
-    O --> Q[Resolution]
-    P --> R[Escalation]
+
+            <div class="flow-diagram">
+                <div class="flow-step">User Input</div>
+                <div class="flow-arrow">↓</div>
+
+                <div class="flow-step">Cassie Agent</div>
+                <div class="flow-arrow">↓</div>
+
+                <div class="flow-step">Category Router</div>
+                <div class="flow-arrow">↓</div>
+
+                <div class="flow-step skills-library">⚡ SKILLS LIBRARY ACCESS #1 ⚡<br><small>Load Diagnostic Playbook</small></div>
+                <div class="flow-arrow">↓</div>
+
+                <div class="flow-step">Playbook Executor</div>
+                <div class="flow-arrow">↓</div>
+
+                <div class="flow-step">Diagnostic Checks<br><small>(Query MCP Servers)</small></div>
+                <div class="flow-arrow">↓</div>
+
+                <div class="flow-step">Evidence Collector</div>
+                <div class="flow-arrow">↓</div>
+
+                <div class="flow-step skills-library">⚡ SKILLS LIBRARY ACCESS #2 ⚡<br><small>Match Diagnostic Pattern</small></div>
+                <div class="flow-arrow">↓</div>
+
+                <div class="flow-step">Pattern Matcher</div>
+                <div class="flow-arrow">↓</div>
+
+                <div class="flow-step">Confidence Scorer</div>
+                <div class="flow-arrow">↓</div>
+
+                <div class="flow-step">Decision: High Confidence? (≥90%)</div>
+                <div class="flow-arrow">↙ Yes &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No ↘</div>
+
+                <div style="display: flex; gap: 20px; max-width: 800px; margin: 20px auto;">
+                    <div style="flex: 1;">
+                        <div class="flow-step skills-library">⚡ SKILLS LIBRARY ACCESS #3 ⚡<br><small>Load Response Template</small></div>
+                        <div class="flow-arrow">↓</div>
+                        <div class="flow-step">Auto Response Generator</div>
+                        <div class="flow-arrow">↓</div>
+                        <div class="flow-step" style="background: #c8e6c9; border-color: #2e7d32;">✓ Resolution</div>
+                    </div>
+                    <div style="flex: 1;">
+                        <div style="height: 120px;"></div>
+                        <div class="flow-step">Manual Review</div>
+                        <div class="flow-arrow">↓</div>
+                        <div class="flow-step" style="background: #ffccbc; border-color: #d84315;">→ Escalation</div>
+                    </div>
                 </div>
             </div>
 
             <div class="highlight">
                 <h3>Key Architecture Points</h3>
                 <ul>
-                    <li><strong>Three Skills Library Access Points:</strong> Playbook selection, pattern matching, and response template loading</li>
-                    <li><strong>Evidence-Based Decisions:</strong> Confidence scoring determines auto-resolution vs manual review</li>
+                    <li><strong>Three Skills Library Access Points:</strong> Playbook selection (#1), pattern matching (#2), and response template loading (#3)</li>
+                    <li><strong>Evidence-Based Decisions:</strong> Confidence scoring (≥90%) determines auto-resolution vs manual review</li>
                     <li><strong>Systematic Investigation:</strong> Playbook-driven diagnostic checks ensure consistency</li>
                     <li><strong>Knowledge Reuse:</strong> Same skills library serves all specialized agents</li>
                 </ul>
@@ -345,68 +419,48 @@ graph TD
             <div class="description">
                 <strong>Use Case:</strong> High-level view showing clear separation of concerns across five distinct layers.
             </div>
-            <div class="diagram-container">
-                <div class="mermaid">
-graph TD
-    A[User Input] --> B[Cassie Agent]
-    B --> C[Category Router]
-    C --> D[LAYER 1 COMPLETE]
 
-    D --> E[Skills Library]
-    E --> F[Playbook Selector]
-    F --> G[LAYER 2 COMPLETE]
-
-    G --> H[Playbook Executor]
-    H --> I[Diagnostic Checks via MCPs]
-    I --> J[LAYER 3 COMPLETE]
-
-    J --> K[Evidence Aggregation]
-    K --> L[Pattern Matcher]
-    L --> M[Confidence Scorer]
-    M --> N[LAYER 4 COMPLETE]
-
-    N --> O[Decision Point]
-    O --> P[Auto Response Path]
-    O --> Q[Manual Review Path]
-    P --> R[Resolution]
-    Q --> S[Escalation]
-                </div>
-            </div>
-
-            <div class="highlight">
-                <h3>Layer Responsibilities</h3>
-                <p><strong>Layer 1 - Classification & Routing:</strong></p>
+            <div class="layer-box">
+                <h4>🔷 LAYER 1: Classification & Routing</h4>
                 <ul>
                     <li>Intent classification using Cassie Agent</li>
                     <li>Domain selection via Category Router</li>
                     <li>Company identification and context gathering</li>
                 </ul>
+            </div>
 
-                <p><strong>Layer 2 - Skills Library:</strong></p>
+            <div class="layer-box skills-library">
+                <h4>⚡ LAYER 2: Skills Library (Central Knowledge Repository)</h4>
                 <ul>
                     <li>Central repository of 100+ diagnostic patterns</li>
                     <li>Investigation playbooks for each domain</li>
                     <li>Response templates and evidence rules</li>
-                    <li>Bot feasibility ratings</li>
+                    <li>Bot feasibility ratings (HIGH/MEDIUM/LOW)</li>
                 </ul>
+            </div>
 
-                <p><strong>Layer 3 - Investigation Execution:</strong></p>
+            <div class="layer-box">
+                <h4>🔷 LAYER 3: Investigation Execution</h4>
                 <ul>
                     <li>Playbook-driven diagnostic checks</li>
-                    <li>MCP server queries (Redshift, Salesforce, Knowledge, Support AI, Atlassian)</li>
-                    <li>Systematic data collection</li>
+                    <li>MCP server queries: Redshift, Salesforce, Knowledge, Support AI, Atlassian</li>
+                    <li>Systematic data collection from multiple sources</li>
                 </ul>
+            </div>
 
-                <p><strong>Layer 4 - Intelligence & Pattern Matching:</strong></p>
+            <div class="layer-box">
+                <h4>🔷 LAYER 4: Intelligence & Pattern Matching</h4>
                 <ul>
-                    <li>Evidence aggregation from multiple sources</li>
+                    <li>Evidence aggregation from multiple data sources</li>
                     <li>Pattern matching against Skills Library</li>
                     <li>Confidence scoring based on evidence quality</li>
                 </ul>
+            </div>
 
-                <p><strong>Layer 5 - Decision & Response:</strong></p>
+            <div class="layer-box">
+                <h4>🔷 LAYER 5: Decision & Response</h4>
                 <ul>
-                    <li>Confidence-based decision logic</li>
+                    <li>Confidence-based decision logic (≥90% threshold)</li>
                     <li>Auto-response generation for high-confidence matches</li>
                     <li>Manual review escalation for ambiguous cases</li>
                 </ul>
@@ -444,11 +498,6 @@ graph TD
 </div>
 
 <script>
-    mermaid.initialize({
-        startOnLoad: true,
-        theme: 'default'
-    });
-
     function showSection(sectionId) {
         document.querySelectorAll('.section').forEach(section => {
             section.classList.remove('active');
