@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cassie Agent - Complete Architecture with Skills Library</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11.4.0/dist/mermaid.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            opacity: 0.95;
+        }
+
+        .nav {
+            background: #f8f9fa;
+            padding: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .nav-btn {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #667eea;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .nav-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        h2 {
+            color: #9c27b0;
+            font-size: 28px;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #9c27b0;
+            padding-bottom: 10px;
+        }
+
+        .description {
+            background: #f3e5f5;
+            padding: 20px;
+            border-left: 4px solid #9c27b0;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .highlight {
+            background: #fff3cd;
+            padding: 20px;
+            border-left: 4px solid #ffc107;
+            margin: 30px 0;
+            border-radius: 4px;
+        }
+
+        .highlight h3 {
+            color: #856404;
+            margin-bottom: 15px;
+        }
+
+        .legend {
+            background: #e8f5e9;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .legend ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .legend li {
+            margin: 10px 0;
+            padding-left: 30px;
+            position: relative;
+            font-size: 16px;
+        }
+
+        .legend li:before {
+            content: "■";
+            position: absolute;
+            left: 0;
+            font-size: 20px;
+        }
+
+        .purple:before { color: #9c27b0; }
+        .blue:before { color: #2196f3; }
+        .yellow:before { color: #ffc107; }
+        .green:before { color: #8bc34a; }
+        .orange:before { color: #ff9800; }
+
+        .diagram-container {
+            background: #fafafa;
+            padding: 30px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        ul {
+            margin: 15px 0 15px 30px;
+        }
+
+        li {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 0;
+            }
+            .content {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>🎯 Cassie Agent Architecture</h1>
+        <p class="subtitle">Complete Architecture with Skills Library Layer</p>
+    </div>
+
+    <div class="nav">
+        <button class="nav-btn active" onclick="showSection('overview')">Overview</button>
+        <button class="nav-btn" onclick="showSection('full-arch')">Full Architecture</button>
+        <button class="nav-btn" onclick="showSection('layers')">5 Layers</button>
+        <button class="nav-btn" onclick="showSection('skills-detail')">Skills Library</button>
+        <button class="nav-btn" onclick="showSection('contents')">Contents</button>
+        <button class="nav-btn" onclick="showSection('data-flow')">Data Flow</button>
+    </div>
+
+    <div class="content">
+        <!-- Overview Section -->
+        <section id="overview" class="section active">
+            <h2>Architecture Overview</h2>
+
+            <div class="highlight">
+                <strong>Key Innovation:</strong> The Skills Library serves as a central, reusable knowledge repository that captures institutional expertise and enables rapid AI agent development. This layered architecture separates concerns: classification, knowledge, execution, intelligence, and decision-making operate independently.
+            </div>
+
+            <div class="legend">
+                <h3>Color Legend</h3>
+                <ul>
+                    <li class="purple">Purple - Skills Library Layer (Central Knowledge Repository)</li>
+                    <li class="blue">Blue - Classification & Routing Layer</li>
+                    <li class="yellow">Yellow - Investigation/Execution Layer</li>
+                    <li class="green">Green - Intelligence & Pattern Matching Layer</li>
+                    <li class="orange">Orange - Decision & Response Layer</li>
+                </ul>
+            </div>
+
+            <div class="highlight">
+                <h3>What is the Skills Library?</h3>
+                <p>The <strong>Skills Library is Layer 2</strong> in the 5-layer architecture - a centralized, reusable knowledge repository containing:</p>
+                <ul>
+                    <li><strong>100+ Diagnostic Patterns</strong> - ELD Not Enabled, Asset Not Assigned, GPS Provider Errors, etc.</li>
+                    <li><strong>Investigation Playbooks</strong> - Domain-specific protocols with step-by-step diagnostic checks</li>
+                    <li><strong>Response Templates</strong> - Auto-resolution text for common patterns</li>
+                    <li><strong>Evidence Rules</strong> - Confidence scoring and auto-resolve criteria</li>
+                    <li><strong>Bot Feasibility Ratings</strong> - HIGH/MEDIUM/LOW automation potential</li>
+                </ul>
+            </div>
+
+            <div class="highlight">
+                <h3>How is it Used?</h3>
+                <p>The Skills Library is accessed <strong>3 times</strong> during investigation:</p>
+                <ol>
+                    <li><strong>Load Playbook:</strong> Category Router → Skills Library → Select appropriate playbook</li>
+                    <li><strong>Pattern Matching:</strong> Evidence Collector → Skills Library → Pattern Matcher</li>
+                    <li><strong>Response Generation:</strong> Confidence Scorer → Skills Library → Response Template</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- Full Architecture Section -->
+        <section id="full-arch" class="section">
+            <h2>1. Complete Architecture with Skills Library</h2>
+            <div class="description">
+                <strong>Use Case:</strong> Shows how the Skills Library integrates into the full diagnostic flow, serving as the central knowledge repository accessed at multiple points.
+            </div>
+            <div class="diagram-container">
+                <div class="mermaid">
+flowchart TD
+    Start([User Input: Support Case]) --> Cassie[Cassie Agent<br/>Intent Classification]
+
+    Cassie --> Router[Category Router<br/>Selects Domain]
+
+    Router --> SkillsLib[(Skills Library<br/>Reusable Diagnostic Patterns)]
+
+    SkillsLib --> LoadPlaybook[Load Domain-Specific<br/>Playbook from Skills]
+
+    LoadPlaybook --> Playbook[Playbook Executor<br/>Execute Protocol]
+
+    Playbook --> Parallel{Diagnostic Checks<br/>in Parallel}
+
+    Parallel --> Check1[ELD Config Check]
+    Parallel --> Check2[Asset Assignment Check]
+    Parallel --> Check3[Log Analysis Check]
+    Parallel --> Check4[Data Quality Check]
+
+    Check1 --> Evidence[Evidence Collector]
+    Check2 --> Evidence
+    Check3 --> Evidence
+    Check4 --> Evidence
+
+    Evidence --> SkillsLib
+    SkillsLib --> Pattern[Pattern Matcher<br/>Match Against Skills]
+
+    Pattern --> Confidence[Confidence Scorer<br/>Evaluate Evidence]
+
+    Confidence --> Decision{Confidence >= 90%?}
+
+    Decision -->|Yes| SkillsLib
+    SkillsLib --> AutoResponse[Auto-Response Generator<br/>Use Template from Skills]
+
+    Decision -->|No| ManualReview[Manual Review<br/>With Evidence]
+
+    AutoResponse --> End1([Resolution])
+    ManualReview --> End2([Escalation])
+
+    style Cassie fill:#e3f2fd
+    style Router fill:#e3f2fd
+    style SkillsLib fill:#f3e5f5,stroke:#9c27b0,stroke-width:3px
+    style LoadPlaybook fill:#fff3cd
+    style Playbook fill:#fff3cd
+    style Evidence fill:#f1f8e9
+    style Pattern fill:#f1f8e9
+    style Confidence fill:#f1f8e9
+    style Decision fill:#ffe0b2
+    style AutoResponse fill:#c8e6c9
+    style ManualReview fill:#ffccbc
+                </div>
+            </div>
+        </section>
+
+        <!-- 5 Layers Section -->
+        <section id="layers" class="section">
+            <h2>2. Five-Layer Architecture</h2>
+            <div class="description">
+                <strong>Use Case:</strong> High-level view showing Skills Library as a distinct architectural layer between classification and execution.
+            </div>
+            <div class="diagram-container">
+                <div class="mermaid">
+flowchart TD
+    subgraph Layer1[Layer 1: Classification & Routing]
+        Input[User Input] --> Cassie[Cassie Agent]
+        Cassie --> Router[Category Router]
+    end
+
+    subgraph Layer2[Layer 2: Skills Library - Knowledge Layer]
+        Router --> Skills[(Skills Library<br/>100+ Diagnostic Patterns<br/>Playbooks, Templates, Rules)]
+        Skills --> LoadPlaybook[Playbook Selector]
+    end
+
+    subgraph Layer3[Layer 3: Investigation Execution]
+        LoadPlaybook --> Executor[Playbook Executor]
+        Executor --> Diagnostics[Diagnostic Checks<br/>Query MCPs]
+    end
+
+    subgraph Layer4[Layer 4: Intelligence & Pattern Matching]
+        Diagnostics --> Evidence[Evidence Aggregation]
+        Evidence --> Skills
+        Skills --> Matcher[Pattern Matcher]
+        Matcher --> Confidence[Confidence Scorer]
+    end
+
+    subgraph Layer5[Layer 5: Decision & Response]
+        Confidence --> Decision{Confidence >= 90%?}
+        Decision -->|Yes| Skills
+        Skills --> AutoGen[Auto-Response Generator]
+        Decision -->|No| Manual[Manual Review]
+    end
+
+    AutoGen --> Resolution([Resolution])
+    Manual --> Escalation([Escalation])
+
+    style Layer1 fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+    style Layer2 fill:#f3e5f5,stroke:#9c27b0,stroke-width:3px
+    style Layer3 fill:#fff3cd,stroke:#ffc107,stroke-width:2px
+    style Layer4 fill:#f1f8e9,stroke:#8bc34a,stroke-width:2px
+    style Layer5 fill:#ffe0b2,stroke:#ff9800,stroke-width:2px
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills Library Detail Section -->
+        <section id="skills-detail" class="section">
+            <h2>3. Skills Library Architecture Detail</h2>
+            <div class="description">
+                <strong>Use Case:</strong> Internal structure of the Skills Library showing what it contains and who consumes it.
+            </div>
+            <div class="diagram-container">
+                <div class="mermaid">
+graph TD
+    subgraph SkillsLibrary[Skills Library - Central Knowledge Repository]
+        Taxonomy[Category Taxonomy<br/>100+ Patterns]
+        Playbooks[Diagnostic Playbooks<br/>Step-by-Step Protocols]
+        Templates[Response Templates<br/>Auto-Resolution Text]
+        Rules[Evidence Rules<br/>Confidence Scoring]
+        Feasibility[Bot Feasibility Ratings<br/>HIGH/MEDIUM/LOW]
+    end
+
+    subgraph Consumers[Components Using Skills]
+        Router[Category Router]
+        Executor[Playbook Executor]
+        Matcher[Pattern Matcher]
+        ResponseGen[Response Generator]
+    end
+
+    Router -.Load Category.-> Taxonomy
+    Executor -.Load Protocol.-> Playbooks
+    Matcher -.Match Evidence.-> Rules
+    ResponseGen -.Load Template.-> Templates
+    Matcher -.Check Automation.-> Feasibility
+
+    style SkillsLibrary fill:#f3e5f5,stroke:#9c27b0,stroke-width:3px
+    style Consumers fill:#fff3cd,stroke:#ffc107,stroke-width:2px
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills Contents Section -->
+        <section id="contents" class="section">
+            <h2>4. Skills Library Contents</h2>
+            <div class="description">
+                <strong>Use Case:</strong> What's actually stored in the Skills Library - patterns, playbooks, templates, and rules.
+            </div>
+            <div class="diagram-container">
+                <div class="mermaid">
+graph LR
+    subgraph Skills[Skills Library]
+        direction TB
+
+        subgraph Patterns[Diagnostic Patterns]
+            P1[ELD Not Enabled<br/>Feasibility: HIGH]
+            P2[Asset Not Assigned<br/>Feasibility: HIGH]
+            P3[GPS Provider Errors<br/>Feasibility: MEDIUM]
+            P4[Outlier Detection<br/>Feasibility: MEDIUM]
+            P5[100+ More Patterns...]
+        end
+
+        subgraph Playbooks[Investigation Playbooks]
+            PB1[OTR Tracking Issues<br/>15 diagnostic checks]
+            PB2[Network Configuration<br/>10 diagnostic checks]
+            PB3[Ocean Tracking<br/>12 diagnostic checks]
+            PB4[GPS Provider Issues<br/>8 diagnostic checks]
+        end
+
+        subgraph Templates[Response Templates]
+            T1[ELD Enable Template]
+            T2[Asset Assignment Template]
+            T3[Configuration Fix Template]
+            T4[GPS Provider Template]
+        end
+
+        subgraph Rules[Evidence Rules]
+            R1[Confidence Thresholds]
+            R2[Auto-Resolve Criteria]
+            R3[Escalation Triggers]
+            R4[Quality Gates]
+        end
+    end
+
+    Patterns --> Playbooks
+    Playbooks --> Templates
+    Rules --> Templates
+
+    style Skills fill:#f3e5f5,stroke:#9c27b0,stroke-width:3px
+    style Patterns fill:#e1bee7
+    style Playbooks fill:#ce93d8
+    style Templates fill:#ba68c8
+    style Rules fill:#ab47bc
+                </div>
+            </div>
+        </section>
+
+        <!-- Data Flow Section -->
+        <section id="data-flow" class="section">
+            <h2>5. Data Flow Through Skills Library</h2>
+            <div class="description">
+                <strong>Use Case:</strong> Step-by-step data flow showing how the Skills Library is accessed at multiple points during investigation.
+            </div>
+            <div class="diagram-container">
+                <div class="mermaid">
+flowchart TD
+    Case[Support Case<br/>Load Not Tracking] --> Cassie[Cassie Agent]
+    Cassie --> Router[Category Router]
+
+    Router -->|1. Load Category| Skills[(Skills Library)]
+    Skills --> SelectPlaybook[Select Playbook:<br/>OTR Tracking Issues]
+
+    SelectPlaybook --> Executor[Playbook Executor]
+    Executor -->|2. Query Data| MCPs[(5 MCP Servers)]
+    MCPs -->|3. Return Data| Evidence[Evidence Collector]
+
+    Evidence -->|4. Match Pattern| Skills
+    Skills --> SelectPattern[Pattern Library:<br/>100+ Patterns]
+    SelectPattern --> Matcher[Pattern Matcher]
+    Matcher --> Scorer[Confidence Scorer]
+
+    Scorer -->|5. High Confidence| Skills
+    Skills --> SelectTemplate[Template Library:<br/>Response Templates]
+    SelectTemplate --> Generator[Response Generator]
+
+    Generator --> Result([Resolution])
+
+    style Case fill:#e3f2fd
+    style Cassie fill:#e3f2fd
+    style Router fill:#e3f2fd
+    style Skills fill:#f3e5f5,stroke:#9c27b0,stroke-width:3px
+    style SelectPlaybook fill:#f3e5f5
+    style SelectPattern fill:#f3e5f5
+    style SelectTemplate fill:#f3e5f5
+    style Executor fill:#fff3cd
+    style MCPs fill:#fff3cd
+    style Evidence fill:#fff3cd
+    style Matcher fill:#f1f8e9
+    style Scorer fill:#f1f8e9
+    style Generator fill:#c8e6c9
+    style Result fill:#c8e6c9
+                </div>
+            </div>
+
+            <div class="highlight">
+                <h3>Skills Library Benefits</h3>
+                <ul>
+                    <li><strong>Reusability:</strong> Same skills used across multiple AI agents</li>
+                    <li><strong>Maintainability:</strong> Update one pattern, all consumers benefit</li>
+                    <li><strong>Rapid Development:</strong> New agents leverage existing diagnostic intelligence</li>
+                    <li><strong>Knowledge Capture:</strong> Institutional expertise preserved and accessible</li>
+                    <li><strong>Continuous Improvement:</strong> Patterns refined based on operational data</li>
+                </ul>
+            </div>
+        </section>
+    </div>
+</div>
+
+<script>
+    // Initialize Mermaid
+    mermaid.initialize({
+        startOnLoad: true,
+        theme: 'default',
+        flowchart: {
+            useMaxWidth: true,
+            htmlLabels: true,
+            curve: 'basis'
+        }
+    });
+
+    // Navigation functionality
+    function showSection(sectionId) {
+        // Hide all sections
+        document.querySelectorAll('.section').forEach(section => {
+            section.classList.remove('active');
+        });
+
+        // Remove active class from all buttons
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+
+        // Show selected section
+        document.getElementById(sectionId).classList.add('active');
+
+        // Add active class to clicked button
+        event.target.classList.add('active');
+
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+</script>
+
+</body>
+</html>
