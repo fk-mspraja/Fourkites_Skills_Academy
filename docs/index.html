@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cassie Agent Architecture - Skills Library Framework</title>
-    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -311,27 +311,27 @@
             <div class="diagram-container">
                 <div class="mermaid">
 flowchart TD
-    Start([User Input:<br/>Support Case]) --> Cassie[Cassie Agent<br/>Intent Classification]
-    Cassie --> Router[Category Router<br/>Selects Domain]
-    Router --> SkillsLib[(Skills Library<br/>Reusable Patterns)]
-    SkillsLib --> LoadPlaybook[Load Playbook<br/>from Skills]
-    LoadPlaybook --> Playbook[Playbook Executor<br/>Execute Protocol]
-    Playbook --> Parallel{Diagnostic Checks<br/>in Parallel}
-    Parallel --> Check1[ELD Config<br/>Check]
-    Parallel --> Check2[Asset Assignment<br/>Check]
-    Parallel --> Check3[Log Analysis<br/>Check]
-    Parallel --> Check4[Data Quality<br/>Check]
-    Check1 --> Evidence[Evidence<br/>Collector]
+    Start([User Input]) --> Cassie[Cassie Agent]
+    Cassie --> Router[Category Router]
+    Router --> SkillsLib[(Skills Library)]
+    SkillsLib --> LoadPlaybook[Load Playbook]
+    LoadPlaybook --> Playbook[Playbook Executor]
+    Playbook --> Parallel{Diagnostic Checks}
+    Parallel --> Check1[ELD Config]
+    Parallel --> Check2[Asset Assignment]
+    Parallel --> Check3[Log Analysis]
+    Parallel --> Check4[Data Quality]
+    Check1 --> Evidence[Evidence Collector]
     Check2 --> Evidence
     Check3 --> Evidence
     Check4 --> Evidence
     Evidence --> SkillsLib2[(Skills Library)]
-    SkillsLib2 --> Pattern[Pattern Matcher<br/>Match Against Skills]
-    Pattern --> Confidence[Confidence Scorer<br/>Evaluate Evidence]
-    Confidence --> Decision{Confidence<br/>Score High?}
+    SkillsLib2 --> Pattern[Pattern Matcher]
+    Pattern --> Confidence[Confidence Scorer]
+    Confidence --> Decision{High Confidence?}
     Decision -->|Yes| SkillsLib3[(Skills Library)]
-    SkillsLib3 --> AutoResponse[Auto-Response<br/>Generator]
-    Decision -->|No| ManualReview[Manual Review<br/>With Evidence]
+    SkillsLib3 --> AutoResponse[Auto Response]
+    Decision -->|No| ManualReview[Manual Review]
     AutoResponse --> End1([Resolution])
     ManualReview --> End2([Escalation])
 
@@ -361,43 +361,43 @@ flowchart TD
             <div class="diagram-container">
                 <div class="mermaid">
 flowchart TD
-    subgraph Layer1["Layer 1: Classification & Routing"]
+    subgraph L1[Layer 1 Classification]
         Input[User Input] --> Cassie[Cassie Agent]
         Cassie --> Router[Category Router]
     end
 
-    subgraph Layer2["Layer 2: Skills Library"]
-        Router --> Skills[(Skills Library<br/>100+ Patterns)]
+    subgraph L2[Layer 2 Skills Library]
+        Router --> Skills[(Skills Library)]
         Skills --> LoadPlaybook[Playbook Selector]
     end
 
-    subgraph Layer3["Layer 3: Investigation Execution"]
+    subgraph L3[Layer 3 Investigation]
         LoadPlaybook --> Executor[Playbook Executor]
-        Executor --> Diagnostics[Diagnostic Checks<br/>Query MCPs]
+        Executor --> Diagnostics[Diagnostic Checks]
     end
 
-    subgraph Layer4["Layer 4: Intelligence & Pattern Matching"]
+    subgraph L4[Layer 4 Intelligence]
         Diagnostics --> Evidence[Evidence Aggregation]
         Evidence --> Skills2[(Skills Library)]
         Skills2 --> Matcher[Pattern Matcher]
         Matcher --> ConfScorer[Confidence Scorer]
     end
 
-    subgraph Layer5["Layer 5: Decision & Response"]
-        ConfScorer --> Decision{High<br/>Confidence?}
+    subgraph L5[Layer 5 Decision]
+        ConfScorer --> Decision{High Confidence?}
         Decision -->|Yes| Skills3[(Skills Library)]
-        Skills3 --> AutoGen[Auto-Response]
+        Skills3 --> AutoGen[Auto Response]
         Decision -->|No| Manual[Manual Review]
     end
 
     AutoGen --> Resolution([Resolution])
     Manual --> Escalation([Escalation])
 
-    style Layer1 fill:#e9ecef,stroke:#495057,stroke-width:2px
-    style Layer2 fill:#fff,stroke:#000,stroke-width:3px
-    style Layer3 fill:#f8f9fa,stroke:#6c757d,stroke-width:2px
-    style Layer4 fill:#e9ecef,stroke:#495057,stroke-width:2px
-    style Layer5 fill:#dee2e6,stroke:#495057,stroke-width:2px
+    style L1 fill:#e9ecef,stroke:#495057,stroke-width:2px
+    style L2 fill:#fff,stroke:#000,stroke-width:3px
+    style L3 fill:#f8f9fa,stroke:#6c757d,stroke-width:2px
+    style L4 fill:#e9ecef,stroke:#495057,stroke-width:2px
+    style L5 fill:#dee2e6,stroke:#495057,stroke-width:2px
                 </div>
             </div>
         </section>
@@ -410,29 +410,29 @@ flowchart TD
             </div>
             <div class="diagram-container">
                 <div class="mermaid">
-graph TD
-    subgraph SkillsLibrary["Skills Library - Central Repository"]
-        Taxonomy[Category Taxonomy<br/>100+ Patterns]
-        Playbooks[Diagnostic Playbooks<br/>Step-by-Step]
-        Templates[Response Templates<br/>Auto-Resolution]
-        Rules[Evidence Rules<br/>Confidence Scoring]
-        Feasibility[Bot Feasibility<br/>HIGH/MEDIUM/LOW]
+flowchart TD
+    subgraph SL[Skills Library]
+        Taxonomy[Category Taxonomy]
+        Playbooks[Diagnostic Playbooks]
+        Templates[Response Templates]
+        Rules[Evidence Rules]
+        Feasibility[Bot Feasibility]
     end
 
-    subgraph Consumers["Components Using Skills"]
+    subgraph Consumers[Components]
         RouterComp[Category Router]
         ExecutorComp[Playbook Executor]
         MatcherComp[Pattern Matcher]
         ResponseGen[Response Generator]
     end
 
-    RouterComp -.Load Category.-> Taxonomy
-    ExecutorComp -.Load Protocol.-> Playbooks
-    MatcherComp -.Match Evidence.-> Rules
-    ResponseGen -.Load Template.-> Templates
-    MatcherComp -.Check Automation.-> Feasibility
+    RouterComp -.-> Taxonomy
+    ExecutorComp -.-> Playbooks
+    MatcherComp -.-> Rules
+    ResponseGen -.-> Templates
+    MatcherComp -.-> Feasibility
 
-    style SkillsLibrary fill:#fff,stroke:#000,stroke-width:3px
+    style SL fill:#fff,stroke:#000,stroke-width:3px
     style Consumers fill:#f8f9fa,stroke:#6c757d,stroke-width:2px
                 </div>
             </div>
@@ -446,37 +446,37 @@ graph TD
             </div>
             <div class="diagram-container">
                 <div class="mermaid">
-graph LR
-    subgraph Skills["Skills Library"]
+flowchart LR
+    subgraph Skills[Skills Library]
         direction TB
 
-        subgraph Patterns["Diagnostic Patterns"]
-            P1[ELD Not Enabled<br/>HIGH]
-            P2[Asset Not Assigned<br/>HIGH]
-            P3[GPS Provider Errors<br/>MEDIUM]
-            P4[Outlier Detection<br/>MEDIUM]
-            P5[100+ More...]
+        subgraph Patterns[Diagnostic Patterns]
+            P1[ELD Not Enabled]
+            P2[Asset Not Assigned]
+            P3[GPS Provider Errors]
+            P4[Outlier Detection]
+            P5[100 More Patterns]
         end
 
-        subgraph Playbooks["Investigation Playbooks"]
-            PB1[OTR Tracking<br/>15 checks]
-            PB2[Network Config<br/>10 checks]
-            PB3[Ocean Tracking<br/>12 checks]
-            PB4[GPS Provider<br/>8 checks]
+        subgraph Playbooks[Investigation Playbooks]
+            PB1[OTR Tracking]
+            PB2[Network Config]
+            PB3[Ocean Tracking]
+            PB4[GPS Provider]
         end
 
-        subgraph Templates["Response Templates"]
+        subgraph Templates[Response Templates]
             T1[ELD Enable]
             T2[Asset Assignment]
             T3[Configuration Fix]
             T4[GPS Provider]
         end
 
-        subgraph Rules["Evidence Rules"]
-            R1[Confidence<br/>Thresholds]
-            R2[Auto-Resolve<br/>Criteria]
-            R3[Escalation<br/>Triggers]
-            R4[Quality<br/>Gates]
+        subgraph Rules[Evidence Rules]
+            R1[Confidence Thresholds]
+            R2[Auto Resolve Criteria]
+            R3[Escalation Triggers]
+            R4[Quality Gates]
         end
     end
 
@@ -511,25 +511,20 @@ graph LR
             <div class="diagram-container">
                 <div class="mermaid">
 flowchart TD
-    Case[Support Case<br/>Load Not Tracking] --> Cassie[Cassie Agent]
+    Case[Support Case] --> Cassie[Cassie Agent]
     Cassie --> Router[Category Router]
-
-    Router -->|1. Load Category| Skills1[(Skills<br/>Library)]
-    Skills1 --> SelectPlaybook[Select Playbook:<br/>OTR Tracking]
-
+    Router -->|Load Category| Skills1[(Skills Library)]
+    Skills1 --> SelectPlaybook[Select Playbook]
     SelectPlaybook --> Executor[Playbook Executor]
-    Executor -->|2. Query Data| MCPs[(5 MCP<br/>Servers)]
-    MCPs -->|3. Return Data| Evidence[Evidence<br/>Collector]
-
-    Evidence -->|4. Match Pattern| Skills2[(Skills<br/>Library)]
-    Skills2 --> SelectPattern[Pattern Library<br/>100+ Patterns]
-    SelectPattern --> Matcher[Pattern<br/>Matcher]
-    Matcher --> Scorer[Confidence<br/>Scorer]
-
-    Scorer -->|5. High Confidence| Skills3[(Skills<br/>Library)]
-    Skills3 --> SelectTemplate[Template Library<br/>Responses]
-    SelectTemplate --> Generator[Response<br/>Generator]
-
+    Executor -->|Query Data| MCPs[(MCP Servers)]
+    MCPs -->|Return Data| Evidence[Evidence Collector]
+    Evidence -->|Match Pattern| Skills2[(Skills Library)]
+    Skills2 --> SelectPattern[Pattern Library]
+    SelectPattern --> Matcher[Pattern Matcher]
+    Matcher --> Scorer[Confidence Scorer]
+    Scorer -->|High Confidence| Skills3[(Skills Library)]
+    Skills3 --> SelectTemplate[Template Library]
+    SelectTemplate --> Generator[Response Generator]
     Generator --> Result([Resolution])
 
     style Case fill:#e9ecef,stroke:#495057,stroke-width:2px
@@ -584,7 +579,6 @@ flowchart TD
 </div>
 
 <script>
-    // Initialize Mermaid with professional theme
     mermaid.initialize({
         startOnLoad: true,
         theme: 'base',
@@ -594,83 +588,24 @@ flowchart TD
             primaryBorderColor: '#495057',
             lineColor: '#495057',
             secondaryColor: '#e9ecef',
-            tertiaryColor: '#dee2e6',
-            background: '#ffffff',
-            mainBkg: '#f8f9fa',
-            secondBkg: '#e9ecef',
-            labelBackground: '#ffffff',
-            labelBorder: '#495057',
-            labelTextColor: '#212529',
-            nodeBorder: '#495057',
-            clusterBkg: '#f8f9fa',
-            clusterBorder: '#495057',
-            defaultLinkColor: '#495057',
-            titleColor: '#212529',
-            edgeLabelBackground: '#ffffff',
-            actorBorder: '#495057',
-            actorBkg: '#f8f9fa',
-            actorTextColor: '#212529',
-            actorLineColor: '#495057',
-            signalColor: '#212529',
-            signalTextColor: '#212529',
-            labelBoxBkgColor: '#f8f9fa',
-            labelBoxBorderColor: '#495057',
-            labelTextColor: '#212529',
-            loopTextColor: '#212529',
-            noteBorderColor: '#495057',
-            noteBkgColor: '#fff',
-            noteTextColor: '#212529',
-            activationBorderColor: '#495057',
-            activationBkgColor: '#e9ecef',
-            sequenceNumberColor: '#ffffff',
-            sectionBkgColor: '#f8f9fa',
-            altSectionBkgColor: '#ffffff',
-            sectionBkgColor2: '#e9ecef',
-            excludeBkgColor: '#dee2e6',
-            taskBorderColor: '#495057',
-            taskBkgColor: '#f8f9fa',
-            taskTextColor: '#212529',
-            taskTextLightColor: '#212529',
-            taskTextOutsideColor: '#212529',
-            taskTextClickableColor: '#212529',
-            activeTaskBorderColor: '#495057',
-            activeTaskBkgColor: '#e9ecef',
-            gridColor: '#dee2e6',
-            doneTaskBkgColor: '#dee2e6',
-            doneTaskBorderColor: '#495057',
-            critBorderColor: '#495057',
-            critBkgColor: '#dee2e6',
-            todayLineColor: '#495057',
-            personBorder: '#495057'
+            tertiaryColor: '#dee2e6'
         },
         flowchart: {
             useMaxWidth: true,
             htmlLabels: true,
-            curve: 'basis',
-            padding: 15
-        },
-        securityLevel: 'loose'
+            curve: 'basis'
+        }
     });
 
-    // Navigation functionality
     function showSection(sectionId) {
-        // Hide all sections
         document.querySelectorAll('.section').forEach(section => {
             section.classList.remove('active');
         });
-
-        // Remove active class from all buttons
         document.querySelectorAll('.nav-btn').forEach(btn => {
             btn.classList.remove('active');
         });
-
-        // Show selected section
         document.getElementById(sectionId).classList.add('active');
-
-        // Add active class to clicked button
         event.target.classList.add('active');
-
-        // Scroll to top smoothly
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 </script>
