@@ -241,9 +241,8 @@
 
     <div class="nav">
         <button class="nav-btn active" onclick="showSection('overview')">Overview</button>
-        <button class="nav-btn" onclick="showSection('full-arch')">Full Architecture</button>
-        <button class="nav-btn" onclick="showSection('layers')">5 Layers</button>
-        <button class="nav-btn" onclick="showSection('data-flow')">Data Flow</button>
+        <button class="nav-btn" onclick="showSection('full-arch')">Architecture Flow</button>
+        <button class="nav-btn" onclick="showSection('layers')">Five Layers</button>
     </div>
 
     <div class="content">
@@ -256,7 +255,7 @@
             </div>
 
             <div class="legend">
-                <h3>Layer Legend</h3>
+                <h3>Five-Layer Architecture</h3>
                 <ul>
                     <li><strong>Layer 1: Classification & Routing</strong> - Intent classification and domain selection</li>
                     <li><strong>Layer 2: Skills Library</strong> - Central knowledge repository (100+ patterns)</li>
@@ -279,11 +278,21 @@
             </div>
 
             <div class="highlight">
+                <h3>How Skills Library is Used</h3>
+                <p>The Skills Library is accessed at <strong>three critical points</strong> during investigation:</p>
+                <ol>
+                    <li><strong>Load Playbook:</strong> After classification, Category Router queries Skills Library to select appropriate diagnostic playbook</li>
+                    <li><strong>Pattern Matching:</strong> After collecting evidence, Pattern Matcher queries Skills Library to identify known patterns</li>
+                    <li><strong>Response Generation:</strong> After high-confidence match, Response Generator loads template from Skills Library</li>
+                </ol>
+            </div>
+
+            <div class="highlight">
                 <h3>Strategic Benefits</h3>
                 <ul>
-                    <li><strong>Reusability:</strong> Same skills used across multiple AI agents</li>
-                    <li><strong>Maintainability:</strong> Update one pattern, all consumers benefit</li>
-                    <li><strong>Rapid Development:</strong> New agents leverage existing intelligence</li>
+                    <li><strong>Reusability:</strong> Write once, use across multiple AI agents</li>
+                    <li><strong>Maintainability:</strong> Update one pattern, all agents benefit immediately</li>
+                    <li><strong>Rapid Development:</strong> New agents leverage existing diagnostic intelligence</li>
                     <li><strong>Knowledge Capture:</strong> Institutional expertise preserved systematically</li>
                     <li><strong>Continuous Improvement:</strong> Patterns refined based on operational data</li>
                 </ul>
@@ -292,132 +301,137 @@
 
         <!-- Full Architecture Section -->
         <section id="full-arch" class="section">
-            <h2>1. Complete Architecture with Skills Library</h2>
+            <h2>Complete Architecture Flow</h2>
             <div class="description">
-                <strong>Use Case:</strong> Shows how the Skills Library integrates into the full diagnostic flow.
+                <strong>Use Case:</strong> Shows the complete diagnostic flow with Skills Library integration at three access points.
             </div>
             <div class="diagram-container">
                 <div class="mermaid">
 graph TD
     A[User Input] --> B[Cassie Agent]
     B --> C[Category Router]
-    C --> D[(Skills Library)]
+    C --> D[Skills Library Access 1]
     D --> E[Load Playbook]
     E --> F[Playbook Executor]
     F --> G[Diagnostic Checks]
     G --> H[Evidence Collector]
-    H --> I[(Skills Library)]
+    H --> I[Skills Library Access 2]
     I --> J[Pattern Matcher]
     J --> K[Confidence Scorer]
-    K --> L{High Confidence?}
-    L -->|Yes| M[(Skills Library)]
-    M --> N[Auto Response]
-    L -->|No| O[Manual Review]
-    N --> P[Resolution]
-    O --> Q[Escalation]
+    K --> L[High Confidence Branch]
+    K --> M[Low Confidence Branch]
+    L --> N[Skills Library Access 3]
+    N --> O[Auto Response Generator]
+    M --> P[Manual Review]
+    O --> Q[Resolution]
+    P --> R[Escalation]
                 </div>
+            </div>
+
+            <div class="highlight">
+                <h3>Key Architecture Points</h3>
+                <ul>
+                    <li><strong>Three Skills Library Access Points:</strong> Playbook selection, pattern matching, and response template loading</li>
+                    <li><strong>Evidence-Based Decisions:</strong> Confidence scoring determines auto-resolution vs manual review</li>
+                    <li><strong>Systematic Investigation:</strong> Playbook-driven diagnostic checks ensure consistency</li>
+                    <li><strong>Knowledge Reuse:</strong> Same skills library serves all specialized agents</li>
+                </ul>
             </div>
         </section>
 
         <!-- 5 Layers Section -->
         <section id="layers" class="section">
-            <h2>2. Five-Layer Architecture</h2>
+            <h2>Five-Layer Architecture</h2>
             <div class="description">
-                <strong>Use Case:</strong> High-level view showing Skills Library as Layer 2.
+                <strong>Use Case:</strong> High-level view showing clear separation of concerns across five distinct layers.
             </div>
             <div class="diagram-container">
                 <div class="mermaid">
 graph TD
-    subgraph L1[Layer 1 Classification]
-        A[User Input]
-        B[Cassie Agent]
-        C[Category Router]
-    end
-
-    subgraph L2[Layer 2 Skills Library]
-        D[(Skills Library)]
-        E[Playbook Selector]
-    end
-
-    subgraph L3[Layer 3 Investigation]
-        F[Playbook Executor]
-        G[Diagnostic Checks]
-    end
-
-    subgraph L4[Layer 4 Intelligence]
-        H[Evidence Aggregation]
-        I[Pattern Matcher]
-        J[Confidence Scorer]
-    end
-
-    subgraph L5[Layer 5 Decision]
-        K{Decision}
-        L[Auto Response]
-        M[Manual Review]
-    end
-
-    A --> B
-    B --> C
-    C --> D
-    D --> E
-    E --> F
-    F --> G
-    G --> H
-    H --> I
-    I --> J
-    J --> K
-    K --> L
-    K --> M
-                </div>
-            </div>
-        </section>
-
-        <!-- Data Flow Section -->
-        <section id="data-flow" class="section">
-            <h2>3. Data Flow Through Skills Library</h2>
-            <div class="description">
-                <strong>Use Case:</strong> Step-by-step data flow showing Skills Library access points.
-            </div>
-            <div class="diagram-container">
-                <div class="mermaid">
-graph TD
-    A[Support Case] --> B[Cassie Agent]
+    A[User Input] --> B[Cassie Agent]
     B --> C[Category Router]
-    C --> D[(Skills Library)]
-    D --> E[Select Playbook]
-    E --> F[Playbook Executor]
-    F --> G[(MCP Servers)]
-    G --> H[Evidence Collector]
-    H --> I[(Skills Library)]
-    I --> J[Pattern Matcher]
-    J --> K[Confidence Scorer]
-    K --> L[(Skills Library)]
-    L --> M[Response Generator]
-    M --> N[Resolution]
+    C --> D[LAYER 1 COMPLETE]
+
+    D --> E[Skills Library]
+    E --> F[Playbook Selector]
+    F --> G[LAYER 2 COMPLETE]
+
+    G --> H[Playbook Executor]
+    H --> I[Diagnostic Checks via MCPs]
+    I --> J[LAYER 3 COMPLETE]
+
+    J --> K[Evidence Aggregation]
+    K --> L[Pattern Matcher]
+    L --> M[Confidence Scorer]
+    M --> N[LAYER 4 COMPLETE]
+
+    N --> O[Decision Point]
+    O --> P[Auto Response Path]
+    O --> Q[Manual Review Path]
+    P --> R[Resolution]
+    Q --> S[Escalation]
                 </div>
             </div>
 
             <div class="highlight">
-                <h3>Skills Library Benefits</h3>
+                <h3>Layer Responsibilities</h3>
+                <p><strong>Layer 1 - Classification & Routing:</strong></p>
                 <ul>
-                    <li><strong>Reusability:</strong> Same skills across multiple AI agents</li>
-                    <li><strong>Maintainability:</strong> Update once, all benefit</li>
-                    <li><strong>Rapid Development:</strong> New agents leverage existing intelligence</li>
-                    <li><strong>Knowledge Capture:</strong> Institutional expertise preserved</li>
-                    <li><strong>Continuous Improvement:</strong> Patterns refined from operational data</li>
-                    <li><strong>Separation of Concerns:</strong> Knowledge layer independent of execution</li>
+                    <li>Intent classification using Cassie Agent</li>
+                    <li>Domain selection via Category Router</li>
+                    <li>Company identification and context gathering</li>
+                </ul>
+
+                <p><strong>Layer 2 - Skills Library:</strong></p>
+                <ul>
+                    <li>Central repository of 100+ diagnostic patterns</li>
+                    <li>Investigation playbooks for each domain</li>
+                    <li>Response templates and evidence rules</li>
+                    <li>Bot feasibility ratings</li>
+                </ul>
+
+                <p><strong>Layer 3 - Investigation Execution:</strong></p>
+                <ul>
+                    <li>Playbook-driven diagnostic checks</li>
+                    <li>MCP server queries (Redshift, Salesforce, Knowledge, Support AI, Atlassian)</li>
+                    <li>Systematic data collection</li>
+                </ul>
+
+                <p><strong>Layer 4 - Intelligence & Pattern Matching:</strong></p>
+                <ul>
+                    <li>Evidence aggregation from multiple sources</li>
+                    <li>Pattern matching against Skills Library</li>
+                    <li>Confidence scoring based on evidence quality</li>
+                </ul>
+
+                <p><strong>Layer 5 - Decision & Response:</strong></p>
+                <ul>
+                    <li>Confidence-based decision logic</li>
+                    <li>Auto-response generation for high-confidence matches</li>
+                    <li>Manual review escalation for ambiguous cases</li>
                 </ul>
             </div>
 
             <div class="highlight">
                 <h3>Implementation Impact</h3>
-                <p><strong>Current State:</strong> Variable auto-resolution rates</p>
-                <p><strong>With Skills Library:</strong></p>
+                <p><strong>Current State:</strong> Production RCA platform with variable auto-resolution rates</p>
+                <p><strong>With Enhanced Skills Library:</strong></p>
                 <ul>
-                    <li>Phase 1 (Weeks 1-2): 40-50% auto-resolution</li>
-                    <li>Phase 2 (Weeks 3-5): 80% diagnostic guidance</li>
-                    <li>Phase 3 (Weeks 6-8): 60-70% auto-resolution</li>
-                    <li>Phase 4 (Weeks 9-11): Production deployment</li>
+                    <li><strong>Phase 1 (Weeks 1-3):</strong> 40-50% auto-resolution with top 10 patterns</li>
+                    <li><strong>Phase 2 (Weeks 4-6):</strong> 80% diagnostic guidance coverage</li>
+                    <li><strong>Phase 3 (Weeks 7-9):</strong> 60-70% auto-resolution with 30+ patterns</li>
+                    <li><strong>Phase 4 (Weeks 10-12):</strong> Production rollout with monitoring</li>
+                </ul>
+            </div>
+
+            <div class="highlight">
+                <h3>Success Metrics</h3>
+                <ul>
+                    <li><strong>Auto-Resolution Rate:</strong> Target 60-70% (from current baseline)</li>
+                    <li><strong>Diagnostic Accuracy:</strong> Target 90%+ confidence scoring accuracy</li>
+                    <li><strong>Investigation Time:</strong> Target 60% reduction in manual investigation time</li>
+                    <li><strong>Pattern Coverage:</strong> Target 60+ documented patterns with proven protocols</li>
+                    <li><strong>Consistency:</strong> Systematic approach across all specialized agents</li>
                 </ul>
             </div>
         </section>
@@ -432,13 +446,7 @@ graph TD
 <script>
     mermaid.initialize({
         startOnLoad: true,
-        theme: 'base',
-        themeVariables: {
-            primaryColor: '#f8f9fa',
-            primaryTextColor: '#212529',
-            primaryBorderColor: '#495057',
-            lineColor: '#495057'
-        }
+        theme: 'default'
     });
 
     function showSection(sectionId) {
