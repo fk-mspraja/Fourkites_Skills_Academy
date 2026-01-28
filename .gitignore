@@ -1,6 +1,12 @@
 # Markdown files (keep local, not in git)
 *.md
+!README.md
 !docs/README.md
+
+# HTML files (keep only framework proposal and docs)
+*.html
+!FOURKITES_AI_FRAMEWORK_PROPOSAL.html
+!docs/index.html
 
 # Python
 __pycache__/
